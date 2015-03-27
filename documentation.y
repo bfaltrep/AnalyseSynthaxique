@@ -1,7 +1,8 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
-
+  void yyerror(const char *s);
+  
 %}
 
 %token	IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
@@ -533,12 +534,12 @@ declaration_list
 
 %%
 
-	  /*  
+	  
 void yyerror(const char *s){
   fflush(stdout);
   fprintf(stderr, "*** %s\n", s);
 }
-	  */
+	  
 int main (){
   yyparse();
   return EXIT_SUCCESS;
