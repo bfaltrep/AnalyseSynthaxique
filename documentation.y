@@ -541,5 +541,7 @@ void yyerror(const char *s){
 	  */
 int main (){
   yyparse();
+  printf("yolo");
+  
   return EXIT_SUCCESS;
 }

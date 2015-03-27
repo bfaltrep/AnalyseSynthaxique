@@ -4,7 +4,7 @@ CFLAGS = -ly -lfl
 YACC = bison -d -v
 
 
-calculette : documentation.tab.c lex.yy.c
+documentation : documentation.tab.c lex.yy.c
 	gcc documentation.tab.c lex.yy.c $(CFLAGS) -o documentation
 
 
@@ -20,5 +20,6 @@ documentation.output : documentation.y
 	$(YACC) documentation.y
 
 
+.PHONY : clean
 clean:
-	rm -rf *.o *.c *~ *.output *.tab.h
+	rm *.c *.output *.tab.h *tab.c documentation
