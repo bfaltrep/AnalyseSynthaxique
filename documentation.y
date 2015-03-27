@@ -1,8 +1,20 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
-  void yyerror(const char *s);
+#include <string.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
   
+  //-- locals functions
+  void yyerror(const char *s);
+  void finish();
+  int create_files();
+  
+  //-- locals var
+  FILE *flot_html;
+  FILE *flot_css;
+  char * buf;
 %}
 
 %token	IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
@@ -533,14 +545,39 @@ declaration_list
 	;
 
 %%
-
 	  
+int create_files(){
+  //créer les deux fichiers
+  flot_html = fopen("index.html","w+");
+  flot_css = fopen("style.css","w+");
+
+
+  buf = "<!DOCTYPE html><html><head><meta charset=\"utf-8\" lang=\"fr\" /><link rel=\"stylesheet\" href=\"style.css\" /></head><body><h1>J'AI RAISON !!</h1> et toc...</body>";
+  
+  //ajoute l'en-tête dans index.html
+  fprintf(flot_html,"%s",buf);//fwrite(buf, sizeof (char *), strlen(buf),flot_html);
+
+  buf = "h1 { color : #8291CF;}";
+  
+  fprintf(flot_css,"%s",buf);
+//"<!DOCTYPE html><html><head><meta charset=\"utf-8\" lang=\"fr\" /><link rel=\"stylesheet\" href=\"style.css\" />"
+  
+}
+
+void finish(){
+  fclose(flot_html); 
+  fclose(flot_css); 
+}
 void yyerror(const char *s){
   fflush(stdout);
   fprintf(stderr, "*** %s\n", s);
 }
 	  
 int main (){
+  create_files();
+  
   yyparse();
+  printf("\n\nt\n\n\n");
+  finish();
   return EXIT_SUCCESS;
 }
