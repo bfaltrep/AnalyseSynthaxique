@@ -1,24 +1,16 @@
 
-CFLAGS = -ly -lfl
+LDLIBS=-ly -lfl
+CFLAGS=-Wall -Werror -g
 
-YACC = bison -d -v
+YACC=bison -d -v
 
-
-calculette : documentation.tab.c lex.yy.c
-	gcc documentation.tab.c lex.yy.c $(CFLAGS) -o documentation
-
+documentation : documentation.c lex.yy.c traitement.c
 
 lex.yy.c : documentation.lex
 	flex documentation.lex
 
-
-documentation.tab.c : documentation.y
+documentation.tab.c : documentation.y traitement.h 
 	$(YACC) documentation.y
-documentation.tab.h : documentation.y
-	$(YACC) documentation.y
-documentation.output : documentation.y
-	$(YACC) documentation.y
-
 
 clean:
-	rm -rf *.o *.c *~ *.output *.tab.h
+	rm -rf *.o documentation.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css
