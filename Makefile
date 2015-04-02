@@ -13,4 +13,4 @@ documentation.tab.c : documentation.y traitement.h
 	$(YACC) documentation.y
 
 clean:
-	rm -rf *.o documentation.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css
+	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css

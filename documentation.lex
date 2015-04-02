@@ -25,6 +25,9 @@ WS  [ \t\v\n\f]
 #include <stdio.h>
 #include "y.tab.h"
 
+  //-- var globales
+extern char * yylval_char; 
+
 extern void yyerror(const char *);  /* prints grammar violation message */
 
 extern int sym_type(const char *);  /* returns type from symbol table */
@@ -52,12 +55,13 @@ static int check_type(void);
 "else"					{ return(ELSE); }
 "enum"					{ return(ENUM); }
 "extern"				{ return(EXTERN); }
-"float"					{ return(FLOAT); }
+"float"					{ yylval_char = "float"; return(FLOAT); }
 "for"					{ return(FOR); }
 "goto"					{ return(GOTO); }
 "if"					{ return(IF); }
 "inline"				{ return(INLINE); }
-"int"					{ return(INT); }
+"int"					{ yylval_char = "int"; return(INT); }
+
 "long"					{ return(LONG); }
 "register"				{ return(REGISTER); }
 "restrict"				{ return(RESTRICT); }
@@ -71,7 +75,7 @@ static int check_type(void);
 "typedef"				{ return(TYPEDEF); }
 "union"					{ return(UNION); }
 "unsigned"				{ return(UNSIGNED); }
-"void"					{ return(VOID); }
+"void"					{ yylval_char = "void"; return(VOID); }
 "volatile"				{ return(VOLATILE); }
 "while"					{ return(WHILE); }
 "_Alignas"                              { return ALIGNAS; }
