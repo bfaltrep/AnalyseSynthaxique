@@ -21,4 +21,4 @@ documentation.output : documentation.y
 
 
 clean:
-	rm -rf *.o *.c *~ *.output *.tab.h
+	rm -rf *.o *.c *~ *.output *.tab.h *.css *.html
