@@ -1,5 +1,17 @@
 #include "traitement.h"
 
+/*c'est pas beau je sais...mais je vois pas comment faire mieux*/
+char * type_to_string(int type){
+   switch (type){
+      case type_specifier:
+        return "type_specifier";
+      case identifier:
+         return "identifier"; 
+      default:
+         return "";
+   }   
+}
+
 /*Formate et ajoute un bloc associé a des selecteurs dans le css.*/
 void ajout_regles_css( char * selecteurs, char * regles){
    //+5 pour '{}' et retour a la ligne. +1 : '\0'
@@ -23,17 +35,20 @@ void ajout_enTete_html (char * language, char * title){
    fprintf(flot_html,"%s",res);
    free(res);
 }
-//void ajout_balise_class(char * type, char * contenu)
-void ajout_balise_class(char * type, char * contenu){
-   char * res = malloc(sizeof(char * ) * (strlen(contenu)+strlen(type)+1+22));
+
+void ajout_balise_class(int type, char * contenu){
+   char * tmp = type_to_string(type);
+   
+   char * res = malloc(sizeof(char * ) * (strlen(contenu)+strlen(tmp)+1+22));
    res = strcpy(res,"<span class=\"");
-   res = strcat(res, type);
+   res = strcat(res,tmp);
    res = strcat(res, "\">");
    res = strcat(res, contenu);
    res = strcat(res, "</span>");
    fprintf(flot_html,"%s",res);
    free(res);
 }
+
 
 int create_files(){
    //créer les deux fichiers

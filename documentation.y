@@ -219,7 +219,7 @@ declaration_specifiers
 	: storage_class_specifier declaration_specifiers
 	| storage_class_specifier
 	| type_specifier declaration_specifiers
-	| type_specifier
+	| type_specifier                                 { ajout_balise_class(type_specifier,yylval_char); }
 	| type_qualifier declaration_specifiers
 	| type_qualifier
 	| function_specifier declaration_specifiers
@@ -249,9 +249,9 @@ storage_class_specifier
 
 type_specifier
 	: VOID
-	| CHAR
-	| SHORT
-	| INT       { ajout_balise_class("type_specifier","int"); }
+	| CHAR          
+	| SHORT        
+	| INT           
 	| LONG
 	| FLOAT
 	| DOUBLE
