@@ -545,22 +545,46 @@ declaration_list
 	;
 
 %%
-	  
+
+	  /*Formate et ajoute un bloc associé a des selecteurs dans le css.*/
+void ajout_regles_css( char * selecteurs, char * regles){
+  //+5 pour '{}' et retour a la ligne. +1 : '\0'
+  char * res = malloc(sizeof(char * ) * (strlen(selecteurs)+strlen(regles)+5+1));
+  res = strcpy(res,selecteurs);
+  res = strcat(res, "{\n");
+  res = strcat(res,regles);
+  res = strcat(res, "}\n\n");
+  fprintf(flot_css,"%s",res);
+  free(res);
+}
+
+void ajout_enTete_html (char * language, char * title){
+  //2 : langage. 1 : \0. 37, 59, 15 : code preforme
+  char * res = malloc(sizeof(char * ) * (strlen(title)+2+1+111));
+  res = strcpy(res,"<head><meta charset=\"utf-8\" lang=\"");
+  res = strcat(res, language);
+  res = strcat(res, "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>");
+  res = strcat(res, title);
+  res = strcat(res, "</title></head>");
+  fprintf(flot_html,"%s",res);
+  free(res);
+}
+
 int create_files(){
   //créer les deux fichiers
   flot_html = fopen("index.html","w+");
   flot_css = fopen("style.css","w+");
 
 
-  buf = "<!DOCTYPE html><html><head><meta charset=\"utf-8\" lang=\"fr\" /><link rel=\"stylesheet\" href=\"style.css\" /></head><body><h1>J'AI RAISON !!</h1> et toc...</body>";
+  buf = "<!DOCTYPE html><html>";
+  fprintf(flot_html,"%s",buf);
+  ajout_enTete_html ("fr", "documentation");
+  buf = "<body><h1>J'AI RAISON !!</h1> et toc...</body>";
+  fprintf(flot_html,"%s",buf);
   
-  //ajoute l'en-tête dans index.html
-  fprintf(flot_html,"%s",buf);//fwrite(buf, sizeof (char *), strlen(buf),flot_html);
+  ajout_regles_css( "h1","color : #8291CF;\n");
+  ajout_regles_css( "h2","color : #8591CF;\n");
 
-  buf = "h1 { color : #8291CF;}";
-  
-  fprintf(flot_css,"%s",buf);
-//"<!DOCTYPE html><html><head><meta charset=\"utf-8\" lang=\"fr\" /><link rel=\"stylesheet\" href=\"style.css\" />"
   
 }
 
