@@ -23,7 +23,7 @@ WS  [ \t\v\n\f]
 
 %{
 #include <stdio.h>
-#include "documentation.tab.h"
+#include "y.tab.h"
 
 extern void yyerror(const char *);  /* prints grammar violation message */
 
@@ -34,6 +34,7 @@ extern int sym_type(const char *);  /* returns type from symbol table */
 static void comment(void);
 static int check_type(void);
 %}
+%option nounput
 
 %%
 "/*"                                    { comment(); }
@@ -167,7 +168,6 @@ static void comment(void)
         {
             while ((c = input()) == '*')
                 ;
-
             if (c == '/')
                 return;
 
