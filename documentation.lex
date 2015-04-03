@@ -24,7 +24,7 @@ WS  [ \t\v\n\f]
 %{
 #include <stdio.h>
 #include "y.tab.h"
-
+  
   //-- var globales
 extern char * yylval_char; 
 
@@ -36,6 +36,12 @@ extern int sym_type(const char *);  /* returns type from symbol table */
 
 static void comment(void);
 static int check_type(void);
+
+void reecrire_yylval_char (){
+  yylval_char = strcpy(yylval_char, yytext);
+}
+
+ 
 %}
 %option nounput
 
@@ -43,45 +49,45 @@ static int check_type(void);
 "/*"                                    { comment(); }
 "//".*                                    { /* consume //-comment */ }
 
-"auto"					{ return(AUTO); }
-"break"					{ return(BREAK); }
-"case"					{ return(CASE); }
-"char"					{ return(CHAR); }
-"const"					{ return(CONST); }
-"continue"				{ return(CONTINUE); }
-"default"				{ return(DEFAULT); }
-"do"					{ return(DO); }
-"double"				{ return(DOUBLE); }
-"else"					{ return(ELSE); }
-"enum"					{ return(ENUM); }
-"extern"				{ return(EXTERN); }
-"float"					{ yylval_char = "float"; return(FLOAT); }
-"for"					{ return(FOR); }
-"goto"					{ return(GOTO); }
-"if"					{ return(IF); }
-"inline"				{ return(INLINE); }
-"int"					{ yylval_char = "int"; return(INT); }
+"auto"					{ reecrire_yylval_char (); return(AUTO); }
+"break"					{ reecrire_yylval_char (); return(BREAK); }
+"case"					{ reecrire_yylval_char (); return(CASE); }
+"char"					{ reecrire_yylval_char (); return(CHAR); }
+"const"					{ reecrire_yylval_char (); return(CONST); }
+"continue"				{ reecrire_yylval_char (); return(CONTINUE); }
+"default"				{ reecrire_yylval_char (); return(DEFAULT); }
+"do"					{ reecrire_yylval_char (); return(DO); }
+"double"				{ reecrire_yylval_char (); return(DOUBLE); }
+"else"					{ reecrire_yylval_char (); return(ELSE); }
+"enum"					{ reecrire_yylval_char (); return(ENUM); }
+"extern"				{ reecrire_yylval_char (); return(EXTERN); }
+"float"					{ reecrire_yylval_char (); return(FLOAT); }
+"for"					{ reecrire_yylval_char (); return(FOR); }
+"goto"					{ reecrire_yylval_char (); return(GOTO); }
+"if"					{ reecrire_yylval_char (); return(IF); }
+"inline"				{ reecrire_yylval_char (); return(INLINE); }
+"int"					{ reecrire_yylval_char (); return(INT); }
 
-"long"					{ return(LONG); }
-"register"				{ return(REGISTER); }
-"restrict"				{ return(RESTRICT); }
-"return"				{ return(RETURN); }
-"short"					{ return(SHORT); }
-"signed"				{ return(SIGNED); }
-"sizeof"				{ return(SIZEOF); }
-"static"				{ return(STATIC); }
-"struct"				{ return(STRUCT); }
-"switch"				{ return(SWITCH); }
-"typedef"				{ return(TYPEDEF); }
-"union"					{ return(UNION); }
-"unsigned"				{ return(UNSIGNED); }
-"void"					{ yylval_char = "void"; return(VOID); }
-"volatile"				{ return(VOLATILE); }
-"while"					{ return(WHILE); }
+"long"					{ reecrire_yylval_char (); return(LONG); }
+"register"				{ reecrire_yylval_char (); return(REGISTER); }
+"restrict"				{ reecrire_yylval_char (); return(RESTRICT); }
+"return"				{ reecrire_yylval_char (); return(RETURN); }
+"short"					{ reecrire_yylval_char (); return(SHORT); }
+"signed"				{ reecrire_yylval_char (); return(SIGNED); }
+"sizeof"				{ reecrire_yylval_char (); return(SIZEOF); }
+"static"				{ reecrire_yylval_char (); return(STATIC); }
+"struct"				{ reecrire_yylval_char (); return(STRUCT); }
+"switch"				{ reecrire_yylval_char (); return(SWITCH); }
+"typedef"				{ reecrire_yylval_char (); return(TYPEDEF); }
+"union"					{ reecrire_yylval_char (); return(UNION); }
+"unsigned"				{ reecrire_yylval_char (); return(UNSIGNED); }
+"void"					{ reecrire_yylval_char (); return(VOID); }
+"volatile"				{ reecrire_yylval_char (); return(VOLATILE); }
+"while"					{ reecrire_yylval_char (); return(WHILE); }
 "_Alignas"                              { return ALIGNAS; }
 "_Alignof"                              { return ALIGNOF; }
 "_Atomic"                               { return ATOMIC; }
-"_Bool"                                 { return BOOL; }
+"_Bool"                                 { reecrire_yylval_char (); return BOOL; }
 "_Complex"                              { return COMPLEX; }
 "_Generic"                              { return GENERIC; }
 "_Imaginary"                            { return IMAGINARY; }

@@ -9,7 +9,6 @@ char * buf;
 
 enum type{type_specifier,identifier};
 
-
 char * type_to_string(int type);
 
 void ajout_regles_css( char * selecteurs, char * regles);

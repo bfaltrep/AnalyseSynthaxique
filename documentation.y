@@ -553,6 +553,7 @@ void yyerror(const char *s){
 }
 	  
 int main (){
+  yylval_char = malloc(sizeof(char)*50);
   create_files();
   
   yyparse();

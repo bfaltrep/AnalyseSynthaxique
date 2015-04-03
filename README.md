@@ -1,4 +1,8 @@
 # AnalyseSynthaxique
 [L3] projet as-pp3
 
-<span>Berenice</span> : j'ai mis des fichiers très basiques pour qu'on parte pas de rien mais on peut autant renommer que modifier complètement ce que j'ai mis jusque la.
+<span>Berenice</span> :
+a faire : </br>
+ - mettre en couleur les catégories (types, variables, nom fonctions ...)
+ - mettre en valeur les occurences d'une variable/fonction quand on survole une des occurence.
+ - refaire l'indentation pour être sûrs qu'elle soit propre
