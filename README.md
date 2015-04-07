@@ -1,8 +1,8 @@
 # AnalyseSynthaxique
-[L3] projet as-pp3
+[L3] projet as-pp3 partie LateX
 
-<span>Berenice</span> :
+<span>Amélie Guémon</span> :
 a faire : </br>
- - mettre en couleur les catégories (types, variables, nom fonctions ...)
- - mettre en valeur les occurences d'une variable/fonction quand on survole une des occurence.
- - refaire l'indentation pour être sûrs qu'elle soit propre
+ - créer la grammaire correspondante à LateX
+ - pouvoir faire les liens internes et externes entre les documents
+ - comprendre et adapter la partie mathématique (au moins celle de Basic Algebra) en MathML
