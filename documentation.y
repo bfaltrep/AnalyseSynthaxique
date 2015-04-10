@@ -5,7 +5,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "traitement.h"
-
+#include "pile/stack.h"
+  
 int yylex();
 
 //-- locals functions
@@ -13,7 +14,9 @@ void yyerror(const char *s);
 
 //-- var globales
 char * yylval_char;
-
+stack imbrique;
+int indentation;
+ 
 %}
 
 %output "y.tab.c"
@@ -40,7 +43,7 @@ char * yylval_char;
 %%
 
 primary_expression
-	: IDENTIFIER
+	: IDENTIFIER  
 	| constant
 	| string
 	| '(' expression ')'
@@ -58,7 +61,7 @@ enumeration_constant		/* before it has been defined as such */
 	;
 
 string
-	: STRING_LITERAL
+        : STRING_LITERAL
 	| FUNC_NAME
 	;
 
@@ -210,7 +213,7 @@ constant_expression
 	;
 
 declaration
-	: declaration_specifiers ';'
+        : declaration_specifiers ';' 
 	| declaration_specifiers init_declarator_list ';'
 	| static_assert_declaration
 	;
@@ -219,7 +222,7 @@ declaration_specifiers
 	: storage_class_specifier declaration_specifiers
 	| storage_class_specifier
 	| type_specifier declaration_specifiers
-	| type_specifier                                 { ajout_balise_class(type_specifier,yylval_char); }
+	| type_specifier                                
 	| type_qualifier declaration_specifiers
 	| type_qualifier
 	| function_specifier declaration_specifiers
@@ -351,7 +354,7 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER
+	: IDENTIFIER 
 	| '(' declarator ')'
 	| direct_declarator '[' ']'
 	| direct_declarator '[' '*' ']'
@@ -397,7 +400,7 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER
+	: IDENTIFIER  
 	| identifier_list ',' IDENTIFIER
 	;
 
@@ -556,8 +559,13 @@ int main (){
   yylval_char = malloc(sizeof(char)*50);
   create_files();
   
+  imbrique = stack_create();
+
+  
   yyparse();
   printf("\n\nt\n\n\n");
   finish();
+  stack_destroy(imbrique);
+  free(yylval_char);
   return EXIT_SUCCESS;
 }

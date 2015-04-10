@@ -1,16 +1,21 @@
 #include "traitement.h"
 
 /*c'est pas beau je sais...mais je vois pas comment faire mieux*/
+/*
 char * type_to_string(int type){
-   switch (type){
-      case type_specifier:
-        return "type_specifier";
-      case identifier:
-         return "identifier"; 
-      default:
-         return "";
-   }   
-}
+  switch (type){
+  case type_specifier:
+    return "type_specifier";
+  case identifier:
+    return "identifier";
+  case FUNC_NAME :
+    return "func_name";
+  case STRING_LITERAL:
+    return "string_literal";
+  default:
+    return "";
+  }   
+  }*/
 
 /*Formate et ajoute un bloc associé a des selecteurs dans le css.*/
 void ajout_regles_css( char * selecteurs, char * regles){
@@ -20,7 +25,6 @@ void ajout_regles_css( char * selecteurs, char * regles){
 }
 
 void ajout_enTete_html (char * language, char * title){
-   //2 : langage. 1 : \0. 37, 59, 15 : code preforme
    char *a ="<head><meta charset=\"utf-8\" lang=\"",
      *b = "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>",
      *c = "</title></head>";
@@ -28,22 +32,21 @@ void ajout_enTete_html (char * language, char * title){
    fprintf(flot_html,"%s%s%s%s%s", a, language, b, title, c);
 }
 
-void ajout_balise_class(int type, char * contenu){
-   /* char * tmp = type_to_string(type); */
-   
-   /* char * res = malloc(sizeof(char * ) * (strlen(contenu)+strlen(tmp)+1+22)); */
-   /* res = strcpy(res,"<span class=\""); */
-   /* res = strcat(res,tmp); */
-   /* res = strcat(res, "\">"); */
-   /* res = strcat(res, contenu); */
-   /* res = strcat(res, "</span>"); */
-   /* fprintf(flot_html,"%s",res); */
-   /* free(res); */
+void newline(){
+  fprintf(flot_html, "<br>");
+}
 
-   char * a = "<span class=\"",
+void tab(){
+  fprintf(flot_html, "&nbsp");
+}
+
+void ajout_balise_class(char * type, char * contenu){
+
+
+   char * a = "\n<span class=\"",
      *b = "\">",
-     *c = "</span>";
-   fprintf(flot_html, "%s%s%s%s%s", a, type_to_string(type), b, contenu, c);
+     *c = "</span>\n";
+   fprintf(flot_html, "%s%s%s%s%s", a, type, b, contenu, c);
 }
 
 
@@ -65,12 +68,13 @@ int create_files(){
    //traitement
 
    //css
+   ajout_regles_css(".number","color : #AAAA00;\n");
+   ajout_regles_css(".key_word" ,"color : #FF6600;\n");
+   ajout_regles_css(".type_specifier" ,"color : #330099;\n");
+   ajout_regles_css(".identifier","color : #CCCC33;\n");
+   ajout_regles_css(".string_literal","color : #99CC33;\n");
+   ajout_regles_css(".variable","color : #66AA33;\n");
    
-   ajout_regles_css( "h1","color : #8291CF;\n");
-   ajout_regles_css( "h2","color : #8591CF;\n");
-   ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
-   //ajouter regle pour nomfonction+nomvariable avec une pile.
-   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
    return 0;
 }
 
@@ -78,5 +82,5 @@ void finish(){
   char * buf = "</body></html>";
   fprintf(flot_html,"%s",buf);
   fclose(flot_html); 
-  fclose(flot_css); 
+  fclose(flot_css);
 }
