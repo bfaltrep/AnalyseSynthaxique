@@ -32,6 +32,8 @@ extern char * yylval_char;
 extern stack imbrique;
 extern int indentation;
 
+ int inFor = 0;
+ 
 extern void yyerror(const char *);  /* prints grammar violation message */
 
 extern int sym_type(const char *);  /* returns type from symbol table */
@@ -66,7 +68,8 @@ void reecrire_yylval_char (){
 "enum"					{ ajout_balise_class("key_word",yytext); return(ENUM); }
 "extern"				{ ajout_balise_class("key_word",yytext); return(EXTERN); }
 "float"					{ ajout_balise_class("type_specifier",yytext); return(FLOAT); }
-"for"					{ ajout_balise_class("key_word",yytext); return(FOR); }
+
+"for"					{ inFor = 1; ajout_balise_class("key_word",yytext); return(FOR); }
 "goto"					{ ajout_balise_class("key_word",yytext); return(GOTO); }
 "if"					{ ajout_balise_class("key_word",yytext); return(IF); }
 "inline"				{ ajout_balise_class("key_word",yytext); return(INLINE); }
@@ -138,19 +141,22 @@ void reecrire_yylval_char (){
 ">="					{ fprintf(flot_html, ">="); return GE_OP; }
 "=="					{ fprintf(flot_html, "=="); return EQ_OP; }
 "!="					{ fprintf(flot_html, "!="); return NE_OP; }
-";"					{ fprintf(flot_html, ";"); newline();
-  int i = 0;
-  for(;i < indentation; i++){ tab();tab();tab();tab(); }
+";"					{ fprintf(flot_html, ";");
+  if(inFor){
+    tab();
+  }else{
+    newline();
+    if(indentation == 0){newline();}
+    int i = 0;  for(;i < indentation; i++){ tab();tab();tab();tab(); }}
   return ';'; }
-("{"|"<%")				{ fprintf(flot_html, "{"); newline();
-  indentation++;
-  int i = 0;
-  for(;i < indentation; i++){ tab();tab();tab();tab(); }
+("{"|"<%")				{ if(inFor){inFor = 0;}fprintf(flot_html, "{<span class=crochet>");
+  newline();  indentation++;
+  int i = 0;  for(;i < indentation; i++){ tab();tab();tab();tab(); }
   return '{'; }
-("}"|"%>")				{ fprintf(flot_html, "}"); newline(); indentation--; if(indentation < 0){
-    yyerror("probleme d'indentation.\n");
-  }
-  newline();
+("}"|"%>")				{ fprintf(flot_html, "</span>}"); newline(); indentation--;
+  if(indentation < 0){ yyerror("probleme d'indentation.\n");}
+  int i = 0;  for(;i < indentation; i++){ tab();tab();tab();tab(); }
+  if(indentation == 0){newline();}
   return '}'; }
 ","					{ fprintf(flot_html, ","); return ','; }
 ":"					{ fprintf(flot_html, ":"); return ':'; }
