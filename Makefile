@@ -1,6 +1,6 @@
 
 LDLIBS=-ly -lfl
-CFLAGS= -Werror -g #-Wall
+CFLAGS= -Werror -g -Wall
 
 
 YACC=bison -d -v

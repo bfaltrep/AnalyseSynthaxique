@@ -85,16 +85,16 @@ generic_association
 	;
 
 postfix_expression
-	: primary_expression
-	| postfix_expression '[' expression ']'
-	| postfix_expression '(' ')'
-	| postfix_expression '(' argument_expression_list ')'
-	| postfix_expression '.' IDENTIFIER
-	| postfix_expression PTR_OP IDENTIFIER
-	| postfix_expression INC_OP
-	| postfix_expression DEC_OP
-	| '(' type_name ')' '{' initializer_list '}'
-	| '(' type_name ')' '{' initializer_list ',' '}'
+: primary_expression                                             {/*fprintf(flot_html, "\ntata\n");*/}
+        | postfix_expression '[' expression ']'                   {/*fprintf(flot_html, "\ntata2\n");*/}
+        | postfix_expression '(' ')'                               {/*fprintf(flot_html, "\ntata3\n");*/}
+	| postfix_expression '(' argument_expression_list ')'       {/*fprintf(flot_html, "\ntata4\n");*/}
+	| postfix_expression '.' IDENTIFIER                       {/*fprintf(flot_html, "\ntata5\n");*/}
+	| postfix_expression PTR_OP IDENTIFIER                     {/*fprintf(flot_html, "\ntata6\n");*/}
+        | postfix_expression INC_OP                              {/*fprintf(flot_html, "\ntata7\n");*/}
+        | postfix_expression DEC_OP                              {/*fprintf(flot_html, "\ntata8\n");*/}
+	| '(' type_name ')' '{' initializer_list '}'             {/*fprintf(flot_html, "\ntata9\n");*/}
+	| '(' type_name ')' '{' initializer_list ',' '}'           {/*fprintf(flot_html, "\ntata10\n");*/}
 	;
 
 argument_expression_list
@@ -227,12 +227,14 @@ declaration_specifiers
 	: storage_class_specifier declaration_specifiers 
 	| storage_class_specifier 
 	| type_specifier declaration_specifiers 
-	| type_specifier                               {/*fprintf(flot_html,"%s",yylval_char);*/
-	  char * tmp; tmp = nommerVariable(yylval_char);/*fprintf(stderr,"tmp : %s\n",tmp); */
-	  char ** tmp2;
-	  asprintf(tmp2,"var declaration %s",tmp);
-	  ajout_balise_class(*tmp2,yylval_char);
-	  stack_push(variables,tmp);/*free(tmp2);free(tmp);*/} 
+	| type_specifier                               {
+	                                               char * tmp;
+						       tmp = nommerVariable(yylval_char);
+	                                               char * tmp2;
+						       asprintf(&tmp2,"var declaration %s",tmp);
+						       ajout_balise_class(tmp2,yylval_char);
+						       stack_push(variables,tmp);
+						       /*free(tmp2);free(tmp);*/} 
 	| type_qualifier declaration_specifiers 
 	| type_qualifier 
 	| function_specifier declaration_specifiers 
@@ -573,13 +575,13 @@ char * nommerVariable(char * variable){
   int i = 2;
   //5 choisit parce qu'assez grand pour couvrir le champ possible d'utilisation du meme nom de variable.
   //choix arbitraire
-  char ** tmp;
+  char * tmp;
   do{
-    asprintf(tmp,"%s%d",variable,i);
-    pos = stack_inside(variables,*tmp);
+    asprintf(&tmp,"%s%d",variable,i);
+    pos = stack_inside(variables,tmp);
     i++;
     }while(pos != -1);
-  return *tmp;
+  return tmp;
 }
 
 int main (){
