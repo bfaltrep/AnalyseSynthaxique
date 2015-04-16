@@ -30,24 +30,25 @@ document: BEGIN_DOC body END_DOC
 ;
 
 body: BODY body
-| BODY itemize body
-| BODY enumerate body
+| itemize body
+| enumerate body
+|
+;
+
+itemize: BEGIN_ITEMIZE {fprintf(flot_html,"<ul>");} body_itemize END_ITEMIZE {fprintf(flot_html,"</ul>");}
+;
+
+body_itemize: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>");} body_itemize
 | 
 ;
 
-itemize: BEGIN_ITEMIZE body_itemize END_ITEMIZE
+enumerate: BEGIN_ENUMERATE  {fprintf(flot_html,"<ol>");} body_enumerate END_ENUMERATE {fprintf(flot_html,"</ol>");}
 ;
 
-body_itemize: ITEM body body_itemize
+body_enumerate: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>");} body_enumerate
 |
 ;
 
-enumerate: BEGIN_ENUMERATE body_enumerate END_ENUMERATE
-;
-
-body_enumerate: ITEM body body_enumerate
-|
-;
 
 %%
 

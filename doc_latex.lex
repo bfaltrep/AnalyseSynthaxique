@@ -10,18 +10,18 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 %option nounput
 
 %%
-"\\begin{document}"    {return(BEGIN_DOC); }
-"\\end{document}"      {return(END_DOC); }
+"\\begin{document}"      {return(BEGIN_DOC); }
+"\\end{document}"        {return(END_DOC); }
 
-"\\begin{itemize}"     {return(BEGIN_ITEMIZE); }
-"\\end{itemize}"       {return(END_ITEMIZE); }
+"\\begin{itemize}"       {return(BEGIN_ITEMIZE); }
+"\\end{itemize}"         {return(END_ITEMIZE); }
 
 "\\begin{enumerate}"     {return(BEGIN_ENUMERATE); }
 "\\end{enumerate}"       {return(END_ENUMERATE); }
   
-"\\item"               {return(ITEM); }
+"\\item"                 {return(ITEM); }
 
-.                      {ECHO; fprintf(flot_html, yytext);return(BODY);}
+.                        {ECHO; fprintf(flot_html, yytext);return(BODY);}
 
 
 %%
