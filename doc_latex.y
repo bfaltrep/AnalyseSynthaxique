@@ -18,8 +18,10 @@ char * yylval_char;
 
 %output "y.tab.c"
 
+%token BEGIN_DOC END_DOC
+%token PARAM OPT IDENTIFIER
 //%token EXEMPLE//
-%token BEGIN_DOC END_DOC IDENTIFIER
+
 
 %%
 
@@ -29,15 +31,21 @@ document
 
 
 body
-: instruction l_end_instruction
+: command l_end_command
 ;
 
-instruction
-: IDENTIFIER '[' PARAM ']'
-| IDENTIFIER TEXT
-;
-
-l_end_instruction
-: instruction l_end_instruction
+l_end_command
+: command l_end_command
 |
 ;
+
+command
+: IDENTIFIER PARAM  // \begin{document}
+| IDENTIFIER OPT  
+| IDENTIFIER PARAM OPT
+| IDENTIFIER // \newpage
+
+;
+
+
+
