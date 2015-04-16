@@ -11,41 +11,57 @@ int yylex();
 //-- locals functions
 void yyerror(const char *s);
 
-//-- var globales
-char * yylval_char;
 
 %}
 
 %output "y.tab.c"
 
-%token BEGIN_DOC END_DOC
-%token PARAM OPT IDENTIFIER
-//%token EXEMPLE//
+%token BEGIN_DOC END_DOC 
+%token BEGIN_ITEMIZE END_ITEMIZE
+%token BEGIN_ENUMERATE END_ENUMERATE
 
+%token ITEM
+
+%token BODY
 
 %%
 
-document
-: BEGIN_DOC  body END_DOC
+document: BEGIN_DOC body END_DOC
 ;
 
-
-body
-: command l_end_command
+body: BODY body
+| BODY itemize body
+| BODY enumerate body
+| 
 ;
 
-l_end_command
-: command l_end_command
+itemize: BEGIN_ITEMIZE body_itemize END_ITEMIZE
+;
+
+body_itemize: ITEM body body_itemize
 |
 ;
 
-command
-: IDENTIFIER PARAM  // \begin{document}
-| IDENTIFIER OPT  
-| IDENTIFIER PARAM OPT
-| IDENTIFIER // \newpage
-
+enumerate: BEGIN_ENUMERATE body_enumerate END_ENUMERATE
 ;
 
+body_enumerate: ITEM body body_enumerate
+|
+;
 
+%%
 
+void yyerror(const char *s)
+{
+  fflush(stdout);
+  fprintf(stderr, "*** %s\n", s);
+}
+
+int main()
+{   
+  create_files();
+  yyparse();
+  finish();
+  return EXIT_SUCCESS;
+    
+}

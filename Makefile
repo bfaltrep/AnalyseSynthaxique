@@ -4,13 +4,13 @@ CFLAGS=-Wall -Werror -g
 
 YACC=bison -d -v
 
-documentation : documentation.c lex.yy.c traitement.c
+doc_latex : doc_latex.c lex.yy.c traitement.c
 
-lex.yy.c : documentation.lex
-	flex documentation.lex
+lex.yy.c : doc_latex.lex
+	flex doc_latex.lex
 
-documentation.tab.c : documentation.y traitement.h 
-	$(YACC) documentation.y
+doc_latex.tab.c : doc_latex.y traitement.h 
+	$(YACC) doc_latex.y
 
 clean:
-	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css
+	rm -rf *.o doc_latex.c lex.yy.c doc_latex.tab.c doc_latex.tab.h *~ *.output *.tab.h  *.html *.css
