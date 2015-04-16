@@ -26,34 +26,39 @@ WS  [ \t\v\n\f]
 #include "y.tab.h"
 #include "traitement.h"
 #include "pile/stack.h"
+#include "list/list.h"
   
   //-- var globales
 extern char * yylval_char;
-extern stack imbrique;
-extern int indentation;
-
- int inFor = 0;
  
+extern stack variables;
+ extern list variables_name;
+ 
+extern int indentation;
+int inFor = 0;
+
+ //fonctions importées
 extern void yyerror(const char *);  /* prints grammar violation message */
-
 extern int sym_type(const char *);  /* returns type from symbol table */
+extern char * nommerVariable(char * variable);
 
+ //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
-
 static void comment(void);
+static void comment_line(void);
 static int check_type(void);
 
 void reecrire_yylval_char (){
   yylval_char = strcpy(yylval_char, yytext);
 }
 
- 
+//["char""double""float""int""long""short""void"]{L}{A}*	{}
 %}
 %option nounput
 
 %%
 "/*"                                    { comment(); }
-"//".*                                    { /* consume //-comment */ }
+"//"                                    { comment_line(); }
 
 "auto"					{ ajout_balise_class("key_word",yytext); return(AUTO); }
 "break"					{ ajout_balise_class("key_word",yytext); return(BREAK); }
@@ -103,7 +108,8 @@ void reecrire_yylval_char (){
 "_Thread_local"                         { ajout_balise_class("key_word",yytext); return THREAD_LOCAL; }
 "__func__"                              { ajout_balise_class("key_word",yytext); return FUNC_NAME; }
 
-{L}{A}*					{ ajout_balise_class("variable",yytext); reecrire_yylval_char (); return check_type(); }
+{L}{A}*					{/*ajout_balise_class("variable",yytext);*/
+  reecrire_yylval_char (); return check_type(); }
 
 {HP}{H}+{IS}?				{ ajout_balise_class("number",yytext); return I_CONSTANT; }
 {NZ}{D}*{IS}?				{ ajout_balise_class("number",yytext);  return I_CONSTANT; }
@@ -188,6 +194,22 @@ void reecrire_yylval_char (){
 int yywrap(void)        /* called at end of input */
 {
     return 1;           /* terminate now */
+}
+
+static void comment_line(void){
+  fprintf(flot_html,"\n<span class=\"comment_line\">//");
+  int c;
+  while ((c = input()) != 0){
+    if(c == '\n'){
+      fprintf(flot_html,"<br></span>\n");
+      int i = 0;
+      for(;i < indentation; i++)
+	{ tab();tab();tab();tab(); }
+      return;
+    }
+    fprintf(flot_html, "%c",c);
+  }
+  yyerror("unterminated comment");
 }
 
 static void comment(void)

@@ -55,9 +55,8 @@ int create_files(){
    ajout_regles_css(".type_specifier" ,"color : #330099;\n");
    ajout_regles_css(".identifier","color : #CCCC33;\n");
    ajout_regles_css(".string_literal","color : #DAA520;\n");
-   ajout_regles_css(".variable","color : #66AA33;\n");
-
-   //javascript initial ??
+   ajout_regles_css(".var","color : #66AA33;\n");
+   ajout_regles_css(".comment_line","color : #FF00CC;\n");
    
    return 0;
 }
@@ -69,3 +68,4 @@ void finish(){
   fclose(flot_html); 
   fclose(flot_css);
 }
+

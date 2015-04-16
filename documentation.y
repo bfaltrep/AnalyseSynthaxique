@@ -1,4 +1,5 @@
 %{
+  #define _GNU_SOURCE 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -6,6 +7,7 @@
 #include <fcntl.h>
 #include "traitement.h"
 #include "pile/stack.h"
+#include "list/list.h"
   
 int yylex();
 
@@ -14,7 +16,10 @@ void yyerror(const char *s);
 
 //-- var globales
 char * yylval_char;
-stack imbrique;
+ 
+stack variables;
+list variables_name;
+ 
 int indentation;
  
 %}
@@ -43,7 +48,7 @@ int indentation;
 %%
 
 primary_expression
-	: IDENTIFIER  
+: IDENTIFIER  {/*fprintf(flot_html,yylval_char);*/}
 	| constant
 	| string
 	| '(' expression ')'
@@ -213,21 +218,26 @@ constant_expression
 	;
 
 declaration
-        : declaration_specifiers ';' 
-	| declaration_specifiers init_declarator_list ';'
-	| static_assert_declaration
+: declaration_specifiers ';' 
+| declaration_specifiers init_declarator_list ';' 
+	| static_assert_declaration 
 	;
 
 declaration_specifiers
-	: storage_class_specifier declaration_specifiers
-	| storage_class_specifier
-	| type_specifier declaration_specifiers
-	| type_specifier                                
-	| type_qualifier declaration_specifiers
-	| type_qualifier
-	| function_specifier declaration_specifiers
-	| function_specifier
-	| alignment_specifier declaration_specifiers
+	: storage_class_specifier declaration_specifiers 
+	| storage_class_specifier 
+	| type_specifier declaration_specifiers 
+	| type_specifier                               {/*fprintf(flot_html,"%s",yylval_char);*/
+	  char * tmp; tmp = nommerVariable(yylval_char);/*fprintf(stderr,"tmp : %s\n",tmp); */
+	  char ** tmp2;
+	  asprintf(tmp2,"var declaration %s",tmp);
+	  ajout_balise_class(*tmp2,yylval_char);
+	  stack_push(variables,tmp);/*free(tmp2);free(tmp);*/} 
+	| type_qualifier declaration_specifiers 
+	| type_qualifier 
+	| function_specifier declaration_specifiers 
+	| function_specifier 
+	| alignment_specifier declaration_specifiers 
 	| alignment_specifier
 	;
 
@@ -554,18 +564,36 @@ void yyerror(const char *s){
   fflush(stdout);
   fprintf(stderr, "*** %s\n", s);
 }
-	  
+
+char * nommerVariable(char * variable){
+  int pos = list_inside(variables_name,variable);
+  if(pos == -1){
+    return variable;
+  }
+  int i = 2;
+  //5 choisit parce qu'assez grand pour couvrir le champ possible d'utilisation du meme nom de variable.
+  //choix arbitraire
+  char ** tmp;
+  do{
+    asprintf(tmp,"%s%d",variable,i);
+    pos = stack_inside(variables,*tmp);
+    i++;
+    }while(pos != -1);
+  return *tmp;
+}
+
 int main (){
   yylval_char = malloc(sizeof(char)*50);
   create_files();
   
-  imbrique = stack_create();
-
+  variables = stack_create();
+  variables_name = list_create();
   
   yyparse();
   printf("\n\nt\n\n\n");
   finish();
-  stack_destroy(imbrique);
+  stack_destroy(variables);
+  list_destroy(variables_name);
   free(yylval_char);
   return EXIT_SUCCESS;
 }
