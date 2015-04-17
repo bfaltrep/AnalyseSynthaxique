@@ -1,4 +1,4 @@
-typedef struct cell_t * cell;
+
 
 
 int i;
@@ -7,14 +7,14 @@ int i;
  fonctions locales
 */
 int f(int i);
-void g(int j);
+void g();
 
 
 /**
    fonction principale, lancée par l'exécutable
  */
 int main(void){
-  char * c = "chocolat";
+  char * c = "chocolat <chocolat> !";
   //on exploite les deux fonctions avant de retourner
   if(i == 0){
     f(i);

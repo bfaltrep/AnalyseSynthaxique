@@ -32,10 +32,9 @@ WS  [ \t\v\n\f]
 extern char * yylval_char;
  
 extern stack variables;
- extern list variables_name;
+extern list variables_name;
  
 extern int indentation;
-int inFor = 0;
 
  //fonctions importées
 extern void yyerror(const char *);  /* prints grammar violation message */
@@ -52,7 +51,6 @@ void reecrire_yylval_char (){
   yylval_char = strcpy(yylval_char, yytext);
 }
 
-//["char""double""float""int""long""short""void"]{L}{A}*	{}
 %}
 %option nounput
 
@@ -61,11 +59,11 @@ void reecrire_yylval_char (){
 "//"                                    { comment_line(); }
 
 "auto"					{ ajout_balise_class("key_word",yytext); return(AUTO); }
-"break"					{ ajout_balise_class("key_word",yytext); return(BREAK); }
+"break"					{ return(BREAK); }
 "case"					{ ajout_balise_class("key_word",yytext); return(CASE); }
 "char"					{ ajout_balise_class("type_specifier",yytext); return(CHAR); }
 "const"					{ ajout_balise_class("key_word",yytext); return(CONST); }
-"continue"				{ ajout_balise_class("key_word",yytext); return(CONTINUE); }
+"continue"				{ return(CONTINUE); }
 "default"				{ ajout_balise_class("key_word",yytext); return(DEFAULT); }
 "do"					{ ajout_balise_class("key_word",yytext); return(DO); }
 "double"				{ ajout_balise_class("type_specifier",yytext); return(DOUBLE); }
@@ -74,8 +72,10 @@ void reecrire_yylval_char (){
 "extern"				{ ajout_balise_class("key_word",yytext); return(EXTERN); }
 "float"					{ ajout_balise_class("type_specifier",yytext); return(FLOAT); }
 
-"for"					{ inFor = 1; ajout_balise_class("key_word",yytext); return(FOR); }
-"goto"					{ ajout_balise_class("key_word",yytext); return(GOTO); }
+"for"					{ inFor = 1;
+                                          ajout_balise_class("key_word",yytext);
+                                          return(FOR); }
+"goto"					{ return(GOTO); }
 "if"					{ ajout_balise_class("key_word",yytext); return(IF); }
 "inline"				{ ajout_balise_class("key_word",yytext); return(INLINE); }
 "int"					{ ajout_balise_class("type_specifier",yytext); return(INT); }
@@ -83,7 +83,7 @@ void reecrire_yylval_char (){
 "long"					{ ajout_balise_class("type_specifier",yytext); return(LONG); }
 "register"				{ ajout_balise_class("key_word",yytext); return(REGISTER); }
 "restrict"				{ ajout_balise_class("key_word",yytext); return(RESTRICT); }
-"return"				{ ajout_balise_class("key_word",yytext); return(RETURN); }
+"return"				{ return(RETURN); }
 "short"					{ ajout_balise_class("type_specifier",yytext); return(SHORT); }
 "signed"				{ ajout_balise_class("key_word",yytext); return(SIGNED); }
 "sizeof"				{ ajout_balise_class("key_word",yytext); return(SIZEOF); }
@@ -92,6 +92,7 @@ void reecrire_yylval_char (){
 "switch"				{ ajout_balise_class("key_word",yytext); return(SWITCH); }
 "typedef"				{ ajout_balise_class("key_word",yytext); return(TYPEDEF); }
 "union"					{ ajout_balise_class("key_word",yytext); return(UNION); }
+
 "unsigned"				{ ajout_balise_class("key_word",yytext); return(UNSIGNED); }
 "void"					{ ajout_balise_class("type_specifier",yytext); return(VOID); }
 "volatile"				{ ajout_balise_class("key_word",yytext); return(VOLATILE); }
@@ -108,13 +109,12 @@ void reecrire_yylval_char (){
 "_Thread_local"                         { ajout_balise_class("key_word",yytext); return THREAD_LOCAL; }
 "__func__"                              { ajout_balise_class("key_word",yytext); return FUNC_NAME; }
 
-{L}{A}*					{/*ajout_balise_class("variable",yytext);*/
-  reecrire_yylval_char (); return check_type(); }
+{L}{A}*					{/*ajout_balise_class("variable",yytext);*/ reecrire_yylval_char (); return check_type(); }
 
 {HP}{H}+{IS}?				{ ajout_balise_class("number",yytext); return I_CONSTANT; }
 {NZ}{D}*{IS}?				{ ajout_balise_class("number",yytext);  return I_CONSTANT; }
 "0"{O}*{IS}?				{ ajout_balise_class("number",yytext); return I_CONSTANT; }
-{CP}?"'"([^\'\\\n]|{ES})+"'"		{ fprintf(flot_html, yytext); return I_CONSTANT; }
+{CP}?"'"([^\'\\\n]|{ES})+"'"		{ fprintf(flot_html,"--%s--", yytext); return I_CONSTANT; }
 
 {D}+{E}{FS}?				{ return F_CONSTANT; }
 {D}*"."{D}+{E}?{FS}?			{ return F_CONSTANT; }
@@ -123,68 +123,57 @@ void reecrire_yylval_char (){
 {HP}{H}*"."{H}+{P}{FS}?			{ return F_CONSTANT; }
 {HP}{H}+"."{P}{FS}?			{ return F_CONSTANT; }
 
-({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{ ajout_balise_class("string_literal",yytext); return STRING_LITERAL; }
+({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{ ajout_balise_class("string_literal",yytext);
+                                          return STRING_LITERAL; }
 
-"..."					{ fprintf(flot_html, "..."); return ELLIPSIS; }
-">>="					{ fprintf(flot_html, ">>="); return RIGHT_ASSIGN; }
-"<<="					{ fprintf(flot_html, "<<="); return LEFT_ASSIGN; }
-"+="					{ fprintf(flot_html, "+="); return ADD_ASSIGN; }
-"-="					{ fprintf(flot_html, "-="); return SUB_ASSIGN; }
-"*="					{ fprintf(flot_html, "*="); return MUL_ASSIGN; }
-"/="					{ fprintf(flot_html, "/="); return DIV_ASSIGN; }
-"%="					{ fprintf(flot_html, "%%="); return MOD_ASSIGN; }
-"&="					{ fprintf(flot_html, "&="); return AND_ASSIGN; }
-"^="					{ fprintf(flot_html, "^="); return XOR_ASSIGN; }
-"|="					{ fprintf(flot_html, "|="); return OR_ASSIGN; }
-">>"					{ fprintf(flot_html, ">>"); return RIGHT_OP; }
-"<<"					{ fprintf(flot_html, "<<"); return LEFT_OP; }
-"++"					{ fprintf(flot_html, "++"); return INC_OP; }
-"--"					{ fprintf(flot_html, "--"); return DEC_OP; }
-"->"					{ fprintf(flot_html, "->"); return PTR_OP; }
-"&&"					{ fprintf(flot_html, "&&"); return AND_OP; }
-"||"					{ fprintf(flot_html, "||"); return OR_OP; }
-"<="					{ fprintf(flot_html, "<="); return LE_OP; }
-">="					{ fprintf(flot_html, ">="); return GE_OP; }
-"=="					{ fprintf(flot_html, "=="); return EQ_OP; }
-"!="					{ fprintf(flot_html, "!="); return NE_OP; }
-";"					{ fprintf(flot_html, ";");
-  if(inFor){
-    tab();
-  }else{
-    newline();
-    if(indentation == 0){newline();}
-    int i = 0;  for(;i < indentation; i++){ tab();tab();tab();tab(); }}
-  return ';'; }
-("{"|"<%")				{ if(inFor){inFor = 0;}fprintf(flot_html, "{<span class=crochet>");
-  newline();  indentation++;
-  int i = 0;  for(;i < indentation; i++){ tab();tab();tab();tab(); }
-  return '{'; }
-("}"|"%>")				{ fprintf(flot_html, "</span>}"); newline(); indentation--;
-  if(indentation < 0){ yyerror("probleme d'indentation.\n");}
-  int i = 0;  for(;i < indentation; i++){ tab();tab();tab();tab(); }
-  if(indentation == 0){newline();}
-  return '}'; }
-","					{ fprintf(flot_html, ","); return ','; }
-":"					{ fprintf(flot_html, ":"); return ':'; }
-"="					{ fprintf(flot_html, "="); return '='; }
-"("					{ fprintf(flot_html, "("); return '('; }
-")"					{ fprintf(flot_html, ")"); return ')'; }
-("["|"<:")				{ fprintf(flot_html, "["); return '['; }
-("]"|":>")				{ fprintf(flot_html, "]"); return ']'; }
-"."					{ fprintf(flot_html, "."); return '.'; }
-"&"					{ fprintf(flot_html, "&"); return '&'; }
-"!"					{ fprintf(flot_html, "!"); return '!'; }
-"~"					{ fprintf(flot_html, "~"); return '~'; }
-"-"					{ fprintf(flot_html, "-"); return '-'; }
-"+"					{ fprintf(flot_html, "+"); return '+'; }
-"*"					{ fprintf(flot_html, "*"); return '*'; }
-"/"					{ fprintf(flot_html, "/"); return '/'; }
-"%"					{ fprintf(flot_html, "%%"); return '%'; }
-"<"					{ fprintf(flot_html, "<"); return '<'; }
-">"					{ fprintf(flot_html, ">"); return '>'; }
-"^"					{ fprintf(flot_html, "^"); return '^'; }
-"|"					{ fprintf(flot_html, "|"); return '|'; }
-"?"					{ fprintf(flot_html, "?"); return '?'; }
+"..."					{ return ELLIPSIS; }
+">>="					{ return RIGHT_ASSIGN; }
+"<<="					{ return LEFT_ASSIGN; }
+"+="					{ return ADD_ASSIGN; }
+"-="					{ return SUB_ASSIGN; }
+"*="					{ return MUL_ASSIGN; }
+"/="					{ return DIV_ASSIGN; }
+"%="					{ return MOD_ASSIGN; }
+"&="					{ return AND_ASSIGN; }
+"^="					{ return XOR_ASSIGN; }
+"|="					{ return OR_ASSIGN; }
+">>"					{ return RIGHT_OP; }
+"<<"					{ return LEFT_OP; }
+"++"					{ return INC_OP; }
+"--"					{ return DEC_OP; }
+"->"					{ return PTR_OP; }
+"&&"					{ return AND_OP; }
+"||"					{ return OR_OP; }
+"<="					{ return LE_OP; }
+">="					{ return GE_OP; }
+"=="					{ return EQ_OP; }
+"!="					{ return NE_OP; }
+";"					{ return ';'; }
+
+("{"|"<%")				{ return '{'; }
+("}"|"%>")				{ return '}'; }
+
+","					{ return ','; }
+":"					{ return ':'; }
+"="					{ return '='; }
+"("					{ return '('; }
+")"					{ return ')'; }
+("["|"<:")				{ return '['; }
+("]"|":>")				{ return ']'; }
+"."					{ return '.'; }
+"&"					{ return '&'; }
+"!"					{ return '!'; }
+"~"					{ return '~'; }
+"-"					{ return '-'; }
+"+"					{ return '+'; }
+"*"					{ return '*'; }
+"/"					{ return '/'; }
+"%"					{ return '%'; }
+"<"					{ return '<'; }
+">"					{ return '>'; }
+"^"					{ return '^'; }
+"|"					{ return '|'; }
+"?"					{ return '?'; }
 
 {WS}					{ /* whitespace separates tokens */ }
 .					{ /* discard bad characters */ }

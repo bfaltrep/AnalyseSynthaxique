@@ -33,6 +33,61 @@ void ajout_balise_class(char * type, char * contenu){
 }
 
 
+void p_virgule(){
+  fprintf(flot_html, ";");
+  //on ne met pas a la ligne quand on est dans une boucle for
+  if(inFor)
+    {
+      tab();
+    }
+  else
+    {
+      newline();
+      if(indentation == 0){
+	newline();
+      }
+      int i = 0;
+      for(;i < indentation; i++)
+	{
+	  tab();tab();tab();tab();
+	}
+    } 
+}
+
+void accolade_ouvrant(){
+  if(inFor)
+    {
+      inFor = 0;
+    }
+  fprintf(flot_html, "{<span class=crochet>");
+  newline();
+  indentation++;
+  int i = 0;
+  for(;i < indentation; i++)
+    {
+      tab();tab();tab();tab();
+    }
+}
+
+void accolade_fermant(){
+  fprintf(flot_html, "</span>}");
+  newline();
+  indentation--;
+  if(indentation < 0)
+    {
+      yyerror("syntax error. too many '}' \n");
+    }
+  int i = 0;
+  for(;i < indentation; i++)
+    {
+      tab();tab();tab();tab();
+    }
+  if(indentation == 0)
+    {
+      newline();
+    }
+}
+
 int create_files(){
    //créer les fichiers du site
    flot_html = fopen("index.html","w+");

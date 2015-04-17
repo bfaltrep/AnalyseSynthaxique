@@ -19,4 +19,4 @@ txt :
 	emacs index.html style.css script.js txt.c &
 
 clean:
-	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css
+	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css *.js
