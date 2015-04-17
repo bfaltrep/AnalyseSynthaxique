@@ -30,7 +30,7 @@ WS  [ \t\v\n\f]
   
   //-- var globales
 extern char * yylval_char;
- 
+ extern char * yylval_string_numb;
 extern stack variables;
 extern list variables_name;
  
@@ -58,63 +58,62 @@ void reecrire_yylval_char (){
 "/*"                                    { comment(); }
 "//"                                    { comment_line(); }
 
-"auto"					{ ajout_balise_class("key_word",yytext); return(AUTO); }
+"auto"					{ return(AUTO); }
 "break"					{ return(BREAK); }
 "case"					{ ajout_balise_class("key_word",yytext); return(CASE); }
-"char"					{ ajout_balise_class("type_specifier",yytext); return(CHAR); }
-"const"					{ ajout_balise_class("key_word",yytext); return(CONST); }
+"char"					{ return(CHAR); }
+"const"					{ return(CONST); }
 "continue"				{ return(CONTINUE); }
 "default"				{ ajout_balise_class("key_word",yytext); return(DEFAULT); }
 "do"					{ ajout_balise_class("key_word",yytext); return(DO); }
-"double"				{ ajout_balise_class("type_specifier",yytext); return(DOUBLE); }
+"double"				{ return(DOUBLE); }
 "else"					{ ajout_balise_class("key_word",yytext); return(ELSE); }
 "enum"					{ ajout_balise_class("key_word",yytext); return(ENUM); }
-"extern"				{ ajout_balise_class("key_word",yytext); return(EXTERN); }
-"float"					{ ajout_balise_class("type_specifier",yytext); return(FLOAT); }
+"extern"				{ return(EXTERN); }
+"float"					{ return(FLOAT); }
 
-"for"					{ inFor = 1;
-                                          ajout_balise_class("key_word",yytext);
-                                          return(FOR); }
+"for"					{ return(FOR); }
 "goto"					{ return(GOTO); }
 "if"					{ ajout_balise_class("key_word",yytext); return(IF); }
-"inline"				{ ajout_balise_class("key_word",yytext); return(INLINE); }
-"int"					{ ajout_balise_class("type_specifier",yytext); return(INT); }
+"inline"				{ return(INLINE); }
+"int"					{ return(INT); }
 
-"long"					{ ajout_balise_class("type_specifier",yytext); return(LONG); }
-"register"				{ ajout_balise_class("key_word",yytext); return(REGISTER); }
-"restrict"				{ ajout_balise_class("key_word",yytext); return(RESTRICT); }
+"long"					{ return(LONG); }
+"register"				{ return(REGISTER); }
+"restrict"				{ return(RESTRICT); }
 "return"				{ return(RETURN); }
-"short"					{ ajout_balise_class("type_specifier",yytext); return(SHORT); }
+"short"					{ return(SHORT); }
 "signed"				{ ajout_balise_class("key_word",yytext); return(SIGNED); }
 "sizeof"				{ ajout_balise_class("key_word",yytext); return(SIZEOF); }
-"static"				{ ajout_balise_class("key_word",yytext); return(STATIC); }
+"static"				{ return(STATIC); }
 "struct"				{ ajout_balise_class("key_word",yytext); return(STRUCT); }
 "switch"				{ ajout_balise_class("key_word",yytext); return(SWITCH); }
-"typedef"				{ ajout_balise_class("key_word",yytext); return(TYPEDEF); }
+"typedef"				{ return(TYPEDEF); }
 "union"					{ ajout_balise_class("key_word",yytext); return(UNION); }
 
-"unsigned"				{ ajout_balise_class("key_word",yytext); return(UNSIGNED); }
-"void"					{ ajout_balise_class("type_specifier",yytext); return(VOID); }
-"volatile"				{ ajout_balise_class("key_word",yytext); return(VOLATILE); }
-"while"					{ ajout_balise_class("key_word",yytext); return(WHILE); }
+"unsigned"				{ return(UNSIGNED); }
+"void"					{ return(VOID); }
+"volatile"				{ return(VOLATILE); }
+"while"					{ return(WHILE); }
 "_Alignas"                              { ajout_balise_class("key_word",yytext); return ALIGNAS; }
 "_Alignof"                              { ajout_balise_class("key_word",yytext); return ALIGNOF; }
-"_Atomic"                               { ajout_balise_class("key_word",yytext); return ATOMIC; }
-"_Bool"                                 { ajout_balise_class("type_specifier",yytext); return BOOL; }
+"_Atomic"                               { return ATOMIC; }
+"_Bool"                                 { return BOOL; }
 "_Complex"                              { ajout_balise_class("key_word",yytext); return COMPLEX; }
 "_Generic"                              { ajout_balise_class("key_word",yytext); return GENERIC; }
 "_Imaginary"                            { ajout_balise_class("key_word",yytext); return IMAGINARY; }
-"_Noreturn"                             { ajout_balise_class("key_word",yytext); return NORETURN; }
+"_Noreturn"                             { return NORETURN; }
 "_Static_assert"                        { ajout_balise_class("key_word",yytext); return STATIC_ASSERT; }
-"_Thread_local"                         { ajout_balise_class("key_word",yytext); return THREAD_LOCAL; }
+"_Thread_local"                         { return THREAD_LOCAL; }
 "__func__"                              { ajout_balise_class("key_word",yytext); return FUNC_NAME; }
 
-{L}{A}*					{/*ajout_balise_class("variable",yytext);*/ reecrire_yylval_char (); return check_type(); }
+{L}{A}*					{/*ajout_balise_class("variable",yytext);*/
+  reecrire_yylval_char (); return check_type(); }
 
-{HP}{H}+{IS}?				{ ajout_balise_class("number",yytext); return I_CONSTANT; }
-{NZ}{D}*{IS}?				{ ajout_balise_class("number",yytext);  return I_CONSTANT; }
-"0"{O}*{IS}?				{ ajout_balise_class("number",yytext); return I_CONSTANT; }
-{CP}?"'"([^\'\\\n]|{ES})+"'"		{ fprintf(flot_html,"--%s--", yytext); return I_CONSTANT; }
+{HP}{H}+{IS}?				{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
+{NZ}{D}*{IS}?				{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
+"0"{O}*{IS}?				{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
+{CP}?"'"([^\'\\\n]|{ES})+"'"		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
 
 {D}+{E}{FS}?				{ return F_CONSTANT; }
 {D}*"."{D}+{E}?{FS}?			{ return F_CONSTANT; }
@@ -123,8 +122,7 @@ void reecrire_yylval_char (){
 {HP}{H}*"."{H}+{P}{FS}?			{ return F_CONSTANT; }
 {HP}{H}+"."{P}{FS}?			{ return F_CONSTANT; }
 
-({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{ ajout_balise_class("string_literal",yytext);
-                                          return STRING_LITERAL; }
+({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{ strcpy(yylval_string_numb, yytext); return STRING_LITERAL; }
 
 "..."					{ return ELLIPSIS; }
 ">>="					{ return RIGHT_ASSIGN; }

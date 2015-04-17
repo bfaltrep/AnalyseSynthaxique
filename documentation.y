@@ -17,6 +17,8 @@ void yyerror(const char *s);
 
 //-- var globales
 char * yylval_char;
+char * yylval_string_numb;
+
  
 stack variables;
 list variables_name;
@@ -72,6 +74,15 @@ point_virgule
          : ';' {p_virgule();}
 virgule
          : ','  {fprintf(flot_html, ",");}
+string_literal
+         : STRING_LITERAL {ajout_balise_class("string_literal",yylval_string_numb);}
+for_
+         : FOR { inFor = 1; ajout_balise_class("key_word","for"); }
+if_
+: IF {ajout_balise_class("key_word","if");}
+alignas
+: ALIGNAS {ajout_balise_class("key_word","_Alignas");}
+
 
 primary_expression
         : IDENTIFIER  {fprintf(flot_html,yylval_char);}
@@ -82,7 +93,7 @@ primary_expression
 	;
 
 constant
-	: I_CONSTANT		/* includes character_constant */
+        : I_CONSTANT	{ ajout_balise_class("number",yylval_string_numb);}
 	| F_CONSTANT
 	| ENUMERATION_CONSTANT	/* after it has been defined as such */
 	;
@@ -92,12 +103,12 @@ enumeration_constant		/* before it has been defined as such */
 	;
 
 string
-        : STRING_LITERAL
+        : string_literal
 	| FUNC_NAME
 	;
 
 generic_selection
-: GENERIC p_ouvrante assignment_expression virgule generic_assoc_list p_fermante
+        : GENERIC p_ouvrante assignment_expression virgule generic_assoc_list p_fermante
 	;
 
 generic_assoc_list
@@ -283,32 +294,31 @@ init_declarator
 	;
 
 storage_class_specifier
-	: TYPEDEF	/* identifiers must be flagged as TYPEDEF_NAME */
-	| EXTERN
-	| STATIC
-	| THREAD_LOCAL
-	| AUTO
-	| REGISTER
+	: TYPEDEF {ajout_balise_class("key_word","typedef");}
+	| EXTERN {ajout_balise_class("key_word","extern");}
+	| STATIC {ajout_balise_class("key_word","static");}
+	| THREAD_LOCAL {ajout_balise_class("key_word","_Thread_local");}
+	| AUTO {ajout_balise_class("key_word","auto");}
+	| REGISTER {ajout_balise_class("key_word","register");}
 	;
 
 type_specifier
-	: VOID
-	| CHAR          
-	| SHORT        
-	| INT           
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| SIGNED
-	| UNSIGNED
-	| BOOL
-	| COMPLEX
-	| IMAGINARY	  	/* non-mandated extension */
+        : VOID {ajout_balise_class("type_specifier","void");}
+	| CHAR {ajout_balise_class("type_specifier","char");}     
+	| SHORT {ajout_balise_class("type_specifier","short");}   
+	| INT {ajout_balise_class("type_specifier","int");}  
+	| LONG {ajout_balise_class("type_specifier","long");}  
+	| FLOAT {ajout_balise_class("type_specifier","float");}  
+	| DOUBLE {ajout_balise_class("type_specifier","double");} 
+	| SIGNED {ajout_balise_class("type_specifier","signed");} 
+	| UNSIGNED {ajout_balise_class("type_specifier","unsigned");} 
+	| BOOL {ajout_balise_class("type_specifier","_Bool");} 
+	| COMPLEX {ajout_balise_class("type_specifier","complex");} 
+	| IMAGINARY {ajout_balise_class("type_specifier","imaginary");} 	  	
 	| atomic_type_specifier
 	| struct_or_union_specifier
 	| enum_specifier
 	| TYPEDEF_NAME            
-	  /* after it has been defined as such */
 	;
 
 struct_or_union_specifier
@@ -318,8 +328,8 @@ struct_or_union_specifier
 	;
 
 struct_or_union
-	: STRUCT
-	| UNION
+        : STRUCT {ajout_balise_class("key_word","struct");}
+        | UNION {ajout_balise_class("key_word","union");}
 	;
 
 struct_declaration_list
@@ -342,7 +352,7 @@ specifier_qualifier_list
 
 struct_declarator_list
 	: struct_declarator
-	| struct_declarator_list ',' {fprintf(flot_html, ",");} struct_declarator
+	| struct_declarator_list virgule struct_declarator
 	;
 
 struct_declarator
@@ -374,20 +384,20 @@ atomic_type_specifier
 	;
 
 type_qualifier
-	: CONST
-	| RESTRICT
-	| VOLATILE
-	| ATOMIC
+	: CONST {ajout_balise_class("key_word","const");} 
+	| RESTRICT {ajout_balise_class("key_word","restrict");} 
+	| VOLATILE {ajout_balise_class("key_word","volatile");} 
+	| ATOMIC {ajout_balise_class("key_word","_Atomic");} 
 	;
 
 function_specifier
-	: INLINE
-	| NORETURN
+        : INLINE {ajout_balise_class("key_word","inline");}
+	| NORETURN {ajout_balise_class("key_word","_Noreturn");}
 	;
 
 alignment_specifier
-	: ALIGNAS p_ouvrante type_name p_fermante
-	| ALIGNAS p_ouvrante constant_expression p_fermante
+        : alignas p_ouvrante type_name p_fermante
+	| alignas p_ouvrante constant_expression p_fermante
 	;
 
 declarator
@@ -426,7 +436,7 @@ type_qualifier_list
 
 
 parameter_type_list
-	: parameter_list virgule ELLIPSIS
+: parameter_list virgule ELLIPSIS {fprintf(flot_html,"...");}
 	| parameter_list
 	;
 
@@ -483,7 +493,7 @@ direct_abstract_declarator
 
 initializer
 	: a_ouvrant initializer_list a_fermant
-        | a_ouvrant initializer_list ',' '}' {fprintf(flot_html, ","); accolade_fermant();}
+        | a_ouvrant initializer_list virgule a_fermant
 	| assignment_expression
 	;
 
@@ -509,7 +519,7 @@ designator
 	;
 
 static_assert_declaration
-        : STATIC_ASSERT p_ouvrante constant_expression ',' {fprintf(flot_html, ",");} STRING_LITERAL ')' ';' {fprintf(flot_html, ")"); p_virgule();} 
+        : STATIC_ASSERT p_ouvrante constant_expression virgule string_literal ')' ';' {fprintf(flot_html, ")"); p_virgule();} 
 	;
 
 statement
@@ -548,18 +558,18 @@ expression_statement
 	;
 
 selection_statement
-	: IF p_ouvrante expression p_fermante statement ELSE statement
-	| IF p_ouvrante expression p_fermante statement
+	: if_ p_ouvrante expression p_fermante statement ELSE statement
+	| if_ p_ouvrante expression p_fermante statement
 	| SWITCH p_ouvrante expression p_fermante statement
 	;
 
 iteration_statement
 	: WHILE p_ouvrante expression p_fermante statement
 	| DO statement WHILE p_ouvrante expression ')' ';'  {fprintf(flot_html, ")"); p_virgule();}
-	| FOR p_ouvrante expression_statement expression_statement p_fermante statement
-	| FOR p_ouvrante expression_statement expression_statement expression p_fermante statement
-	| FOR p_ouvrante declaration expression_statement p_fermante statement
-	| FOR p_ouvrante declaration expression_statement expression p_fermante statement
+	| for_ p_ouvrante expression_statement expression_statement p_fermante statement
+	| for_ p_ouvrante expression_statement expression_statement expression p_fermante statement
+	| for_ p_ouvrante declaration expression_statement p_fermante statement
+	| for_ p_ouvrante declaration expression_statement expression p_fermante statement
 	;
 
 jump_statement
@@ -614,6 +624,7 @@ char * nommerVariable(char * variable){
 
 int main (){
   yylval_char = malloc(sizeof(char)*50);
+  yylval_string_numb = malloc(sizeof(char)*50);
   create_files();
   
   variables = stack_create();
@@ -625,5 +636,6 @@ int main (){
   stack_destroy(variables);
   list_destroy(variables_name);
   free(yylval_char);
+  free(yylval_string_numb);
   return EXIT_SUCCESS;
 }
