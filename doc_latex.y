@@ -19,9 +19,10 @@ void yyerror(const char *s);
 %token BEGIN_DOC END_DOC 
 %token BEGIN_ITEMIZE END_ITEMIZE
 %token BEGIN_ENUMERATE END_ENUMERATE
-
 %token ITEM
-
+%token BEGIN_TABULAR END_TABULAR
+%token NEW_CASE
+%token NEW_LINE
 %token BODY
 
 %%
@@ -32,6 +33,7 @@ document: BEGIN_DOC body END_DOC
 body: BODY body
 | itemize body
 | enumerate body
+| tabular body
 |
 ;
 
@@ -49,6 +51,13 @@ body_enumerate: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>
 |
 ;
 
+tabular: BEGIN_TABULAR {fprintf(flot_html,"<table>");} body_tabular END_TABULAR {fprintf(flot_html,"</table>");}
+
+body_tabular: {fprintf(flot_html,"<tr>");} case_ NEW_LINE {fprintf(flot_html,"</tr>");} body_tabular
+;
+
+case_: {fprintf(flot_html,"<td>");} body NEW_CASE {fprintf(flot_html,"</td>");} case_
+;
 
 %%
 
