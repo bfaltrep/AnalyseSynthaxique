@@ -52,6 +52,7 @@ body_enumerate: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>
 ;
 
 tabular: BEGIN_TABULAR {fprintf(flot_html,"<table>");} body_tabular END_TABULAR {fprintf(flot_html,"</table>");}
+;
 
 body_tabular: {fprintf(flot_html,"<tr>");} case_ NEW_LINE {fprintf(flot_html,"</tr>");} body_tabular
 ;

@@ -10,6 +10,8 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 %option nounput
 
+%s TAB
+
 %%
 "\\begin{document}"      {return(BEGIN_DOC); }
 "\\end{document}"        {return(END_DOC); }
@@ -22,21 +24,23 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 "\\item"                 {return(ITEM); }
   
-"\\begin{tabular}"       {return(BEGIN_TABULAR); }
-"\\end{tabular}"         {return(END_TABULAR); }
- 
- "\\\\"                   {/*fprintf(flot_html,"</tr>");*/ return(NEW_LINE); }
- "&"                      {/*fprintf(flot_html,"</td>");*/ return(NEW_CASE); }
- "\{"[lrc]+"\}"          {printf("%d",yytext[yyleng]);}
-  
-"\\begin{equation}"
-"\\end{equation}"
-"\\label"
+"\\begin{tabular}"       {return(BEGIN_TABULAR); BEGIN TAB}
+"\\end{tabular}"         {return(END_TABULAR);BEGIN INITIAL }
 
-"\\section"
-"\\subsection"
-"\\subsubsection"
-"\{"[[:alnum:]]+"\}"     {}
+/* Pour tabular, idée : créer une fction à paramètres infini qui nous permettrait de gérer l'agencement des cases ce qui nous permettrais d'éviter l'utilisation de tableaux (tableau dans tableau)  */
+
+ <TAB>"\\\\"                   {/*fprintf(flot_html,"</tr>");*/ return(NEW_LINE); }
+ <TAB>"&"                      {/*fprintf(flot_html,"</td>");*/ return(NEW_CASE); }
+ <TAB>"\{"[lrc]+"\}"          {; }
+  
+"\\begin{equation}"{; }
+"\\end{equation}"{; }
+"\\label"{; }
+
+"\\section"{; }
+"\\subsection"{; }
+"\\subsubsection"{; }
+"\{"[[:alnum:]]+"\}"     {; }
   
 "\\backslash"            {fprintf(flot_html,"\\"); printf("\\"); }
 "\\{"                    {fprintf(flot_html,"{"); printf("{"); }
