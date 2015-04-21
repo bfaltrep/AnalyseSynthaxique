@@ -7,13 +7,12 @@
 extern char * yylval_char;  
 extern void yyerror(const char *);  /* prints grammar violation message */
 
-
  
 %}
 
 %option nounput
 
-%s TAB
+%s TAB FAT SECTION
 %x TAB1
 
 %%
@@ -34,7 +33,7 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 <TAB>"\\\\"                   {return(NEW_LINE); }
 <TAB>"&"                      {return(NEW_CASE); }
 <TAB>"\{"[lrc]+"\}"          ;
-  
+
 "\\backslash"            {fprintf(flot_html,"\\"); printf("\\"); }
 "\\{"                    {fprintf(flot_html,"{"); printf("{"); }
 "\\}"                    {fprintf(flot_html,"}"); printf("}"); }
@@ -42,6 +41,16 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 "\\]"                    {fprintf(flot_html,"]"); printf("]"); }
 "\\&"                    {fprintf(flot_html,"&"); printf("&"); }
 "\\$"                    {fprintf(flot_html,"$"); printf("$"); }
+
+"\\texttt{"              {BEGIN FAT; fprintf(flot_html,"<b>"); }
+<FAT>"}"                 {BEGIN INITIAL; fprintf(flot_html,"</b>"); }
+
+"\\section{"             {BEGIN SECTION; fprintf(flot_html,"<h1>"); }
+"\\subsection{"          {BEGIN SUBSECTION; fprintf(flot_html,"<h2>"); }
+"\\subsubsection{"       {BEGIN SUBSUBSECTION; fprintf(flot_html,"<h3>"); }
+<SECTION>"}"             {BEGIN INITIAL; fprintf(flot_html,"</h1>"); }
+<SUBSECTION>"}"          {BEGIN INITIAL; fprintf(flot_html,"</h2>"); }
+<SUBSUBSECTION>"}"       {BEGIN INITIAL; fprintf(flot_html,"</h3>"); }
 
 .                        {yylval_char = strcpy(yylval_char, yytext);printf(yytext);return(BODY);}
 
