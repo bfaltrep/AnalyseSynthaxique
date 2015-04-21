@@ -7,12 +7,19 @@ void ajout_regles_css( char * selecteurs, char * regles){
    fprintf(flot_css,"%s%s%s%s", selecteurs, a, regles, b);
 }
 
-void ajout_enTete_html (char * language, char * title){
-   char *a ="<head><meta charset=\"utf-8\" lang=\"",
-     *b = "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>",
-     *c = "</title></head>\n";
+void ajout_balise_class(char * type, char * contenu){
+   char * a = "\n<span class=\"",
+     *b = "\">",
+     *c = "</span>\n";
+   fprintf(flot_html, "%s%s%s%s%s", a, type, b, contenu, c);
+}
 
-   fprintf(flot_html,"%s%s%s%s%s", a, language, b, title, c);
+void ajout_div(){
+  fprintf(flot_html, "<div>");
+}
+
+void div_fermante(){
+  fprintf(flot_html, "</div>");
 }
 
 void newline(){
@@ -22,16 +29,6 @@ void newline(){
 void tab(){
   fprintf(flot_html, "&nbsp");
 }
-
-void ajout_balise_class(char * type, char * contenu){
-
-
-   char * a = "\n<span class=\"",
-     *b = "\">",
-     *c = "</span>\n";
-   fprintf(flot_html, "%s%s%s%s%s", a, type, b, contenu, c);
-}
-
 
 void p_virgule(){
   fprintf(flot_html, ";");
@@ -52,6 +49,10 @@ void p_virgule(){
 	  tab();tab();tab();tab();
 	}
     } 
+}
+
+void deux_points(){
+  
 }
 
 void accolade_ouvrant(){
@@ -88,7 +89,15 @@ void accolade_fermant(){
     }
 }
 
-int create_files(){
+void ajout_enTete_html (char * language, char * title){
+   char *a ="<head><meta charset=\"utf-8\" lang=\"",
+     *b = "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>",
+     *c = "</title></head>\n";
+
+   fprintf(flot_html,"%s%s%s%s%s", a, language, b, title, c);
+}
+
+int create_files(char * nom){
    //créer les fichiers du site
    flot_html = fopen("index.html","w+");
    flot_css = fopen("style.css","w+");
@@ -97,7 +106,7 @@ int create_files(){
    //html
    buf = "<!DOCTYPE html><html>";
    fprintf(flot_html,"%s",buf);
-   ajout_enTete_html ("fr", "documentation");
+   ajout_enTete_html ("fr", nom);
    
    buf = "<body>";
    fprintf(flot_html,"%s",buf);
@@ -117,7 +126,7 @@ int create_files(){
 }
 
 void finish(){
-  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
+  char * buf = "\n<script src=\"site/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
   fprintf(flot_html,"%s",buf);
   fclose(flot_js);
   fclose(flot_html); 

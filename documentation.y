@@ -79,9 +79,21 @@ string_literal
 for_
          : FOR { inFor = 1; ajout_balise_class("key_word","for"); }
 if_
-: IF {ajout_balise_class("key_word","if");}
+         : IF {ajout_balise_class("key_word","if");}
 alignas
-: ALIGNAS {ajout_balise_class("key_word","_Alignas");}
+         : ALIGNAS {ajout_balise_class("key_word","_Alignas");}
+sizeof
+         : SIZEOF { ajout_balise_class("key_word","sizeof");}
+enum
+         : ENUM { ajout_balise_class("key_word","enum");}
+static
+         : STATIC {ajout_balise_class("key_word","static");}
+
+
+
+
+
+
 
 
 primary_expression
@@ -108,7 +120,7 @@ string
 	;
 
 generic_selection
-        : GENERIC p_ouvrante assignment_expression virgule generic_assoc_list p_fermante
+        : GENERIC { ajout_balise_class("key_word","_Generic"); } p_ouvrante assignment_expression virgule generic_assoc_list p_fermante
 	;
 
 generic_assoc_list
@@ -118,7 +130,7 @@ generic_assoc_list
 
 generic_association
 	: type_name deux_point assignment_expression
-	| DEFAULT deux_point assignment_expression
+	| DEFAULT { ajout_balise_class("key_word","default"); } deux_point assignment_expression
 	;
 
 postfix_expression
@@ -126,12 +138,12 @@ postfix_expression
         | postfix_expression c_ouvrant expression c_fermant
         | postfix_expression parentheses                         
 	| postfix_expression p_ouvrante argument_expression_list p_fermante
-	| postfix_expression '.' {fprintf(flot_html, ".");} IDENTIFIER                 
-	| postfix_expression PTR_OP IDENTIFIER                   
-        | postfix_expression INC_OP                          
-        | postfix_expression DEC_OP                           
+	| postfix_expression '.' { fprintf(flot_html, "."); } IDENTIFIER                 
+	| postfix_expression PTR_OP { fprintf(flot_html, "->"); } IDENTIFIER                   
+        | postfix_expression INC_OP { fprintf(flot_html, "++"); }              
+        | postfix_expression DEC_OP { fprintf(flot_html, "--"); }                        
 	| p_ouvrante type_name p_fermant_a_ouvrant initializer_list a_fermant      
-        | p_ouvrante type_name p_fermant_a_ouvrant initializer_list ',' '}'  {fprintf(flot_html, ","); accolade_fermant();}         
+        | p_ouvrante type_name p_fermant_a_ouvrant initializer_list virgule a_fermant         
 	;
 
 argument_expression_list
@@ -141,12 +153,12 @@ argument_expression_list
 
 unary_expression
 	: postfix_expression
-	| INC_OP unary_expression
-	| DEC_OP unary_expression
+	| INC_OP { fprintf(flot_html, "++"); } unary_expression
+	| DEC_OP { fprintf(flot_html, "--"); } unary_expression
 	| unary_operator cast_expression
-	| SIZEOF unary_expression
-	| SIZEOF p_ouvrante type_name p_fermante
-	| ALIGNOF p_ouvrante type_name p_fermante
+	| sizeof unary_expression
+	| sizeof p_ouvrante type_name p_fermante
+	| ALIGNOF { ajout_balise_class("key_word","_Alignof"); } p_ouvrante type_name p_fermante
 	;
 
 unary_operator
@@ -178,22 +190,22 @@ additive_expression
 
 shift_expression
 	: additive_expression
-	| shift_expression LEFT_OP additive_expression
-	| shift_expression RIGHT_OP additive_expression
+	| shift_expression LEFT_OP {fprintf(flot_html, "<<");} additive_expression
+	| shift_expression RIGHT_OP {fprintf(flot_html, ">>");} additive_expression
 	;
 
 relational_expression
 	: shift_expression
 	| relational_expression '<' {fprintf(flot_html, "<");} shift_expression
 	| relational_expression '>' {fprintf(flot_html, ">");} shift_expression
-	| relational_expression LE_OP shift_expression
-	| relational_expression GE_OP shift_expression
+	| relational_expression LE_OP {fprintf(flot_html, "<=");} shift_expression
+	| relational_expression GE_OP {fprintf(flot_html, ">=");} shift_expression
 	;
 
 equality_expression
 	: relational_expression
-	| equality_expression EQ_OP relational_expression
-	| equality_expression NE_OP relational_expression
+	| equality_expression EQ_OP {fprintf(flot_html, "==");} relational_expression
+	| equality_expression NE_OP {fprintf(flot_html, "!=");} relational_expression
 	;
 
 and_expression
@@ -213,12 +225,12 @@ inclusive_or_expression
 
 logical_and_expression
 	: inclusive_or_expression
-	| logical_and_expression AND_OP inclusive_or_expression
+	| logical_and_expression AND_OP {fprintf(flot_html, "&&");} inclusive_or_expression
 	;
 
 logical_or_expression
 	: logical_and_expression
-	| logical_or_expression OR_OP logical_and_expression
+	| logical_or_expression OR_OP {fprintf(flot_html, "||");} logical_and_expression
 	;
 
 conditional_expression
@@ -233,16 +245,16 @@ assignment_expression
 
 assignment_operator
 	: '='  {fprintf(flot_html, "=");}
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
+	| MUL_ASSIGN {fprintf(flot_html, "*=");}
+	| DIV_ASSIGN {fprintf(flot_html, "/=");}
+	| MOD_ASSIGN {fprintf(flot_html, "%%=");}
+	| ADD_ASSIGN {fprintf(flot_html, "+=");}
+	| SUB_ASSIGN {fprintf(flot_html, "-=");}
+	| LEFT_ASSIGN {fprintf(flot_html, "<<=");}
+	| RIGHT_ASSIGN {fprintf(flot_html, ">>=");}
+	| AND_ASSIGN {fprintf(flot_html, "&=");}
+	| XOR_ASSIGN {fprintf(flot_html, "^=");}
+	| OR_ASSIGN {fprintf(flot_html, "|=");}
 	;
 
 expression
@@ -255,8 +267,8 @@ constant_expression
 	;
 
 declaration
-        : declaration_specifiers ';'  {p_virgule();}
-| declaration_specifiers init_declarator_list ';'  {p_virgule();}
+        : declaration_specifiers point_virgule
+| declaration_specifiers init_declarator_list point_virgule
 	| static_assert_declaration 
 	;
 
@@ -296,7 +308,7 @@ init_declarator
 storage_class_specifier
 	: TYPEDEF {ajout_balise_class("key_word","typedef");}
 	| EXTERN {ajout_balise_class("key_word","extern");}
-	| STATIC {ajout_balise_class("key_word","static");}
+	| static
 	| THREAD_LOCAL {ajout_balise_class("key_word","_Thread_local");}
 	| AUTO {ajout_balise_class("key_word","auto");}
 	| REGISTER {ajout_balise_class("key_word","register");}
@@ -338,8 +350,8 @@ struct_declaration_list
 	;
 
 struct_declaration
-	: specifier_qualifier_list ';' { p_virgule();}	/* for anonymous struct/union */
-	| specifier_qualifier_list struct_declarator_list ';' { p_virgule();}   
+	: specifier_qualifier_list point_virgule	/* for anonymous struct/union */
+	| specifier_qualifier_list struct_declarator_list point_virgule
 	| static_assert_declaration
 	;
 
@@ -362,11 +374,11 @@ struct_declarator
 	;
 
 enum_specifier
-	: ENUM a_ouvrant enumerator_list a_fermant
-        | ENUM a_ouvrant enumerator_list ',' '}' {fprintf(flot_html, ","); accolade_fermant(); }
-        | ENUM IDENTIFIER a_ouvrant enumerator_list a_fermant
-        | ENUM IDENTIFIER a_ouvrant enumerator_list ',' '}' {fprintf(flot_html, ","); accolade_fermant();}
-	| ENUM IDENTIFIER
+	: enum a_ouvrant enumerator_list a_fermant
+        | enum a_ouvrant enumerator_list virgule a_fermant
+        | enum IDENTIFIER a_ouvrant enumerator_list a_fermant
+        | enum IDENTIFIER a_ouvrant enumerator_list virgule a_fermant
+	| enum IDENTIFIER
 	;
 
 enumerator_list
@@ -408,12 +420,12 @@ declarator
 direct_declarator
 	: IDENTIFIER {ajout_balise_class("var",yylval_char);}
 	| p_ouvrante declarator p_fermante
-	| direct_declarator '[' ']' {fprintf(flot_html, "[]");}
-	| direct_declarator c_ouvrant '*' ']' {fprintf(flot_html, "*]");}
-	| direct_declarator c_ouvrant STATIC type_qualifier_list assignment_expression c_fermant
-	| direct_declarator c_ouvrant STATIC assignment_expression c_fermant
-	| direct_declarator c_ouvrant type_qualifier_list '*' ']' {fprintf(flot_html, "*]");}
-	| direct_declarator c_ouvrant type_qualifier_list STATIC assignment_expression c_fermant
+	| direct_declarator c_ouvrant c_fermant 
+	| direct_declarator c_ouvrant etoile c_fermant
+	| direct_declarator c_ouvrant static type_qualifier_list assignment_expression c_fermant
+	| direct_declarator c_ouvrant static assignment_expression c_fermant
+	| direct_declarator c_ouvrant type_qualifier_list etoile c_fermant
+	| direct_declarator c_ouvrant type_qualifier_list static assignment_expression c_fermant
 	| direct_declarator c_ouvrant type_qualifier_list assignment_expression c_fermant
 	| direct_declarator c_ouvrant type_qualifier_list c_fermant
 	| direct_declarator c_ouvrant assignment_expression c_fermant
@@ -469,20 +481,20 @@ abstract_declarator
 
 direct_abstract_declarator
 	: p_ouvrante abstract_declarator p_fermante
-	| '[' ']' {fprintf(flot_html, "[]");}
-	|  c_ouvrant '*' ']' {fprintf(flot_html, "*]");}
-	| c_ouvrant STATIC type_qualifier_list assignment_expression c_fermant
-	| c_ouvrant STATIC assignment_expression c_fermant
-	| c_ouvrant type_qualifier_list STATIC assignment_expression c_fermant
+	| c_ouvrant c_fermant
+	|  c_ouvrant etoile c_fermant
+	| c_ouvrant static type_qualifier_list assignment_expression c_fermant
+	| c_ouvrant static assignment_expression c_fermant
+	| c_ouvrant type_qualifier_list static assignment_expression c_fermant
 	| c_ouvrant type_qualifier_list assignment_expression c_fermant
 	| c_ouvrant type_qualifier_list c_fermant
 	| c_ouvrant assignment_expression c_fermant
-	| direct_abstract_declarator '[' ']' {fprintf(flot_html, "[]");}
-	| direct_abstract_declarator c_ouvrant '*' ']' {fprintf(flot_html, "*]");}
-	| direct_abstract_declarator c_ouvrant STATIC type_qualifier_list assignment_expression c_fermant
-	| direct_abstract_declarator c_ouvrant STATIC assignment_expression c_fermant
+	| direct_abstract_declarator c_ouvrant c_fermant
+	| direct_abstract_declarator c_ouvrant etoile c_fermant
+	| direct_abstract_declarator c_ouvrant static type_qualifier_list assignment_expression c_fermant
+	| direct_abstract_declarator c_ouvrant static assignment_expression c_fermant
 	| direct_abstract_declarator c_ouvrant type_qualifier_list assignment_expression c_fermant
-	| direct_abstract_declarator c_ouvrant type_qualifier_list STATIC assignment_expression c_fermant
+	| direct_abstract_declarator c_ouvrant type_qualifier_list static assignment_expression c_fermant
 	| direct_abstract_declarator c_ouvrant type_qualifier_list c_fermant
 	| direct_abstract_declarator c_ouvrant assignment_expression c_fermant
 	| parentheses
@@ -500,7 +512,6 @@ initializer
 initializer_list
 	: designation initializer
 	| initializer
-	| initializer_list virgule designation initializer
 	| initializer_list virgule initializer
 	;
 
@@ -514,12 +525,12 @@ designator_list
 	;
 
 designator
-	: c_ouvrant constant_expression ']'  {fprintf(flot_html, "]");}
+	: c_ouvrant constant_expression c_fermant
 	| '.' {fprintf(flot_html, ".");} IDENTIFIER
 	;
 
 static_assert_declaration
-        : STATIC_ASSERT p_ouvrante constant_expression virgule string_literal ')' ';' {fprintf(flot_html, ")"); p_virgule();} 
+        : STATIC_ASSERT p_ouvrante constant_expression virgule string_literal p_fermante point_virgule 
 	;
 
 statement
@@ -533,13 +544,13 @@ statement
 
 labeled_statement
 	: IDENTIFIER deux_point statement
-	| CASE constant_expression deux_point statement {/*sautdeligne*/}
-	| DEFAULT deux_point statement
+	| CASE {ajout_balise_class("key_word","case");} constant_expression deux_point statement {/*sautdeligne*/}
+	| DEFAULT {ajout_balise_class("key_word","default");} deux_point statement
 	;
 
 compound_statement
-        : '{' '}' {accolade_ouvrant(); accolade_fermant();}
-        | a_ouvrant  block_item_list a_fermant
+        : a_ouvrant a_fermant
+        | a_ouvrant block_item_list a_fermant
 	;
 
 block_item_list
@@ -558,14 +569,14 @@ expression_statement
 	;
 
 selection_statement
-	: if_ p_ouvrante expression p_fermante statement ELSE statement
+        : if_ p_ouvrante expression p_fermante statement ELSE {ajout_balise_class("key_word","else");} statement
 	| if_ p_ouvrante expression p_fermante statement
-	| SWITCH p_ouvrante expression p_fermante statement
+	| SWITCH {ajout_balise_class("key_word","switch");} p_ouvrante expression p_fermante statement
 	;
 
 iteration_statement
-	: WHILE p_ouvrante expression p_fermante statement
-	| DO statement WHILE p_ouvrante expression ')' ';'  {fprintf(flot_html, ")"); p_virgule();}
+	: WHILE {ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante statement
+	| DO {ajout_balise_class("key_word","do");} statement WHILE {ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante point_virgule
 	| for_ p_ouvrante expression_statement expression_statement p_fermante statement
 	| for_ p_ouvrante expression_statement expression_statement expression p_fermante statement
 	| for_ p_ouvrante declaration expression_statement p_fermante statement
@@ -600,6 +611,16 @@ declaration_list
 	| declaration_list declaration
 	;
 
+
+
+
+
+
+
+
+
+
+
 %%
 
 void yyerror(const char *s){
@@ -625,7 +646,7 @@ char * nommerVariable(char * variable){
 int main (){
   yylval_char = malloc(sizeof(char)*50);
   yylval_string_numb = malloc(sizeof(char)*50);
-  create_files();
+  create_files("documentation");
   
   variables = stack_create();
   variables_name = list_create();
