@@ -12,7 +12,7 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 %option nounput
 
-%s TAB FAT SECTION
+%s TAB FAT SECTION SUBSECTION SUBSUBSECTION
 %x TAB1
 
 %%
