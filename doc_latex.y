@@ -9,6 +9,7 @@
 int yylex();
 
 //-- locals functions
+char * yylval_char;
 void yyerror(const char *s);
 
 
@@ -27,10 +28,11 @@ void yyerror(const char *s);
 
 %%
 
+
 document: BEGIN_DOC body END_DOC
 ;
 
-body: BODY body
+body: BODY {fprintf(flot_html,yylval_char); } body
 | itemize body
 | enumerate body
 | tabular body
@@ -54,10 +56,18 @@ body_enumerate: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>
 tabular: BEGIN_TABULAR {fprintf(flot_html,"<table>");} body_tabular END_TABULAR {fprintf(flot_html,"</table>");}
 ;
 
-body_tabular: {fprintf(flot_html,"<tr>");} case_ NEW_LINE {fprintf(flot_html,"</tr>");} body_tabular
+body_tabular: {fprintf(flot_html,"<tr>");} case_ new_case_ line_ body_tabular
+|
 ;
 
-case_: {fprintf(flot_html,"<td>");} body NEW_CASE {fprintf(flot_html,"</td>");} case_
+case_: {fprintf(flot_html,"<td>");} body {fprintf(flot_html,"</td>");}
+;
+
+new_case_: NEW_CASE {fprintf(flot_html,"<td>");} body {fprintf(flot_html,"</td>");} new_case_
+|
+;
+
+line_: NEW_LINE {fprintf(flot_html,"</tr>");}
 ;
 
 %%
@@ -69,7 +79,8 @@ void yyerror(const char *s)
 }
 
 int main()
-{   
+{
+  yylval_char=malloc(sizeof(char)*60);
   create_files();
   yyparse();
   finish();

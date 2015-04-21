@@ -4,13 +4,17 @@
 #include "traitement.h"
 #define YY_NO_INPUT
 
+extern char * yylval_char;  
 extern void yyerror(const char *);  /* prints grammar violation message */
 
+
+ 
 %}
 
 %option nounput
 
 %s TAB
+%x TAB1
 
 %%
 "\\begin{document}"      {return(BEGIN_DOC); }
@@ -24,23 +28,12 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 "\\item"                 {return(ITEM); }
   
-"\\begin{tabular}"       {return(BEGIN_TABULAR); BEGIN TAB}
-"\\end{tabular}"         {return(END_TABULAR);BEGIN INITIAL }
+"\\begin{tabular}"       {BEGIN TAB; return(BEGIN_TABULAR);}
+<TAB>"\\end{tabular}"         {BEGIN INITIAL; return(END_TABULAR);}
 
-/* Pour tabular, idée : créer une fction à paramètres infini qui nous permettrait de gérer l'agencement des cases ce qui nous permettrais d'éviter l'utilisation de tableaux (tableau dans tableau)  */
-
- <TAB>"\\\\"                   {/*fprintf(flot_html,"</tr>");*/ return(NEW_LINE); }
- <TAB>"&"                      {/*fprintf(flot_html,"</td>");*/ return(NEW_CASE); }
- <TAB>"\{"[lrc]+"\}"          {; }
-  
-"\\begin{equation}"{; }
-"\\end{equation}"{; }
-"\\label"{; }
-
-"\\section"{; }
-"\\subsection"{; }
-"\\subsubsection"{; }
-"\{"[[:alnum:]]+"\}"     {; }
+<TAB>"\\\\"                   {return(NEW_LINE); }
+<TAB>"&"                      {return(NEW_CASE); }
+<TAB>"\{"[lrc]+"\}"          ;
   
 "\\backslash"            {fprintf(flot_html,"\\"); printf("\\"); }
 "\\{"                    {fprintf(flot_html,"{"); printf("{"); }
@@ -50,7 +43,7 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 "\\&"                    {fprintf(flot_html,"&"); printf("&"); }
 "\\$"                    {fprintf(flot_html,"$"); printf("$"); }
 
-.                        {ECHO; fprintf(flot_html, yytext);return(BODY);}
+.                        {yylval_char = strcpy(yylval_char, yytext);printf(yytext);return(BODY);}
 
 
 %%
