@@ -1,0 +1,10 @@
+<TAB>"\{"[lrc]+"\}"          {;}
+
+"\\begin{equation}"{; }
+"\\end{equation}"{; }
+"\\label"{; }
+
+"\\section"{; }
+"\\subsection"{; }
+"\\subsubsection"{; }
+"\{"[[:alnum:]]+"\}"     {; }
