@@ -69,6 +69,8 @@ int create_files(){
    ajout_regles_css( "h1","color : #8291CF;\n");
    ajout_regles_css( "h2","color : #8591CF;\n");
    ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
+   ajout_regles_css( "td","border: 1px solid black;\n");
+   ajout_regles_css( "table","border-collapse: collapse;\n");
    //ajouter regle pour nomfonction+nomvariable avec une pile.
    //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
    return 0;
