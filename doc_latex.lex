@@ -4,16 +4,22 @@
 #include "traitement.h"
 #define YY_NO_INPUT
 
-extern char * yylval_char;  
+extern char * yylval_char;
+extern char * param_tabular;
+extern int index_param_tabular;
+int param();
+extern void tabular_param(char * param_tabular,char * param, int length);
 extern void yyerror(const char *);  /* prints grammar violation message */
 
  
 %}
 
 %option nounput
+%option stack
+%option noyy_top_state noyy_pop_state
 
 %s TAB FAT SECTION SUBSECTION SUBSUBSECTION
-%x TAB1
+%x PARAMTAB
 
 %%
 "\\begin{document}"      {return(BEGIN_DOC); }
@@ -27,12 +33,12 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 "\\item"                 {return(ITEM); }
   
-"\\begin{tabular}"       {BEGIN TAB; return(BEGIN_TABULAR);}
-<TAB>"\\end{tabular}"         {BEGIN INITIAL; return(END_TABULAR);}
+"\\begin{tabular}"       {yy_push_state(PARAMTAB); return(BEGIN_TABULAR);}
+<TAB>"\\end{tabular}"    {BEGIN INITIAL;return(END_TABULAR);}
 
-<TAB>"\\\\"                   {return(NEW_LINE); }
-<TAB>"&"                      {return(NEW_CASE); }
-<TAB>"\{"[lrc]+"\}"          ;
+<TAB>"\\\\"              {index_param_tabular=0;return(NEW_LINE); }
+<TAB>"&"                 {++index_param_tabular;return param();}
+<PARAMTAB>"\{"[lrc]+"\}"          {yy_push_state(TAB);tabular_param(param_tabular,yytext,(int)yyleng);index_param_tabular=0;return param();}
 
 "\\backslash"            {fprintf(flot_html,"\\"); printf("\\"); }
 "\\{"                    {fprintf(flot_html,"{"); printf("{"); }
@@ -42,12 +48,14 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 "\\&"                    {fprintf(flot_html,"&"); printf("&"); }
 "\\$"                    {fprintf(flot_html,"$"); printf("$"); }
 
-"\\texttt{"              {BEGIN FAT; fprintf(flot_html,"<b>"); }
-<FAT>"}"                 {BEGIN INITIAL; fprintf(flot_html,"</b>"); }
+"\\texttt{"              {yy_push_state(FAT); fprintf(flot_html,"<b>"); }
+"{\\bf"                  {yy_push_state(FAT); fprintf(flot_html,"<b>"); }
+<FAT>"}"                 {fprintf(flot_html,"</b>"); }
 
-"\\section{"             {BEGIN SECTION; fprintf(flot_html,"<h1>"); }
-"\\subsection{"          {BEGIN SUBSECTION; fprintf(flot_html,"<h2>"); }
-"\\subsubsection{"       {BEGIN SUBSUBSECTION; fprintf(flot_html,"<h3>"); }
+
+"\\section{"             {yy_push_state(SECTION);fprintf(flot_html,"<h1>"); }
+"\\subsection{"          {yy_push_state(SUBSECTION); fprintf(flot_html,"<h2>"); }
+"\\subsubsection{"       {yy_push_state(SUBSUBSECTION); fprintf(flot_html,"<h3>"); }
 <SECTION>"}"             {BEGIN INITIAL; fprintf(flot_html,"</h1>"); }
 <SUBSECTION>"}"          {BEGIN INITIAL; fprintf(flot_html,"</h2>"); }
 <SUBSUBSECTION>"}"       {BEGIN INITIAL; fprintf(flot_html,"</h3>"); }
@@ -57,4 +65,11 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
 %%
 
-  
+int param(){
+  if (param_tabular[index_param_tabular]=='l'){
+    return(NEW_CASE_L);}
+  else if (param_tabular[index_param_tabular]=='c'){
+    return(NEW_CASE_C);}
+  else{
+    return(NEW_CASE_R);}
+}

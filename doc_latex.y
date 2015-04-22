@@ -10,6 +10,9 @@ int yylex();
 
 //-- locals functions
 char * yylval_char;
+char * param_tabular;
+int index_param_tabular;
+void tabular_param(char * param_tabular,char * param, int length);
 void yyerror(const char *s);
 
 
@@ -21,8 +24,8 @@ void yyerror(const char *s);
 %token BEGIN_ITEMIZE END_ITEMIZE
 %token BEGIN_ENUMERATE END_ENUMERATE
 %token ITEM
-%token BEGIN_TABULAR END_TABULAR
-%token NEW_CASE
+%token BEGIN_TABULAR PARAM_TABULAR END_TABULAR
+%token NEW_CASE_L NEW_CASE_C NEW_CASE_R NEW_CASE
 %token NEW_LINE
 %token BODY
 
@@ -56,15 +59,55 @@ body_enumerate: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>
 tabular: BEGIN_TABULAR {fprintf(flot_html,"<table>");} body_tabular END_TABULAR {fprintf(flot_html,"</table>");}
 ;
 
-body_tabular: {fprintf(flot_html,"<tr>");} case_ new_case_ line_ body_tabular
+body_tabular: body_tabular_l
+|body_tabular_c
+|body_tabular_r
 |
 ;
 
-case_: {fprintf(flot_html,"<td>");} body {fprintf(flot_html,"</td>");}
+body_tabular_l: {fprintf(flot_html,"<trl>");} new_case_l line_ body_tabular_l2
 ;
 
-new_case_: NEW_CASE {fprintf(flot_html,"<td>");} body {fprintf(flot_html,"</td>");} new_case_
+body_tabular_l2: {fprintf(flot_html,"<trl>");} case_l line_ body_tabular_l2
 |
+;
+
+body_tabular_c: {fprintf(flot_html,"<trc>");} new_case_c line_ body_tabular_c2
+;
+
+body_tabular_c2: {fprintf(flot_html,"<trc>");} case_c line_ body_tabular_c2
+|
+;
+
+body_tabular_r: {fprintf(flot_html,"<trr>");} new_case_r line_ body_tabular_r2
+;
+
+body_tabular_r2: {fprintf(flot_html,"<trr>");} case_r line_ body_tabular_r2
+|
+;
+
+new_case_: new_case_l
+|new_case_c
+|new_case_r
+|
+;
+
+new_case_l: NEW_CASE_L case_l
+;
+
+new_case_c: NEW_CASE_C case_c
+;
+
+new_case_r: NEW_CASE_R case_r
+;
+
+case_l:{fprintf(flot_html,"<td align=\"left\">");} body {fprintf(flot_html,"</td>");} new_case_
+;
+
+case_c:{fprintf(flot_html,"<td align=\"center\">");} body {fprintf(flot_html,"</td>");} new_case_
+;
+
+case_r:{fprintf(flot_html,"<td align=\"right\">");} body {fprintf(flot_html,"</td>");} new_case_
 ;
 
 line_: NEW_LINE {fprintf(flot_html,"</tr>");}
@@ -78,12 +121,24 @@ void yyerror(const char *s)
   fprintf(stderr, "*** %s\n", s);
 }
 
+void tabular_param(char * param_tabular,char * param, int length){
+  int i =1;
+  while (i!=length-1){
+      param_tabular[i-1]=param[i];
+      ++i;
+  }
+}
+
 int main()
 {
   yylval_char=malloc(sizeof(char)*60);
+  param_tabular=malloc(sizeof(char)*10); //pas plus de 10 colonnes
+  index_param_tabular=0;
   create_files();
   yyparse();
   finish();
+  free(yylval_char);
+  free(param_tabular);
   return EXIT_SUCCESS;
     
 }
