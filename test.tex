@@ -1,33 +1,64 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{xcolor}
+
+
 \begin{document}
-Piou Piiou !
-Test Caracteres spéciaux :
+
+\textcolor{blue}{Piou} \textcolor{red}{Piiou} !
+
+\section{Mon premier est:}        
+
+Test Caractères spéciaux :
+$\left[ Crochets \right]$
+
 \begin{enumerate}
-\item \backslasho/\backslasho/\backslasho/\backslasho/
-\item J'ai oublié de tester ça \backslash\backslash
-\item Ben \& Jerry's
-\item Money ! \$_\$
-$$ $$ $$$$$$$$$$$$
+\item \textbackslash o/ \textbackslash o/ \textbackslash o/ \textbackslash o/
+\item J'ai oublié de tester \textit{ça} \textbackslash\textbackslash
+\item \underline{Ben} \& Jerry's
+\item Money ! \$\_\$
 \item \{Accolades\}
-\item \[Crochets\]
+\item $\left[ Crochets \right]$
 \end{enumerate}
 
+\subsection{Mon second ressemble à:}
+
+%Je suis un commentaire !
+
+Je suis un essai \textasciitilde n de texte ! Mais quand vais je retourner à \textasciicircum la ligne ou faire un alinéa ?
+Ici ?
+
+Ici ?
+
+
+Ou encore là ?
+
 \begin{itemize}
-\itemPIOU PIOU
+\item PIOU PIOU
 \begin{enumerate}
-\itemenum1
-\itemENUM2
+\item enum1
+\item ENUM2
 \end{enumerate}
-\itemPILPIL
+\item PILPIL
 \end{itemize}
 POYPOY
 \begin{enumerate}
-\itemenum3
-\itemENUM4
+\item enum3
+\item ENUM4
 \end{enumerate}
 \begin{tabular}{rlc}
-Bob & 300 & 15 \\
-Chris & 8 & 7800 \\
-0 & h & 0 \\
+A droite ... & A gauche ... & Au centre ! \\
+{\bf \textcolor{red}{Bob}} & 300 & 15 \\
+{\itshape Chris} & 8 & \texttt{7800} \\
+\underline{ \textcolor{blue}{0}} & \textcolor{white}{h} & \textcolor{red}{0} \\
 \end{tabular}
-Je re-test tout ici !
+
+\subsubsection{Mon tout est un:}
+Je re-re-test tout ici !
+JZHGEFIUZHJ
+KJHGZEFOIUZ
+LZKEHFIO
+LJHSDFPIZE
+LZMEHFDUÉI"
 \end{document}
