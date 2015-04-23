@@ -1,10 +1,12 @@
-<TAB>"\{"[lrc]+"\}"          {;}
-
 "\\begin{equation}"{; }
 "\\end{equation}"{; }
 "\\label"{; }
 
-"\\section"{; }
-"\\subsection"{; }
-"\\subsubsection"{; }
-"\{"[[:alnum:]]+"\}"     {; }
+Changement de police ?
+
+couleurs reconnues : black, white, red, green, blue, yellow, cyan, magenta, brown, orange, violet, purple, gray, lightgray & darkgray
+/!\ utilisation du package \usepackage{xcolor}
+
+doit-on s'occuper des des caractères accentués ?
+
+
