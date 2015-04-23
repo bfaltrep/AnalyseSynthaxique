@@ -47,34 +47,34 @@ void ajout_balise_class(int type, char * contenu){
 }
 
 
-int create_files(){
-   //créer les deux fichiers
-   flot_html = fopen("index.html","w+");
-   flot_css = fopen("style.css","w+");
+int create_files(char* name_page, char* name_html){
+  //créer les deux fichiers
+  flot_html = fopen(name_html,"w+"); //
+  flot_css = fopen("style.css","w+"); //
 
-   //html
+  //html
 
 
-   buf = "<!DOCTYPE html><html>";
-   fprintf(flot_html,"%s",buf);
-   ajout_enTete_html ("fr", "documentation");
+  buf = "<!DOCTYPE html><html>";
+  fprintf(flot_html,"%s",buf);
+  ajout_enTete_html ("fr", name_page); //
    
-   buf = "<body>";
-   fprintf(flot_html,"%s",buf);
+  buf = "<body>";
+  fprintf(flot_html,"%s",buf);
    
-   //traitement
+  //traitement
 
-   //css
+  //css
    
-   ajout_regles_css( "h1","color : #8291CF;\n");
-   ajout_regles_css( "h2","color : #8591CF;\n");
-   ajout_regles_css( "h3","color : #85981A;\n");
-   ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
-   ajout_regles_css( "td","border: 1px solid black;\n");
-   ajout_regles_css( "table","border-collapse: collapse;\n");
-   //ajouter regle pour nomfonction+nomvariable avec une pile.
-   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
-   return 0;
+  ajout_regles_css( "h1","color : #8291CF;\n");
+  ajout_regles_css( "h2","color : #8591CF;\n");
+  ajout_regles_css( "h3","color : #85981A;\n");
+  ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
+  ajout_regles_css( "td","border: 1px solid black;\n");
+  ajout_regles_css( "table","border-collapse: collapse;\n");
+  //ajouter regle pour nomfonction+nomvariable avec une pile.
+  //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
+  return 0;
 }
 
 void finish(){
