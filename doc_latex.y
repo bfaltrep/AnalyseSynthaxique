@@ -137,7 +137,7 @@ int main()
   yylval_char=malloc(sizeof(char)*60);
   param_tabular=malloc(sizeof(char)*10); //pas plus de 10 colonnes
   index_param_tabular=0;
-  create_files("Partie LateX","latex.html","latex.css");
+  create_files("Partie LateX","latex.html");
   yyparse();
   finish();
   free(yylval_char);
