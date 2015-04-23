@@ -25,8 +25,8 @@ void yyerror(const char *s);
 %token BEGIN_ENUMERATE END_ENUMERATE
 %token ITEM
 %token BEGIN_TABULAR PARAM_TABULAR END_TABULAR
-%token NEW_CASE_L NEW_CASE_C NEW_CASE_R NEW_CASE
-%token NEW_LINE
+%token NEW_CASE_L NEW_CASE_C NEW_CASE_R NEW_CASE NEW_LINE
+%token FORME_FAT FORME_ITALIC FORME_UNDERLINE
 %token BODY
 
 %%
@@ -39,6 +39,9 @@ body: BODY {fprintf(flot_html,yylval_char); } body
 | itemize body
 | enumerate body
 | tabular body
+| FORME_FAT {fprintf(flot_html,"<b>");} body
+| FORME_ITALIC {fprintf(flot_html,"<i>");} body
+| FORME_UNDERLINE {fprintf(flot_html,"<u>");} body
 |
 ;
 
@@ -56,7 +59,7 @@ body_enumerate: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>
 |
 ;
 
-tabular: BEGIN_TABULAR {fprintf(flot_html,"<table>");} body_tabular END_TABULAR {fprintf(flot_html,"</table>");}
+tabular: BEGIN_TABULAR {fprintf(flot_html,"<table>");} {fprintf(flot_html,"<tr>");} body_tabular END_TABULAR {fprintf(flot_html,"</tr></table>");}
 ;
 
 body_tabular: body_tabular_l
@@ -65,24 +68,24 @@ body_tabular: body_tabular_l
 |
 ;
 
-body_tabular_l: {fprintf(flot_html,"<trl>");} new_case_l line_ body_tabular_l2
+body_tabular_l: new_case_l line_ body_tabular_l2
 ;
 
-body_tabular_l2: {fprintf(flot_html,"<trl>");} case_l line_ body_tabular_l2
+body_tabular_l2: case_l line_ body_tabular_l2
 |
 ;
 
-body_tabular_c: {fprintf(flot_html,"<trc>");} new_case_c line_ body_tabular_c2
+body_tabular_c: new_case_c line_ body_tabular_c2
 ;
 
-body_tabular_c2: {fprintf(flot_html,"<trc>");} case_c line_ body_tabular_c2
+body_tabular_c2: case_c line_ body_tabular_c2
 |
 ;
 
-body_tabular_r: {fprintf(flot_html,"<trr>");} new_case_r line_ body_tabular_r2
+body_tabular_r: new_case_r line_ body_tabular_r2
 ;
 
-body_tabular_r2: {fprintf(flot_html,"<trr>");} case_r line_ body_tabular_r2
+body_tabular_r2: case_r line_ body_tabular_r2
 |
 ;
 
@@ -110,7 +113,7 @@ case_c:{fprintf(flot_html,"<td align=\"center\">");} body {fprintf(flot_html,"</
 case_r:{fprintf(flot_html,"<td align=\"right\">");} body {fprintf(flot_html,"</td>");} new_case_
 ;
 
-line_: NEW_LINE {fprintf(flot_html,"</tr>");}
+line_: NEW_LINE {fprintf(flot_html,"</tr><tr>");}
 ;
 
 %%
