@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "traitement.h"
-  
+
 int yylex();
 
 //-- locals functions
@@ -26,6 +26,8 @@ void yyerror(const char *s);
 %token ITEM
 %token BEGIN_TABULAR PARAM_TABULAR END_TABULAR
 %token NEW_CASE_L NEW_CASE_C NEW_CASE_R NEW_CASE NEW_LINE
+%token BEGIN_EQUATION END_EQUATION
+%token LABEL
 %token FORME_FAT FORME_ITALIC FORME_UNDERLINE
 %token BODY
 
@@ -39,6 +41,8 @@ body: BODY {fprintf(flot_html,yylval_char); } body
 | itemize body
 | enumerate body
 | tabular body
+| equation body
+| LABEL {fprintf(flot_html,"<t class=\"label_equation\">\(");} body
 | FORME_FAT {fprintf(flot_html,"<b>");} body
 | FORME_ITALIC {fprintf(flot_html,"<i>");} body
 | FORME_UNDERLINE {fprintf(flot_html,"<u>");} body
@@ -115,6 +119,12 @@ case_r:{fprintf(flot_html,"<td align=\"right\">");} body {fprintf(flot_html,"</t
 
 line_: NEW_LINE {fprintf(flot_html,"</tr><tr>");}
 ;
+
+equation: BEGIN_EQUATION {fprintf(flot_html,"<p style=\"text-indent:2em\">");} body END_EQUATION {fprintf(flot_html,"</p>");}
+;
+
+
+
 
 %%
 
