@@ -5,6 +5,7 @@
 //-- locals var
 FILE *flot_html;
 FILE *flot_css;
+FILE *flot_js;
 char * buf;
 
 enum type{type_specifier,identifier};

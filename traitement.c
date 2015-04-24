@@ -71,10 +71,9 @@ int create_files(char* name_page, char* name_html){
   //créer les deux fichiers
   flot_html = fopen(name_html,"w+"); //
   flot_css = fopen("style.css","w+"); //
+  flot_js = fopen("script.js","w+");
 
   //html
-
-
   buf = "<!DOCTYPE html><html>";
   fprintf(flot_html,"%s",buf);
   ajout_enTete_html ("fr", name_page); //
@@ -85,21 +84,23 @@ int create_files(char* name_page, char* name_html){
   //traitement
 
   //css
-   
   ajout_regles_css( "h1","color : #8291CF;\n");
   ajout_regles_css( "h2","color : #8591CF;\n");
   ajout_regles_css( "h3","color : #85981A;\n");
   ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
   ajout_regles_css( "td","border: 1px solid black;\n");
   ajout_regles_css( "table","border-collapse: collapse;\n");
+  ajout_regles_css( ".label_equation","margin-left: 5em;\n");
+  
   //ajouter regle pour nomfonction+nomvariable avec une pile.
   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
   return 0;
 }
 
 void finish(){
-  char * buf = "</body></html>";
+  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
   fprintf(flot_html,"%s",buf);
+  fclose(flot_js);
   fclose(flot_html); 
   fclose(flot_css); 
 }
