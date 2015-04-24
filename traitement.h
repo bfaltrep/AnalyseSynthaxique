@@ -21,4 +21,6 @@ void ajout_balise_id(int type, char * contenu);
 
 int create_files();
 
+int create_menu();
+
 void finish();

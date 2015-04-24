@@ -46,6 +46,26 @@ void ajout_balise_class(int type, char * contenu){
    fprintf(flot_html, "%s%s%s%s%s", a, type_to_string(type), b, contenu, c);
 }
 
+int create_menu()
+{
+  char *a = "<ul id=\"", //menu
+    *b = "\">",
+    *c = "<li><a href=\"",//latex.html
+    *d = "\">",
+    *e = "</a></li>",
+    *f = "</ul>";
+
+  fprintf(flot_html,"%s%s%s",a,"menu",b);
+  fprintf(flot_html,"%s%s%s%s%s",c,"index.html",d,"Index",e);
+  fprintf(flot_html,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
+  fprintf(flot_html,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
+  fprintf(flot_html,"%s",f);
+  
+  ajout_regles_css( "ul#menu li","display:inline;margin:10px;padding:10px;\n");
+  ajout_regles_css( "ul#menu","text-align:center; margin:0;padding:0; list-style:none;\n");
+  return 0;
+}
+
 
 int create_files(char* name_page, char* name_html){
   //créer les deux fichiers
