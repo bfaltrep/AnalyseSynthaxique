@@ -9,4 +9,7 @@ couleurs reconnues : black, white, red, green, blue, yellow, cyan, magenta, brow
 
 doit-on s'occuper des des caractères accentués ?
 
-
+Réferences / liens internes
+\label{marker}
+\ref{marker}
+\pageref{marker}
