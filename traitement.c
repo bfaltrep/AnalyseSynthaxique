@@ -24,6 +24,14 @@ void div_fermante(){
 
 void newline(){
   fprintf(flot_html, "<br>");
+  if(indentation == 0){
+    fprintf(flot_html, "<br>");
+  }
+  int i = 0;
+  fprintf(flot_html,"%d",indentation);
+  for(;i < indentation; i++){
+    tab();tab();tab();tab();
+  }
 }
 
 void tab(){
@@ -33,26 +41,12 @@ void tab(){
 void p_virgule(){
   fprintf(flot_html, ";");
   //on ne met pas a la ligne quand on est dans une boucle for
-  if(inFor)
-    {
-      tab();
-    }
-  else
-    {
-      newline();
-      if(indentation == 0){
-	newline();
-      }
-      int i = 0;
-      for(;i < indentation; i++)
-	{
-	  tab();tab();tab();tab();
-	}
-    } 
-}
-
-void deux_points(){
-  
+  if(inFor){
+    tab();
+  }
+  else{
+    newline();
+  } 
 }
 
 void accolade_ouvrant(){
@@ -61,31 +55,17 @@ void accolade_ouvrant(){
       inFor = 0;
     }
   fprintf(flot_html, "{<span class=crochet>");
-  newline();
   indentation++;
-  int i = 0;
-  for(;i < indentation; i++)
-    {
-      tab();tab();tab();tab();
-    }
+  newline();
 }
 
 void accolade_fermant(){
   fprintf(flot_html, "</span>}");
-  newline();
   indentation--;
+  newline();
   if(indentation < 0)
     {
       yyerror("syntax error. too many '}' \n");
-    }
-  int i = 0;
-  for(;i < indentation; i++)
-    {
-      tab();tab();tab();tab();
-    }
-  if(indentation == 0)
-    {
-      newline();
     }
 }
 

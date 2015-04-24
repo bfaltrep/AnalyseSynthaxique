@@ -544,7 +544,7 @@ statement
 
 labeled_statement
 	: IDENTIFIER deux_point statement
-	| CASE {ajout_balise_class("key_word","case");} constant_expression deux_point statement {/*sautdeligne*/}
+	| CASE {ajout_balise_class("key_word","case");} constant_expression deux_point {newline();} statement
 	| DEFAULT {ajout_balise_class("key_word","default");} deux_point statement
 	;
 
