@@ -34,21 +34,27 @@ section_t sect;
 %option noyy_top_state
 
 %s TAB
-%s FAT ITALIC UNDERLINE COLOR COMMENTAIRE
+%s FAT ITALIC UNDERLINE COLOR COMMENT
 %s SECTION SUBSECTION SUBSUBSECTION
 %s MAT
-%x PARAMTAB
-%x COLOR1
 %s EQUATION
 %s LAB
+%x PARAMTAB
+%x COLOR1
+%x IMAGE
 
 %%
 
-"\\begin{document}"      {return(BEGIN_DOC); q = queue_create(); }
-"\\end{document}"        {return(END_DOC); queue_destroy(q); }
+"\\begin{document}"      {fprintf(flot_html,"<p style=\"text-indent:2em\">");q = queue_create();return(BEGIN_DOC); }
+"\\end{document}"        {fprintf(flot_html,"</p>");queue_destroy(q);return(END_DOC); }
+
 
 "\\documentclass"("["[[:alnum:],]*"]")+("{"[[:alnum:],]*"}")+ {;}
 "\\usepackage"("["[[:alnum:],]*"]")*("{"[[:alnum:],]*"}")* {;}
+
+"\\includegraphics"[[:alnum:]\[\]]*"{" {yy_push_state(IMAGE);}
+<IMAGE>[[:alnum:]._]+"}"   {printf("%s",yytext);yytext[yyleng-1]='\0';printf("%s",yytext);fprintf(flot_html,"<p><a href=%s><img src=%s ></p>",yytext,yytext);yy_pop_state();}
+
 
 "\\begin{itemize}"       {return(BEGIN_ITEMIZE); }
 "\\end{itemize}"         {return(END_ITEMIZE); }
@@ -74,16 +80,18 @@ section_t sect;
 <LAB>"}"                 {yy_pop_state(); fprintf(flot_html,")</t>"); }
   
 
-"\\textbackslash"        {fprintf(flot_html,"\\"); }
-"\\{"                    {fprintf(flot_html,"{"); }
-"\\}"                    {fprintf(flot_html,"}"); }
-"$\\left["               {yy_push_state(MAT);fprintf(flot_html,"["); }
-<MAT>"\\right]$"         {yy_pop_state();fprintf(flot_html,"]"); }
-"\\&"                    {fprintf(flot_html,"&"); }
-"\\$"                    {fprintf(flot_html,"$"); }
-"\\_"                    {fprintf(flot_html,"_"); }
-"\\textasciitilde"       {fprintf(flot_html,"~"); }
-"\\textasciicircum"      {fprintf(flot_html,"^"); }
+"\\textbackslash "        {fprintf(flot_html,"\\"); printf("\\"); }
+"\\textbackslash\\textbackslash" {fprintf(flot_html,"\\\\"); printf("\\\\"); }
+"\\{"                    {fprintf(flot_html,"{"); printf("{"); }
+"\\}"                    {fprintf(flot_html,"}"); printf("}"); }
+"$\\left[ "               {yy_push_state(MAT);fprintf(flot_html,"["); printf("["); }
+<MAT>" \\right]$"         {yy_pop_state();fprintf(flot_html,"]"); printf("]"); }
+"\\&"                    {fprintf(flot_html,"&"); printf("&"); }
+"\\$"                    {fprintf(flot_html,"$"); printf("$"); }
+"\\_"                    {fprintf(flot_html,"_"); printf("_"); }
+"\\textasciitilde "       {fprintf(flot_html,"~"); printf("~"); }
+"\\textasciicircum "      {fprintf(flot_html,"^"); printf("^"); }
+
 
 
 
@@ -98,8 +106,8 @@ section_t sect;
 <COLOR>"}"               {yy_pop_state();fprintf(flot_html,"</font>"); }
 
 
-"%"                      {yy_push_state(COMMENTAIRE);fprintf(flot_html,"<!--"); }
-<COMMENTAIRE>"\n"        {yy_pop_state();fprintf(flot_html,"-->"); }
+"%"                      {yy_push_state(COMMENT);fprintf(flot_html,"<!--"); }
+<COMMENT>("\n")+         {yy_pop_state();fprintf(flot_html,"-->"); }
 
 
 
@@ -110,8 +118,12 @@ section_t sect;
 <SUBSECTION>"}"          {yy_pop_state(); fprintf(flot_html,"</h2>"); }
 <SUBSUBSECTION>"}"       {yy_pop_state(); fprintf(flot_html,"</h3>"); }
 
-  
-.                        {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
+
+[\t\v\f\n\r]             {fprintf(flot_html," ");}
+[\t\v\f\n\r][\t\v\f\n\r]+ {fprintf(flot_html,"</p><p style=\"text-indent:2em\">");}
+"\\\\"|"\\newline"       {fprintf(flot_html, "<br>");}
+.                        {yylval_char = strcpy(yylval_char, yytext);printf(yytext);return(BODY); }
+
 
 
 %%

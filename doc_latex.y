@@ -29,6 +29,7 @@ void yyerror(const char *s);
 %token BEGIN_EQUATION END_EQUATION
 %token LABEL
 %token FORME_FAT FORME_ITALIC FORME_UNDERLINE
+%token BEG_PARAGRAPH END_PARAGRAPH
 %token BODY
 
 %%
