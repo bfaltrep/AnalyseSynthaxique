@@ -12,4 +12,4 @@ lex.yy.c : doc_latex.lex
 doc_latex.tab.c : doc_latex.y traitement.h
 
 clean:
-	rm -rf *.o doc_latex.c lex.yy.c doc_latex.tab.c doc_latex.tab.h *~ *.output *.tab.h  *.html *.css doc_latex
+	rm -rf *.o doc_latex.c lex.yy.c doc_latex.tab.c doc_latex.tab.h *~ *.output *.tab.h  *.html *.css *.js doc_latex
