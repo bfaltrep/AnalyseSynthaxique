@@ -13,19 +13,11 @@ extern int index_param_tabular;
 extern void tabular_param(char * param_tabular,char * param, int length);
 extern void yyerror(const char *);  /* prints grammar violation message */
  
-typedef struct
-{
-  int scale;
-  char *title;
-}section;
- 
-typedef section *section_t;
  
 int param();
-void remplir_file_section(section_t s, int type, char* name);
- 
+void create_tdm();
+  
 queue q;
-section_t sect;
  
 %}
 
@@ -45,8 +37,8 @@ section_t sect;
 
 %%
 
-"\\begin{document}"      {fprintf(flot_html,"<p style=\"text-indent:2em\">");q = queue_create();return(BEGIN_DOC); }
-"\\end{document}"        {fprintf(flot_html,"</p>");queue_destroy(q);return(END_DOC); }
+"\\begin{document}"      {fprintf(flot_html,"<p style=\"text-indent:2em\">"); q = queue_create(); return(BEGIN_DOC); }
+"\\end{document}"        {fprintf(flot_html,"</p>"); queue_destroy(q); return(END_DOC); }
 
 
 "\\documentclass"("["[[:alnum:],]*"]")+("{"[[:alnum:],]*"}")+ {;}
@@ -114,16 +106,21 @@ section_t sect;
 "\\section{"             {yy_push_state(SECTION);fprintf(flot_html,"<h1>"); }
 "\\subsection{"          {yy_push_state(SUBSECTION); fprintf(flot_html,"<h2>"); }
 "\\subsubsection{"       {yy_push_state(SUBSUBSECTION); fprintf(flot_html,"<h3>"); }
+
 <SECTION>"}"             {yy_pop_state(); fprintf(flot_html,"</h1>"); }
 <SUBSECTION>"}"          {yy_pop_state(); fprintf(flot_html,"</h2>"); }
 <SUBSUBSECTION>"}"       {yy_pop_state(); fprintf(flot_html,"</h3>"); }
 
+<SECTION>.               {yylval_char = strcpy(yylval_char, yytext); queue_push(q,1,yytext); printf(yytext); return(BODY); }
+<SUBSECTION>.            {yylval_char = strcpy(yylval_char, yytext); queue_push(q,2,yytext); printf(yytext); return(BODY); }
+<SUBSUBSECTION>.         {yylval_char = strcpy(yylval_char, yytext); queue_push(q,3,yytext); printf(yytext); return(BODY); }
 
-[\t\v\f\n\r]             {fprintf(flot_html," ");}
+[\t\v\f\n\r]              {fprintf(flot_html," ");}
 [\t\v\f\n\r][\t\v\f\n\r]+ {fprintf(flot_html,"</p><p style=\"text-indent:2em\">");}
-"\\\\"|"\\newline"       {fprintf(flot_html, "<br>");}
-.                        {yylval_char = strcpy(yylval_char, yytext);printf(yytext);return(BODY); }
+"\\\\"|"\\newline"        {fprintf(flot_html, "<br>");}
 
+  
+.                         {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
 
 
 %%
@@ -137,11 +134,27 @@ int param(){
     return(NEW_CASE_R);}
 }
 
-
-void remplir_file_section(section_t s, int type, char* name)
+void create_tdm()
 {
-  s->scale = type;
-  s->title = name;
-  queue_push(q,s);
-  
+  while(!queue_empty(q))
+    {
+      switch(queue_front_val1(q))
+	{
+	case 1:
+	  fprintf(flot_html,queue_front_val2(q));
+	  break;
+	case 2:
+	  fprintf(flot_html,"<t class=\"subsection\">");
+	  fprintf(flot_html,queue_front_val2(q));
+	  fprintf(flot_html,"</t>");
+	  break;
+	case 3:
+	  fprintf(flot_html,"<t class=\"subsubsection\">");
+	  fprintf(flot_html,queue_front_val2(q));
+	  fprintf(flot_html,"</t>");
+	  break;
+	  }
+      queue_pop(q);
+    }
 }
+
