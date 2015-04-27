@@ -22,13 +22,12 @@ void div_fermante(){
   fprintf(flot_html, "</div>");
 }
 
-void newline(){
+void newline(int long){
   fprintf(flot_html, "<br>");
   if(indentation == 0){
     fprintf(flot_html, "<br>");
   }
   int i = 0;
-  fprintf(flot_html,"%d",indentation);
   for(;i < indentation; i++){
     tab();tab();tab();tab();
   }
@@ -41,33 +40,99 @@ void tab(){
 void p_virgule(){
   fprintf(flot_html, ";");
   //on ne met pas a la ligne quand on est dans une boucle for
-  if(inFor){
-    tab();
-  }
-  else{
+  if(!bool_cond){
     newline();
-  } 
+  }
 }
 
 void accolade_ouvrant(){
-  if(inFor)
+  if(bool_cond)
     {
-      inFor = 0;
+      bool_cond = 0;
     }
   fprintf(flot_html, "{<span class=crochet>");
   indentation++;
   newline();
+  //pour pouvoir traiter le crochet comme les nom de variables lorsque l'on supprime de la pile, on doit allouer de la mémoire.
+  char * tmp;
+  asprintf(&tmp,"{" );
+  stack_push(variables,tmp);
 }
 
 void accolade_fermant(){
   fprintf(flot_html, "</span>}");
   indentation--;
-  newline();
   if(indentation < 0)
     {
       yyerror("syntax error. too many '}' \n");
     }
+  newline();
+  while(strcmp("{",stack_top(variables)) != 0){
+    stack_pop(variables);
+  }
+  stack_pop(variables);
 }
+
+
+
+
+
+char * retrouverVariable(char * nom){
+  char * surnom = stack_inside_variable(variables,nom);
+  if(surnom == NULL){
+    char * tmp;
+    asprintf(&tmp,"%s%s","syntax error. variable undeclared : ",surnom);
+    yyerror(tmp);
+    free(tmp);
+    return NULL;
+  }
+  return surnom;
+}
+
+/*
+  ajoute le nouveau nom de variable dans la liste, dans la pile et dans le fichier javascript
+*/
+void ajouterVariable(char * nom){
+  char * tmp;
+  char * tmp2;
+  asprintf(&tmp,nom);
+  asprintf(&tmp2,nom);
+  list_insert(variables_name,tmp);
+  stack_push(variables,tmp2);
+
+  fprintf(flot_js,"$(\".%s\").hover(function() {\n    $(\".%s\").css(\"background-color\",\"black\");},function() {\n    $(\".%s\").css(\"background-color\",\"initial\");\n});\n\n",tmp,tmp,tmp);
+  free(tmp);
+}
+
+/*
+  créer un nom unique à la variable déclarée
+*/
+void nommerVariable(char * nom){
+  int pos = list_inside(variables_name,nom);
+  if(pos == -1){
+    ajouterVariable(nom);
+  }
+  //si ce nom existe déjà, on renomme la classe spécifique à la variable
+  int i = 2;
+  char * tmp;
+  do{
+    //nettoyage des noms testé mais déjà utilisés.
+    if(i > 2){
+      free(tmp);
+    }
+    asprintf(&tmp,"%d%s",i,nom);
+    pos = list_inside(variables_name,tmp);
+    i++;
+  }while(pos != -1);
+  ajouterVariable(tmp);
+  free(tmp);
+}
+
+
+
+
+
+
 
 void ajout_enTete_html (char * language, char * title){
    char *a ="<head><meta charset=\"utf-8\" lang=\"",

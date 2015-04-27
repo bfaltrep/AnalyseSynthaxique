@@ -34,7 +34,11 @@ extern int stack_size(stack s);
 */
 extern int stack_inside(stack s, void * object);
 
+/*
+  return NULL if object is not inside the stack, else return the object;
+*/
+extern char * stack_inside_variable(stack s, void * object);
 
-
-
+//TMP
+void stack_print(stack s);
 #endif

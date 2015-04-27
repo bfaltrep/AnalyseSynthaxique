@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +8,7 @@
 typedef struct list_cell cell;
 
 struct list_cell{
-  void * val;
+  char * val;
   cell * next;
 };
 
@@ -39,9 +40,10 @@ void list_destroy(list l){
   free(l);
 }
 
-void list_insert(list l, void *object){
+void list_insert(list l, char *object){
   cell* c = create_cell();
-  c->val = object;
+  
+  asprintf(&(c->val),"%s",object);
   c->next = l->first;
   l->first = c;
   l->size++;
@@ -56,6 +58,7 @@ void list_delete(list l, int pos){
   
   if(pos == 0){
     c = c->next;
+    free(l->first->val);
     free(l->first);
     l->first = c;
     return;
@@ -66,6 +69,7 @@ void list_delete(list l, int pos){
   }
   c2 = c->next;
   c->next = c2->next;
+  free(c2->val);
   free(c2);
 }
 
@@ -77,7 +81,7 @@ int list_empty(list l){
   return l->first == NULL;
 }
 
-int list_inside(list l, void * object){
+int list_inside(list l, char * object){
   int i = 0;
   cell * c = l->first;
   for(; i < l->size ; i++){
@@ -87,4 +91,18 @@ int list_inside(list l, void * object){
     c = c->next;
   }
   return -1;
+}
+
+void list_print(list l){
+  cell * tmp = l->first;
+  if(tmp == NULL){
+    return;
+  }
+  int i = 0;
+  printf("%s\n",tmp->val);
+  for(; i < l->size-1; i++){
+    tmp = tmp->next;
+    printf("%s\n",tmp->val);
+  }
+  printf("\n");
 }

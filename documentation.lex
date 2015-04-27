@@ -39,17 +39,12 @@ extern int indentation;
  //fonctions importées
 extern void yyerror(const char *);  /* prints grammar violation message */
 extern int sym_type(const char *);  /* returns type from symbol table */
-extern char * nommerVariable(char * variable);
 
  //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 static void comment(void);
 static void comment_line(void);
 static int check_type(void);
-
-void reecrire_yylval_char (){
-  yylval_char = strcpy(yylval_char, yytext);
-}
 
 %}
 %option nounput
@@ -107,8 +102,8 @@ void reecrire_yylval_char (){
 "_Thread_local"                         { return THREAD_LOCAL; }
 "__func__"                              { return FUNC_NAME; }
 
-{L}{A}*					{/*ajout_balise_class("variable",yytext);*/
-  reecrire_yylval_char (); return check_type(); }
+{L}{A}*					{ yylval_char = strcpy(yylval_char, yytext); return check_type();
+      }
 
 {HP}{H}+{IS}?				{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
 {NZ}{D}*{IS}?				{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
@@ -188,10 +183,8 @@ static void comment_line(void){
   int c;
   while ((c = input()) != 0){
     if(c == '\n'){
-      fprintf(flot_html,"<br></span>\n");
-      int i = 0;
-      for(;i < indentation; i++)
-	{ tab();tab();tab();tab(); }
+      fprintf(flot_html,"</span>\n");
+      newline(indentation);
       return;
     }
     fprintf(flot_html, "%c",c);

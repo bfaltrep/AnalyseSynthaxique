@@ -1,10 +1,13 @@
 #ifndef TRAITEMENT_H
 #define TRAITEMENT_H
 
-
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "pile/stack.h"
+#include "list/list.h"
 
 //-- global var
 FILE *flot_html;
@@ -13,10 +16,14 @@ FILE *flot_js;
 char * buf;
 
 //globales sont initialisées à 0 donc ok !
-int inFor;
+int bool_cond;
 int indentation;
 
 extern void yyerror(const char *);
+extern char * yylval_char;
+extern char * yylval_string_numb;
+extern stack variables;
+extern list variables_name;
 
 int create_files();
 void finish();
@@ -36,16 +43,15 @@ void accolade_ouvrant();
 void accolade_fermant();
 void ajout_div();
 void div_fermante();
+
+//variables
+void nommerVariable(char * variable);
+char * retrouverVariable(char * nom);
+
+
 /*
 
 //TEMPORAIRE
-//fonction pour mettre en valeur une variable au survol
-
-$(".i").hover(function() {
-	$(".i").css("background-color","black");},function() {
-	$(".i").css("background-color","initial");
-});
-
 
 // cache/affiche aux ouvertures et fermeture des accolades
 $('body').on('click','img',function(){ 
