@@ -71,6 +71,12 @@ void condition_saut_ligne(){
 }
 */
 void accolade_fermant(){
+  //retirer une tabulation avant d'écrire l'accolade
+  int size = strlen("&nbsp")*sizeof(char)*4;
+
+  fseek(flot_html,-size,SEEK_CUR);
+
+  
   fprintf(flot_html, "</span>}");
   indentation--;
   if(indentation < 0)
@@ -111,7 +117,7 @@ void ajouterVariable(char * nom){
   list_insert(variables_name,tmp);
   stack_push(variables,tmp2);
   //fonctionnalité : cliquer sur accolade ouvrante, cache/affiche le contenu
-  fprintf(flot_js,"$(\".%s\").hover(function() {\n    $(\".%s\").css(\"background-color\",\"black\");},function() {\n    $(\".%s\").css(\"background-color\",\"initial\");\n});\n\n",tmp,tmp,tmp);
+  fprintf(flot_js,"$(\".%s\").hover(function() {\n    $(\".%s\").css(\"background-color\",\"black\");\n    $(\".declaration.%s\").css(\"background-color\",\"blue\");},function() {\n    $(\".%s\").css(\"background-color\",\"initial\");\n    $(\".declaration.%s\").css(\"background-color\",\"initial\");});\n\n",tmp,tmp,tmp,tmp,tmp);
   free(tmp);
 }
 
@@ -177,10 +183,12 @@ int create_files(char * nom){
   ajout_regles_css(".string_literal","color : #DAA520;\n");
   ajout_regles_css(".var","color : #66AA33;\n");
   ajout_regles_css(".comment_line","color : #FF00CC;\n");
+  ajout_regles_css(".accolade","cursor:pointer;\n");
 
   //js
 
   fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
+  
   return 0;
 }
 

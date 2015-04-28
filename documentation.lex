@@ -167,6 +167,7 @@ static int check_type(void);
 "?"					{ return '?'; }
 
 {WS}					{ /* whitespace separates tokens */ }
+
 .					{ /* discard bad characters */ }
 
 %%
