@@ -62,8 +62,9 @@ int create_files(){
 }
 
 void finish(){
-  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
-  fprintf(flot_html,"%s",buf);
+  char * tmp = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
+  fclose(flot_html2);
+  fprintf(flot_html,"%s",tmp);
   fclose(flot_js);
   fclose(flot_html); 
   fclose(flot_css);

@@ -12,6 +12,10 @@ void g(int j);
 
 /**
    fonction principale, lancée par l'exécutable
+   \\ brief loli
+   \\param a c
+   \\param d
+   \\return aie
  */
 int main(void){
   char * c = "chocolat";

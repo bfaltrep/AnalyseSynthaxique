@@ -6,7 +6,11 @@
 FILE *flot_html;
 FILE *flot_css;
 FILE *flot_js;
+FILE * flot_html2;
+
 char * buf;
+char *lect;
+
 
 int create_files();
 void finish();

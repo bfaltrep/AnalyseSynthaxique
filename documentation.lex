@@ -23,6 +23,7 @@ WS  [ \t\v\n\f]
 
 %{
 #include <stdio.h>
+#include <string.h>
 #include "y.tab.h"
 #include "traitement.h"
 #include "pile/stack.h"
@@ -45,6 +46,7 @@ extern char * nommerVariable(char * variable);
  //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 static void comment(void);
+void lecture_ecriture_doxy(void);
 static void comment_line(void);
 static int check_type(void);
 
@@ -55,10 +57,13 @@ void reecrire_yylval_char (){
 //["char""double""float""int""long""short""void"]{L}{A}*	{}
 %}
 %option nounput
+%x COMMDOXY
 
 %%
-"/*"                                    { comment(); }
-"//"                                    { comment_line(); }
+"/**" | "/*!"           { lecture_ecriture_doxy(); }
+
+"/*"                    { comment(); }
+"//"                    { comment_line(); }
 
 "auto"					{ ajout_balise_class("key_word",yytext); return(AUTO); }
 "break"					{ ajout_balise_class("key_word",yytext); return(BREAK); }
@@ -216,17 +221,58 @@ static void comment(void)
 {
     int c;
 
-    while ((c = input()) != 0)
-        if (c == '*')
-        {
-            while ((c = input()) == '*')
-                ;
-            if (c == '/')
-                return;
+    while ((c = input()) != 0){
+       if (c == '*')
+       {
+          while ((c = input()) == '*')
+             ;
+          if (c == '/')
+             return;
 
-            if (c == 0)
-                break;
-        }
+          if (c == 0)
+             break;
+       }
+    }
+    yyerror("unterminated comment");
+}
+
+void lecture_ecriture_doxy(void)
+{
+    int c;
+    flot_html2 = fopen("documentation.html","w+");
+    lect="";
+    
+    while ((c = input()) != 0){
+       if(c == '*'){
+          c=input();
+          if(c == '/')
+             return;
+          else if(c == '\\'){
+             while((c=input()) != ' '){
+                fprintf(flot_html2, "%c", c);
+                sprintf(lect,"%s%c",lect,c);
+                lect=strcat(lect, c);
+             }
+             if(strcmp(lect, "brief")==0){
+                printf("on est dans brief\n");
+             }
+             else if(strcmp(lect, "label")==0){
+                printf("on est dans label\n");
+             }
+             else if(strcmp(lect, "param")==0){
+                printf("on est dans param\n");
+             }
+             else if(strcmp(lect, "ref")==0){
+                printf("on est dans ref\n");
+             }
+             else if(strcmp(lect, "return")==0){
+                printf("on est dans return\n");
+             }
+          }
+       }
+       else
+          fprintf(flot_html2, "%c", c);
+    }
     yyerror("unterminated comment");
 }
 
