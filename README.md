@@ -15,3 +15,5 @@ Code Latex </br>
 </br>
 
 PS: j'ai mis ok quand on a une version correct. Il faut qu'on test avec vos fichiers aussi pour s'assurer que ca vous convienne aussi
+
+27 et 230

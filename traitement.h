@@ -43,27 +43,10 @@ void accolade_ouvrant();
 void accolade_fermant();
 void ajout_div();
 void div_fermante();
+void condition_saut_ligne();
 
 //variables
 void nommerVariable(char * variable);
 char * retrouverVariable(char * nom);
-
-
-/*
-
-//TEMPORAIRE
-
-// cache/affiche aux ouvertures et fermeture des accolades
-$('body').on('click','img',function(){ 
-if($(this).attr('src') === "moins.png") {
- $(this).attr('src',"plus.png"); 
-} 
-else { 
- $(this).attr('src',"moins.png"); 
-} 
-$(this).next('div').toggle(); 
-});
-
-*/
 
 #endif 

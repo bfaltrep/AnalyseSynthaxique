@@ -30,9 +30,7 @@ WS  [ \t\v\n\f]
   
   //-- var globales
 extern char * yylval_char;
- extern char * yylval_string_numb;
-extern stack variables;
-extern list variables_name;
+extern char * yylval_string_numb;
  
 extern int indentation;
 
