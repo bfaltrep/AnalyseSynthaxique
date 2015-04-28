@@ -41,7 +41,7 @@ extern int sym_type(const char *);  /* returns type from symbol table */
  //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 static void comment(void);
-static void comment_line(void);
+ static void preproc_commentline(int type, char* name);
 static int check_type(void);
 
 %}
@@ -49,7 +49,7 @@ static int check_type(void);
 
 %%
 "/*"                                    { comment(); }
-"//"                                    { comment_line(); }
+"//"                                    { preproc_commentline(1,""); }
 
 "auto"					{ return(AUTO); }
 "break"					{ return(BREAK); }
@@ -167,16 +167,42 @@ static int check_type(void);
 "?"					{ return '?'; }
 
 {WS}					{ /* whitespace separates tokens */ }
-
-.					{ /* discard bad characters */ }
+"#"("include"|"INCLUDE")                { preproc_commentline(0,"include"); }
+"#"("define"|"DEFINE")                  { preproc_commentline(0,"define"); }
+.				  	{ /* discard bad characters */ }
 
 %%
 
 int yywrap(void)        /* called at end of input */
 {
-    return 1;           /* terminate now */
+  return 1;           /* terminate now */
 }
 
+
+
+static void preproc_commentline(int type, char * name){
+  fprintf(flot_html,"\n<span class=\"%s\">%s%s%s",type?"comment_line":"preproc",type?"//":"#",name,type?"":"</span>");
+  int c;
+  while ((c = input()) != 0){
+    if(c == '\n'){
+      if(type){
+	fprintf(flot_html, "</span>");
+      }
+      newline(indentation);
+      return;
+    }
+    if(c == '<'){
+      fprintf(flot_html, "&lt;");
+    }
+    else if(c == '>'){
+      fprintf(flot_html, "&gt;");
+    }
+    else{
+      fprintf(flot_html, "%c",c);
+    }
+  }
+}
+/*
 static void comment_line(void){
   fprintf(flot_html,"\n<span class=\"comment_line\">//");
   int c;
@@ -188,8 +214,10 @@ static void comment_line(void){
     }
     fprintf(flot_html, "%c",c);
   }
+  //ne peut pas se produire...
   yyerror("unterminated comment");
 }
+*/
 
 static void comment(void)
 {

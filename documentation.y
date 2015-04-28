@@ -23,11 +23,8 @@
   stack variables;
   list variables_name;
 
+%}
 
-
-
-  
-  %}
 %output "y.tab.c"
 %token IDENTIFIER I_CONSTANT F_CONSTANT STRING_LITERAL FUNC_NAME SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
@@ -139,7 +136,7 @@ postfix_expression
 | postfix_expression parentheses
 | postfix_expression p_ouvrante argument_expression_list p_fermante
 | postfix_expression '.' { fprintf(flot_html, "."); } IDENTIFIER
-| postfix_expression PTR_OP { fprintf(flot_html, "->"); } IDENTIFIER
+| postfix_expression PTR_OP { fprintf(flot_html, "-&gt;"); } IDENTIFIER
 | postfix_expression INC_OP { fprintf(flot_html, "++"); }
 | postfix_expression DEC_OP { fprintf(flot_html, "--"); }
 | p_ouvrante type_name p_fermant_a_ouvrant initializer_list a_fermant
@@ -162,7 +159,7 @@ unary_expression
 ;
 
 unary_operator
-: '&' {fprintf(flot_html, "&");}
+: '&' {fprintf(flot_html, "&amp;");}
 | '*' {fprintf(flot_html, "*");}
 | '+' {fprintf(flot_html, "+");}
 | '-' {fprintf(flot_html, "-");}
@@ -190,16 +187,16 @@ additive_expression
 
 shift_expression
 : additive_expression
-| shift_expression LEFT_OP {fprintf(flot_html, "<<");} additive_expression
-| shift_expression RIGHT_OP {fprintf(flot_html, ">>");} additive_expression
+| shift_expression LEFT_OP {fprintf(flot_html, "&lt;&lt;");} additive_expression
+| shift_expression RIGHT_OP {fprintf(flot_html, "&gt;&gt;");} additive_expression
 ;
 
 relational_expression
 : shift_expression
-| relational_expression '<' {fprintf(flot_html, "<");} shift_expression
-| relational_expression '>' {fprintf(flot_html, ">");} shift_expression
-| relational_expression LE_OP {fprintf(flot_html, "<=");} shift_expression
-| relational_expression GE_OP {fprintf(flot_html, ">=");} shift_expression
+| relational_expression '<' {fprintf(flot_html, "&lt;");} shift_expression
+| relational_expression '>' {fprintf(flot_html, "&gt;");} shift_expression
+| relational_expression LE_OP {fprintf(flot_html, "&lt;=");} shift_expression
+| relational_expression GE_OP {fprintf(flot_html, "&gt;=");} shift_expression
 ;
 
 equality_expression
@@ -210,7 +207,7 @@ equality_expression
 
 and_expression
 : equality_expression
-| and_expression '&' {fprintf(flot_html, "&");} equality_expression
+| and_expression '&' {fprintf(flot_html, "&amp;");} equality_expression
 ;
 
 exclusive_or_expression
@@ -225,7 +222,7 @@ inclusive_or_expression
 
 logical_and_expression
 : inclusive_or_expression
-| logical_and_expression AND_OP {fprintf(flot_html, "&&");} inclusive_or_expression
+| logical_and_expression AND_OP {fprintf(flot_html, "&amp;&amp;");} inclusive_or_expression
 ;
 
 logical_or_expression
@@ -250,9 +247,9 @@ assignment_operator
 | MOD_ASSIGN {fprintf(flot_html, "%%=");}
 | ADD_ASSIGN {fprintf(flot_html, "+=");}
 | SUB_ASSIGN {fprintf(flot_html, "-=");}
-| LEFT_ASSIGN {fprintf(flot_html, "<<=");}
-| RIGHT_ASSIGN {fprintf(flot_html, ">>=");}
-| AND_ASSIGN {fprintf(flot_html, "&=");}
+| LEFT_ASSIGN {fprintf(flot_html, "&lt;&lt;=");}
+| RIGHT_ASSIGN {fprintf(flot_html, "&gt;&gt;=");}
+| AND_ASSIGN {fprintf(flot_html, "&amp;=");}
 | XOR_ASSIGN {fprintf(flot_html, "^=");}
 | OR_ASSIGN {fprintf(flot_html, "|=");}
 ;
@@ -408,10 +405,10 @@ declarator
 direct_declarator
 : IDENTIFIER {/*declaration de variables*/
   nommerVariable(yylval_char);
-  char * tmp2;
-  asprintf(&tmp2,"var declaration %s",((char *)stack_top(variables)));
-  ajout_balise_class(tmp2,yylval_char);
-  free(tmp2);
+  char * tmp = ((char *)stack_top(variables));
+  asprintf(&tmp,"var declaration %s",tmp);
+  ajout_balise_class(tmp,yylval_char);
+  free(tmp);
   }
 | p_ouvrante declarator p_fermante
 | direct_declarator c_ouvrant c_fermant
@@ -424,7 +421,7 @@ direct_declarator
 | direct_declarator c_ouvrant type_qualifier_list c_fermant
 | direct_declarator c_ouvrant assignment_expression c_fermant
 | direct_declarator p_ouvrante parameter_type_list p_fermante
-| direct_declarator parentheses
+| direct_declarator parentheses 
 | direct_declarator p_ouvrante identifier_list p_fermante
 ;
 

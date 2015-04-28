@@ -101,7 +101,7 @@ char * retrouverVariable(char * nom){
     asprintf(&tmp,"%s%s","syntax error. variable undeclared : ",nom);
     yyerror(tmp);
     free(tmp);*/
-    return NULL;
+    return "noname";
   }
   return surnom;
 }
@@ -176,13 +176,16 @@ int create_files(char * nom){
   //traitement
 
   //css
-  ajout_regles_css(".number","color : #990000;\n");
+  ajout_regles_css("body","background-color : #333333; color : white;\n");
+  
+  ajout_regles_css(".preproc","color : #FF9933;\n");
+  
+  ajout_regles_css(".number","color : #CC0000;\n");
   ajout_regles_css(".key_word" ,"color : #FF6600;\n");
-  ajout_regles_css(".type_specifier" ,"color : #330099;\n");
-  ajout_regles_css(".identifier","color : #CCCC33;\n");
+  ajout_regles_css(".type_specifier" ,"color : #0099FF;\n");
   ajout_regles_css(".string_literal","color : #DAA520;\n");
   ajout_regles_css(".var","color : #66AA33;\n");
-  ajout_regles_css(".comment_line","color : #FF00CC;\n");
+  ajout_regles_css(".comment_line","color : #999999;\n");
   ajout_regles_css(".accolade","cursor:pointer;\n");
 
   //js
