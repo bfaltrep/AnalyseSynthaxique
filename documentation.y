@@ -75,7 +75,7 @@ point_virgule
 virgule
 : ',' {fprintf(flot_html, ",");}
 string_literal
-: STRING_LITERAL {ajout_balise_class("string_literal",yylval_string_numb);}
+: STRING_LITERAL { string_literal(); }
 for_
 : FOR { bool_cond = 1; ajout_balise_class("key_word","for"); }
 if_

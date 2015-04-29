@@ -51,6 +51,7 @@ void accolade_fermant();
 void ajout_div();
 void div_fermante();
 void condition_saut_ligne();
+void string_literal();
 
 //variables
 void nommerVariable(char * variable);

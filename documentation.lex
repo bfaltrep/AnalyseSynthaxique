@@ -57,8 +57,8 @@ static int check_type(void);
 %x COMMDOXY
 
 %%
-"/**"                   { lecture_ecriture_doxy(); }
-"/*!"                   { lecture_ecriture_doxy(); }
+"/**"                   { comment();/*lecture_ecriture_doxy();*/ }
+"/*!"                   {comment(); /*lecture_ecriture_doxy();*/ }
 
 "/*"                    { comment(); }
 "//"                    { preproc_commentline(1,""); }

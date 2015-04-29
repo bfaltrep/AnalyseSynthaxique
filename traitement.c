@@ -133,7 +133,59 @@ void nommerVariable(char * nom){
   free(tmp);
 }
 
+/*
+ Fonction récupérée sur le site developpez.com/articles/libc/string
 
+*/
+char *str_remplace (const char *s, unsigned int start, unsigned int lenght, const char *ct)
+{
+   char *new_s = NULL;
+
+   if (s != NULL && ct != NULL && start >= 0 && lenght > 0)
+   {
+      size_t size = strlen (s);
+
+      new_s = malloc (sizeof (*new_s) * (size - lenght + strlen (ct) + 1));
+      if (new_s != NULL)
+      {
+         memcpy (new_s, s, start);
+         memcpy (&new_s[start], ct, strlen (ct));
+         memcpy (&new_s[start + strlen (ct)], &s[start + lenght], size - lenght - start + 1);
+      }
+   }
+   else
+   {
+      fprintf (stderr, "Memoire insuffisante\n");
+      exit (EXIT_FAILURE);
+   }
+   return new_s;
+}
+
+void string_literal(){
+  char * carac;
+  char * tmp = "";
+  int i;
+  while((carac = strpbrk(yylval_string_numb,"<>")) != NULL){
+    switch(carac[0]){
+    case '<':
+      tmp = yylval_string_numb;
+      i = carac - yylval_string_numb;
+      yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&lsaquo;");
+      break;
+    case '>':
+      tmp = yylval_string_numb;
+      i = carac - yylval_string_numb;
+      yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&rsaquo;");
+      break;
+    default :
+      printf("erreur \n");
+      break;
+    }
+  }
+  free(tmp);
+  free(carac);
+  ajout_balise_class("string_literal",yylval_string_numb);
+}
 
 void ajout_enTete_html (char * language, char * title){
   char *a ="<head><meta charset=\"utf-8\" lang=\"",
