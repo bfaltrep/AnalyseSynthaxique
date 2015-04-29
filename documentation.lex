@@ -22,7 +22,11 @@ ES  (\\([\'\"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 WS  [ \t\v\n\f]
 
 %{
-# define _GNU_SOURCE
+  
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+  
 #include <stdio.h>
 #include <string.h>
 #include "y.tab.h"
@@ -59,43 +63,40 @@ static int check_type(void);
 "/*"                    { comment(); }
 "//"                    { preproc_commentline(1,""); }
 
-"auto"					{ return(AUTO); }
-"break"					{ return(BREAK); }
-"case"					{ return(CASE); }
-"char"					{ return(CHAR); }
-"const"					{ return(CONST); }
-"continue"				{ return(CONTINUE); }
-"default"				{ return(DEFAULT); }
-"do"					{ return(DO); }
-"double"				{ return(DOUBLE); }
-"else"					{ return(ELSE); }
-"enum"					{ return(ENUM); }
-"extern"				{ return(EXTERN); }
-"float"					{ return(FLOAT); }
-
-"for"					{ return(FOR); }
-"goto"					{ return(GOTO); }
-"if"					{ return(IF); }
-"inline"				{ return(INLINE); }
-"int"					{ return(INT); }
-
-"long"					{ return(LONG); }
-"register"				{ return(REGISTER); }
-"restrict"				{ return(RESTRICT); }
-"return"				{ return(RETURN); }
-"short"					{ return(SHORT); }
-"signed"				{ return(SIGNED); }
-"sizeof"				{ return(SIZEOF); }
-"static"				{ return(STATIC); }
-"struct"				{ return(STRUCT); }
-"switch"				{ return(SWITCH); }
-"typedef"				{ return(TYPEDEF); }
-"union"					{ return(UNION); }
-
-"unsigned"				{ return(UNSIGNED); }
-"void"					{ return(VOID); }
-"volatile"				{ return(VOLATILE); }
-"while"					{ return(WHILE); }
+"auto"			{ return(AUTO); }
+"break"			{ return(BREAK); }
+"case"			{ return(CASE); }
+"char"			{ return(CHAR); }
+"const"			{ return(CONST); }
+"continue"		{ return(CONTINUE); }
+"default"		{ return(DEFAULT); }
+"do"			{ return(DO); }
+"double"		{ return(DOUBLE); }
+"else"			{ return(ELSE); }
+"enum"			{ return(ENUM); }
+"extern"		{ return(EXTERN); }
+"float"			{ return(FLOAT); }
+"for"			{ return(FOR); }
+"goto"			{ return(GOTO); }
+"if"			{ return(IF); }
+"inline"		{ return(INLINE); }
+"int"			{ return(INT); }
+"long"			{ return(LONG); }
+"register"		{ return(REGISTER); }
+"restrict"		{ return(RESTRICT); }
+"return"		{ return(RETURN); }
+"short"			{ return(SHORT); }
+"signed"		{ return(SIGNED); }
+"sizeof"		{ return(SIZEOF); }
+"static"		{ return(STATIC); }
+"struct"		{ return(STRUCT); }
+"switch"		{ return(SWITCH); }
+"typedef"	        { return(TYPEDEF); }
+"union"			{ return(UNION); }
+"unsigned"		{ return(UNSIGNED); }
+"void"			{ return(VOID); }
+"volatile"	        { return(VOLATILE); }
+"while"		        { return(WHILE); }
 "_Alignas"              { return ALIGNAS; }
 "_Alignof"              { return ALIGNOF; }
 "_Atomic"               { return ATOMIC; }
@@ -108,19 +109,19 @@ static int check_type(void);
 "_Thread_local"         { return THREAD_LOCAL; }
 "__func__"              { return FUNC_NAME; }
 
-{L}{A}*					{ yylval_char = strcpy(yylval_char, yytext); return check_type();
+{L}{A}*			{ yylval_char = strcpy(yylval_char, yytext); return check_type();
       }
 
-{HP}{H}+{IS}?				        { strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
-{NZ}{D}*{IS}?				        { strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
-"0"{O}*{IS}?				        { strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
+{HP}{H}+{IS}?		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
+{NZ}{D}*{IS}?		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
+"0"{O}*{IS}?		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
 {CP}?"'"([^\'\\\n]|{ES})+"'"		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
 
 {D}+{E}{FS}?				{ return F_CONSTANT; }
-{D}*"."{D}+{E}?{FS}?		{ return F_CONSTANT; }
-{D}+"."{E}?{FS}?			{ return F_CONSTANT; }
-{HP}{H}+{P}{FS}?			{ return F_CONSTANT; }
-{HP}{H}*"."{H}+{P}{FS}?		{ return F_CONSTANT; }
+{D}*"."{D}+{E}?{FS}?			{ return F_CONSTANT; }
+{D}+"."{E}?{FS}?        		{ return F_CONSTANT; }
+{HP}{H}+{P}{FS}?	       		{ return F_CONSTANT; }
+{HP}{H}*"."{H}+{P}{FS}?			{ return F_CONSTANT; }
 {HP}{H}+"."{P}{FS}?			{ return F_CONSTANT; }
 
 ({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{ strcpy(yylval_string_numb, yytext); return STRING_LITERAL; }
@@ -147,37 +148,37 @@ static int check_type(void);
 ">="				{ return GE_OP; }
 "=="				{ return EQ_OP; }
 "!="				{ return NE_OP; }
-";"					{ return ';'; }
+";"				{ return ';'; }
 
 ("{"|"<%")			{ return '{'; }
 ("}"|"%>")			{ return '}'; }
 
-","					{ return ','; }
-":"					{ return ':'; }
-"="					{ return '='; }
-"("					{ return '('; }
-")"					{ return ')'; }
+","				{ return ','; }
+":"				{ return ':'; }
+"="				{ return '='; }
+"("				{ return '('; }
+")"				{ return ')'; }
 ("["|"<:")			{ return '['; }
 ("]"|":>")			{ return ']'; }
-"."					{ return '.'; }
-"&"					{ return '&'; }
-"!"					{ return '!'; }
-"~"					{ return '~'; }
-"-"					{ return '-'; }
-"+"					{ return '+'; }
-"*"					{ return '*'; }
-"/"					{ return '/'; }
-"%"					{ return '%'; }
-"<"					{ return '<'; }
-">"					{ return '>'; }
-"^"					{ return '^'; }
-"|"					{ return '|'; }
-"?"					{ return '?'; }
+"."				{ return '.'; }
+"&"				{ return '&'; }
+"!"				{ return '!'; }
+"~"				{ return '~'; }
+"-"				{ return '-'; }
+"+"				{ return '+'; }
+"*"				{ return '*'; }
+"/"				{ return '/'; }
+"%"				{ return '%'; }
+"<"				{ return '<'; }
+">"				{ return '>'; }
+"^"				{ return '^'; }
+"|"				{ return '|'; }
+"?"				{ return '?'; }
 
-"#"("include"|"INCLUDE")    { preproc_commentline(0,"include"); }
-"#"("define"|"DEFINE")      { preproc_commentline(0,"define"); }
-{WS}					{ /* whitespace separates tokens */ }
-.				  	{ /* discard bad characters */ }
+"#"("include"|"INCLUDE")  	{ preproc_commentline(0,"include"); }
+"#"("define"|"DEFINE")    	{ preproc_commentline(0,"define"); }
+{WS}			        { /* whitespace separates tokens */ }
+.				{ /* discard bad characters */ }
 
 %%
 
@@ -240,9 +241,8 @@ void lecture_ecriture_doxy(void)
        }
        else if(c == '\\'){
           while((c=input()) != ' '){
-             //fprintf(flot_html2, "%c", c);
-             asprintf(lect,"%s",yytext);
-             
+	    //fprintf(flot_html2, "%c", c);
+	    asprintf(&lect,"%s",yytext);             
           }
           if(strcmp(lect, "brief")==0){
              printf("on est dans brief\n");

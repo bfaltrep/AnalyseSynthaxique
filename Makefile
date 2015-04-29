@@ -1,6 +1,6 @@
 
-LDLIBS=-ly -lfl
-CFLAGS= -Werror -g -Wall
+LDLIBS=-ly -lfl -lm
+CFLAGS=  -g -Wall -Werror -D_GNU_SOURCE
 
 
 YACC=bison -d -v
@@ -19,5 +19,5 @@ txt :
 	emacs index.html style.css script.js documentation.html txt.c &
 
 clean:
-	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css *.js
+	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css *.js ./pile/*~ ./pile/*.o ./list/*~ ./list/*.o 
 

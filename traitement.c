@@ -58,18 +58,7 @@ void accolade_ouvrant(){
   asprintf(&tmp,"{" );
   stack_push(variables,tmp);
 }
-/*
-void condition_saut_ligne(){
-  if(bool_cond){
-    bool_cond = 0;
-    newline(indentation+1);
-  }
-  else{
-    indentation++;
-    newline(indentation);
-  }
-}
-*/
+
 void accolade_fermant(){
   //retirer une tabulation avant d'écrire l'accolade
   int size = strlen("&nbsp")*sizeof(char)*4;
@@ -89,6 +78,21 @@ void accolade_fermant(){
   }
   stack_pop(variables);
 }
+
+char * retrouverVariable(char * nom){
+  char * surnom = stack_inside_variable(variables,nom);
+  if(surnom == NULL){
+    //message retiré car pose des problèmes pour les fonctions importées par des includes.
+    /*
+      char * tmp;
+      asprintf(&tmp,"%s%s","syntax error. variable undeclared : ",nom);
+      yyerror(tmp);
+      free(tmp);*/
+    return "noname";
+  }
+  return surnom;
+}
+
 
 /*
   ajoute le nouveau nom de variable dans la liste, dans la pile et dans le fichier javascript
