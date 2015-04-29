@@ -9,7 +9,7 @@ int main(){
   list_insert(l, "world");
   list_insert(l, "and");
   list_insert(l, "co");
-  
+  list_print(l);
   printf("inside hello ? %d\n",list_inside(l,"hello"));
   
   printf("size : %d. Attendu 4.\n",list_size(l));
@@ -20,13 +20,15 @@ int main(){
   list_inside(l,"hello");
   printf("size : %d. Attendu 5.\n",list_size(l));
   list_delete(l,4);
+  
   printf("size : %d. Attendu 4.\n",list_size(l));
   printf("vide ? %s\n",list_empty(l)?"oui":"non");
+  list_print(l);
   printf("inside world ? %d\n",list_inside(l,"world"));
   printf("inside tutu ? %d\n",list_inside(l,"tutu"));
   
-  list_delete(l,0);list_delete(l,0);list_delete(l,0);list_delete(l,0);
-  printf("size : %d. Attendu 0.\n",list_size(l));
+  list_delete(l,0);list_delete(l,0);list_delete(l,0);
+  printf("size : %d. Attendu 1.\n",list_size(l));
   printf("vide ? %s\n",list_empty(l)?"oui":"non");
   list_destroy(l);
 }

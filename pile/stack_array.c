@@ -2,12 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
+#include <string.h>
 
 void stack_resize(stack s);
 int stack_full(stack s);
 
 #define SIZE_INIT 10
-
 
 struct stack_t{
   void** tab;
@@ -28,6 +29,10 @@ stack stack_create(void){
 
 /* destroy a stack */
 void stack_destroy(stack s){
+  int i = 0;
+  for(; i <= s->head ; i++){
+    free(s->tab[i]);
+  }
   free(s->tab);
   free(s);
 }
@@ -56,10 +61,13 @@ void * stack_top(stack s){
 /* pop an element off of the stack.
    The stack must not be empty (as reported by stack_empty()) */
 void stack_pop(stack s){
-  if(!stack_empty(s))
+  if(!stack_empty(s)){
+    free(s->tab[s->head]);
     s->head--;
-  else
+  }
+  else{
     printf("Empty stack, can't pop.\n");
+  }
 }
 
 int stack_full(stack s){
@@ -91,4 +99,29 @@ int stack_inside(stack s, void * object){
     }
   }
   return -1;
+}
+
+char * stack_inside_variable(stack s, void * object){
+  int i = s->head;
+  for(; i >= 0 ; i--){
+    int n = log10(strtol(((char*)s->tab[i]),NULL,0)) + 1;
+    if(strtol(((char*)s->tab[i]),NULL,0) == 0){
+      n = 0;
+    }
+    //printf("%d, %s, %s et %s\n",s->head+1,(char*)s->tab[i],(char*)s->tab[i]+n, (char*)object); //TMP
+    fflush(stdout);
+    if(strcmp((s->tab[i]+n),object) == 0){
+      return s->tab[i];
+    }
+  }
+  return NULL;
+}
+
+void stack_print(stack s){
+  printf("\n");
+  int i = 0;
+  for(; i <= s->head ; i++){
+    printf(" %d %s -",i,(char*)s->tab[i]);
+  }
+  printf("\n");
 }
