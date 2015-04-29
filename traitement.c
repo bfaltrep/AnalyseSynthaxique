@@ -38,6 +38,7 @@ int create_files(){
    flot_html = fopen("index.html","w+");
    flot_css = fopen("style.css","w+");
    flot_js = fopen("script.js","w+");
+   flot_html2 = fopen("documentation.html", "w+");
 
    //html
    buf = "<!DOCTYPE html><html>";
@@ -63,8 +64,9 @@ int create_files(){
 
 void finish(){
   char * tmp = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
-  fclose(flot_html2);
+  
   fprintf(flot_html,"%s",tmp);
+  fclose(flot_html2);
   fclose(flot_js);
   fclose(flot_html); 
   fclose(flot_css);

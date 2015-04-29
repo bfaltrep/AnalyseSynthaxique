@@ -22,6 +22,7 @@ ES  (\\([\'\"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 WS  [ \t\v\n\f]
 
 %{
+   # define _GNU_SOURCE
 #include <stdio.h>
 #include <string.h>
 #include "y.tab.h"
@@ -60,9 +61,11 @@ void reecrire_yylval_char (){
 %x COMMDOXY
 
 %%
-"/**" | "/*!"           { lecture_ecriture_doxy(); }
+"/**"                   { lecture_ecriture_doxy(); }
+"/*!"                   { lecture_ecriture_doxy(); }
 
 "/*"                    { comment(); }
+
 "//"                    { comment_line(); }
 
 "auto"					{ ajout_balise_class("key_word",yytext); return(AUTO); }
@@ -238,40 +241,36 @@ static void comment(void)
 
 void lecture_ecriture_doxy(void)
 {
-    int c;
-    flot_html2 = fopen("documentation.html","w+");
-    lect="";
+   int c;
     
     while ((c = input()) != 0){
        if(c == '*'){
           c=input();
           if(c == '/')
              return;
-          else if(c == '\\'){
-             while((c=input()) != ' '){
-                fprintf(flot_html2, "%c", c);
-                sprintf(lect,"%s%c",lect,c);
-                lect=strcat(lect, c);
+       }
+       else if(c == '\\'){
+          while((c=input()) != ' '){
+             //fprintf(flot_html2, "%c", c);
+             asprintf(lect,"%s",yytext);
+             
+          }
+          if(strcmp(lect, "brief")==0){
+             printf("on est dans brief\n");
+          }
+          else if(strcmp(lect, "label")==0){
+             printf("on est dans label\n");
+          }
+          else if(strcmp(lect, "param")==0){
+             printf("on est dans param\n");
+          }
+          else if(strcmp(lect, "ref")==0){
+             printf("on est dans ref\n");
              }
-             if(strcmp(lect, "brief")==0){
-                printf("on est dans brief\n");
-             }
-             else if(strcmp(lect, "label")==0){
-                printf("on est dans label\n");
-             }
-             else if(strcmp(lect, "param")==0){
-                printf("on est dans param\n");
-             }
-             else if(strcmp(lect, "ref")==0){
-                printf("on est dans ref\n");
-             }
-             else if(strcmp(lect, "return")==0){
-                printf("on est dans return\n");
-             }
+          else if(strcmp(lect, "return")==0){
+             printf("on est dans return\n");
           }
        }
-       else
-          fprintf(flot_html2, "%c", c);
     }
     yyerror("unterminated comment");
 }

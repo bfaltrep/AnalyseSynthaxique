@@ -15,7 +15,7 @@ documentation.tab.c : documentation.y traitement.h
 
 txt :
 	./documentation < txt.c
-	firefox index.html &
+	firefox index.html documentation.html &
 	emacs index.html style.css script.js documentation.html txt.c &
 
 clean:

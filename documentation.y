@@ -1,5 +1,5 @@
 %{
-  #define _GNU_SOURCE 
+#define _GNU_SOURCE 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -596,6 +596,7 @@ int main (){
   finish();
   stack_destroy(variables);
   list_destroy(variables_name);
+  free(lect);
   free(yylval_char);
   return EXIT_SUCCESS;
 }
