@@ -17,7 +17,7 @@
   void yyerror(const char *s);
   
   //-- var globales
-  
+  char * yytext;
   char * yylval_char;
   char * yylval_string_numb;
   stack variables;
@@ -289,7 +289,7 @@ init_declarator_list
 
 init_declarator
 : declarator '=' {fprintf(flot_html, "=");} initializer
-| declarator
+| declarator {fprintf(flot_html, "-TOTO-");} 
 ;
 
 storage_class_specifier
@@ -397,6 +397,7 @@ alignment_specifier
 : alignas p_ouvrante type_name p_fermante
 | alignas p_ouvrante constant_expression p_fermante
 ;
+
 declarator
 : pointer direct_declarator
 | direct_declarator
@@ -586,12 +587,12 @@ translation_unit
 ;
 external_declaration
 : function_definition
-| declaration
+| declaration {fprintf(flot_html,"-declaration fonction-");}
 ;
 
 function_definition
 : declaration_specifiers declarator declaration_list compound_statement
-| declaration_specifiers declarator compound_statement
+| declaration_specifiers declarator {fprintf(flot_html,"-DEFINITION-");} compound_statement
 ;
 
 declaration_list
