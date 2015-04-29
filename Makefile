@@ -19,8 +19,5 @@ txt :
 	emacs index.html style.css script.js documentation.html txt.c &
 
 clean:
-<<<<<<< HEAD
-	rm -rf *.o documentation.txt documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css
-=======
 	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css *.js
->>>>>>> origin/berenice_test
+
