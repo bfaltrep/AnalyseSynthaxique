@@ -13,3 +13,9 @@ Réferences / liens internes
 \label{marker}
 \ref{marker}
 \pageref{marker}
+
+ordre actégorie MathMl Operateur, Symboles Logique, Symboles, Ensembles
+
+pas de lceil/rceil, sinon, il faut passer par une macro
+pas de symbole html pour \simeq ?
+problème de la racine acrré à gérer
