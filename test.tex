@@ -3,6 +3,7 @@
 \usepackage[francais]{babel}
 \usepackage{xcolor}
 \usepackage{graphicx}
+\usepackage{amsmath,amsfonts,amssymb}
 
 
 \begin{document}
@@ -11,14 +12,15 @@
 
 \section{Mon premier est:}        
 
-Test Caractères spéciaux : $\left[ Crochets \right]$
+Test Caractères spéciaux : [ Crochets ]
 \begin{enumerate}
 \item \textbackslash o/ \textbackslash o/ \textbackslash o/ \textbackslash o/
 \item J'ai oublié de tester \textit{ça} \textbackslash\textbackslash
 \item \underline{Ben} \& Jerry's
 \item Money ! \$\_\$
 \item \{Accolades\}
-\item $\left[ Crochets \right]$
+\item [Crochets]
+\item test !
 \end{enumerate}
 
 \subsection{Mon second ressemble à:}
@@ -36,9 +38,21 @@ Ici ? Test\newline Test2
 Test
 
 Ici ?
+\begin{equation}
+\label{prout}
+x = 2
+\end{equation}
 
+Dans l'equation~\eqref{prout}, blabla
 
-Ou encore là ?
+\begin{equation*}
+\label{eq:2}
+x = 2
+\end{equation*}
+
+Dans l'equation~\eqref{eq:2}, blabla \(f(x) = 0 \iff x = 1\) j'ai fini cette equation qui sort de nulle part ! :)  C'est fou comme on revient toujours à la ligne !
+
+Ou encore là ? \\Sauf quand on le précise :p
 
 \begin{itemize}
 \item PIOU PIOU
@@ -63,7 +77,7 @@ A droite ... & A gauche ... & Au centre ! \\
 
 \subsubsection{Mon tout est un:}
 Je re-re-test tout ici !
-\includegraphics{Amel.jpg}
+\includegraphics{Mini_Amel.png}
 JZHGEFIUZHJ
 
 \begin{tabular}{cccc}
