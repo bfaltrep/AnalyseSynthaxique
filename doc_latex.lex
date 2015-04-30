@@ -28,7 +28,8 @@ queue q;
 %s TAB
 %s FAT ITALIC UNDERLINE COLOR COMMENT
 %s SECTION SUBSECTION SUBSUBSECTION
-%s EQUATION MATH_ML
+%s EQUATION
+%x MATH_ML
 %x LAB
 %x PARAMTAB
 %x COLOR1
@@ -71,7 +72,75 @@ queue q;
 <LAB>"}"                 {yy_pop_state(); fprintf(flot_html,")</t>"); }
 
 "\\("|"$"|"\\begin{math}"  {yy_push_state(MATH_ML); return(BEGIN_MATH_ML);}
-<MATH_ML>"\\)"|"$"|"\\end{math}"   {yy_pop_state(); return(END_MATH_ML);}
+<MATH_ML>"\\)"|"$"|"\\end{math}"   {yy_pop_state(); ;return(END_MATH_ML);}
+
+<MATH_ML>[[:alpha:]]+    {fprintf(flot_html,"<mi>%s</mi>",yytext);}
+<MATH_ML>[[:digit:]]+    {fprintf(flot_html,"<mn>%s</mn>",yytext);}
+<MATH_ML>"!"             {fprintf(flot_html,"!");}
+<MATH_ML>[[:blank:]]+    {fprintf(flot_html," ");}
+
+<MATH_ML>"^"             {fprintf(flot_html,"<sup>");}
+<MATH_ML>"_"             {fprintf(flot_html,"<sub>");}
+<MATH_ML>"\\frac{"       {fprintf(flot_html,"<mfrac><mrow>");}
+<MATH_ML>"}{"            {fprintf(flot_html,"</mrow><mrow>");}
+
+<MATH_ML>"{"             {fprintf(flot_html,"<mrow>");}
+<MATH_ML>"}"             {fprintf(flot_html,"</mrow>");}
+
+<MATH_ML>"("             {fprintf(flot_html,"<mrow><mo>(</mo><mrow>");}
+<MATH_ML>")"             {fprintf(flot_html,"</mrow><mo>)</mo></mrow>");}
+<MATH_ML>"-"             {fprintf(flot_html,"<mo>&minus;</mo>");}
+<MATH_ML>"\\times"       {fprintf(flot_html,"<mo>&times;</mo>");}
+<MATH_ML>"\\div"             {fprintf(flot_html,"<mo>&divide;</mo>");}
+<MATH_ML>"\\neq"             {fprintf(flot_html,"<mo>&ne;</mo>");}
+<MATH_ML>"\\equiv"             {fprintf(flot_html,"<mo>&equiv;</mo>");}
+<MATH_ML>"\\sim"             {fprintf(flot_html,"<mo>&sim;</mo>");}
+<MATH_ML>"\\approx"             {fprintf(flot_html,"<mo>&asymp;</mo>");}
+<MATH_ML>"<"             {fprintf(flot_html,"<mo>&lt;</mo>");}
+<MATH_ML>"\\ll"             {fprintf(flot_html,"<mo>&lt;&lt;</mo>");}
+<MATH_ML>"\\leq"             {fprintf(flot_html,"<mo>&le;</mo>");}
+<MATH_ML>">"             {fprintf(flot_html,"<mo>&gt;</mo>");}
+<MATH_ML>"\\gg"             {fprintf(flot_html,"<mo>&gt;&gt;</mo>");}
+<MATH_ML>"\\geq"             {fprintf(flot_html,"<mo>&ge;</mo>");}
+<MATH_ML>"\\pm"             {fprintf(flot_html,"<mo>&plusmn;</mo>");}
+<MATH_ML>"\\cdot"             {fprintf(flot_html,"<mo>.</mo>");}
+<MATH_ML>"\\cdots"             {fprintf(flot_html,"<mo>...</mo>");}
+<MATH_ML>"\|"            {fprintf(flot_html,"<mo>||</mo>");}
+<MATH_ML>":"            {fprintf(flot_html,"<mo>:</mo>");}
+<MATH_ML>"\%"            {fprintf(flot_html,"<mo>%%</mo>");}
+<MATH_ML>"+"|"="|"/"        {fprintf(flot_html,"<mo>%s</mo>",yytext);}
+
+<MATH_ML>"\\neg"             {fprintf(flot_html,"<mo>&not</mo>;");}
+<MATH_ML>"\\wedge"             {fprintf(flot_html,"<mo>&and;</mo>");}
+<MATH_ML>"\\vee"             {fprintf(flot_html,"<mo>&or;</mo>");}
+<MATH_ML>"\\oplus"             {fprintf(flot_html,"<mo>&oplus;</mo>");}
+<MATH_ML>"\\Rightarrow"             {fprintf(flot_html,"<mo>&rArr;</mo>");}
+<MATH_ML>"\\Leftarrow"             {fprintf(flot_html,"<mo>&lArr;</mo>");}
+<MATH_ML>"\\Leftrightarrow"             {fprintf(flot_html,"<mo>&hArr;</mo>");}
+<MATH_ML>"\\exists"             {fprintf(flot_html,"<mo>&exist;</mo>");}
+<MATH_ML>"\\forall"             {fprintf(flot_html,"<mo>&forall;</mo>");}
+<MATH_ML>"\\&"                {fprintf(flot_html,"<mo>&amp;</mo>");}
+
+<MATH_ML>"\\cap"                {fprintf(flot_html,"<mo>&cap;</mo>");}
+<MATH_ML>"\\cup"                {fprintf(flot_html,"<mo>&cup;</mo>");}
+<MATH_ML>"\\supset"                {fprintf(flot_html,"<mo>&sup;</mo>");}
+<MATH_ML>"\\subset"                {fprintf(flot_html,"<mo>&sub;</mo>");}
+<MATH_ML>"\\emptyset"                {fprintf(flot_html,"<mo>&empty;</mo>");}
+<MATH_ML>"\\in"                {fprintf(flot_html,"<mo>&isin;</mo>");}
+<MATH_ML>"\\notin"                {fprintf(flot_html,"<mo>&notin;</mo>");}
+
+<MATH_ML>"\\prime"                {fprintf(flot_html,"<mo>&prime;</mo>");}
+<MATH_ML>"\\rfloor"                {fprintf(flot_html,"<mo>&rfloor;</mo>");}
+<MATH_ML>"\\lfloor"                {fprintf(flot_html,"<mo>&lfloor;</mo>");}
+<MATH_ML>"\\infty"                {fprintf(flot_html,"<mo>&infin;</mo>");}
+
+<MATH_ML>"\\varnothing"                {fprintf(flot_html,"<mo>&#2205;</mo>");}
+
+
+
+
+
+
 
 "\\textbackslash "        {fprintf(flot_html,"\\"); printf("\\"); }
 "\\textbackslash\\textbackslash" {fprintf(flot_html,"\\\\"); printf("\\\\"); }

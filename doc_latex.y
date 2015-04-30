@@ -126,7 +126,7 @@ line_: NEW_LINE {fprintf(flot_html,"</tr><tr>");}
 equation: BEGIN_EQUATION {fprintf(flot_html,"<p style=\"text-indent:2em\">");} body END_EQUATION {fprintf(flot_html,"</p>");}
 ;
 
-math: BEGIN_MATH_ML {fprintf(flot_html,"<span lang=\"latex\">");} body END_MATH_ML {fprintf(flot_html,"</span>");}
+math: BEGIN_MATH_ML {fprintf(flot_html,"<math display=\"inline\">");}  END_MATH_ML {fprintf(flot_html,"</sub></sup></mrow></math>");}
 ;
 
 
