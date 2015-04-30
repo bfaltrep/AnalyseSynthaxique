@@ -135,7 +135,7 @@ void nommerVariable(char * nom){
 
 /*
  Fonction récupérée sur le site developpez.com/articles/libc/string
-
+ permet de remplacer une chaine de caractère par une autre chaine, dans une chaine.
 */
 char *str_remplace (const char *s, unsigned int start, unsigned int lenght, const char *ct)
 {
@@ -163,19 +163,19 @@ char *str_remplace (const char *s, unsigned int start, unsigned int lenght, cons
 
 void string_literal(){
   char * carac;
-  char * tmp = "";
+  char * tmp = NULL;
   int i;
   while((carac = strpbrk(yylval_string_numb,"<>")) != NULL){
     switch(carac[0]){
     case '<':
       tmp = yylval_string_numb;
       i = carac - yylval_string_numb;
-      yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&lsaquo;");
+      yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&lt;");
       break;
     case '>':
       tmp = yylval_string_numb;
       i = carac - yylval_string_numb;
-      yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&rsaquo;");
+      yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&gt;");
       break;
     default :
       printf("erreur \n");

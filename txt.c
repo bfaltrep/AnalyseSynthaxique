@@ -1,6 +1,7 @@
+#include <stdio.h>
+#include "test5h"
 
-
-
+#define CONSTANTE 52
 int i;
 
 /*
