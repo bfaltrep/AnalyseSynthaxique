@@ -27,6 +27,7 @@ void yyerror(const char *s);
 %token BEGIN_TABULAR PARAM_TABULAR END_TABULAR
 %token NEW_CASE_L NEW_CASE_C NEW_CASE_R NEW_CASE NEW_LINE
 %token BEGIN_EQUATION END_EQUATION
+%token BEGIN_MATH_ML END_MATH_ML
 %token LABEL
 %token FORME_FAT FORME_ITALIC FORME_UNDERLINE
 %token BEG_PARAGRAPH END_PARAGRAPH
@@ -43,6 +44,7 @@ body: BODY {fprintf(flot_html,yylval_char); } body
 | enumerate body
 | tabular body
 | equation body
+| math body
 | LABEL {fprintf(flot_html,"<t class=\"label_equation\">\(");} body
 | FORME_FAT {fprintf(flot_html,"<b>");} body
 | FORME_ITALIC {fprintf(flot_html,"<i>");} body
@@ -124,7 +126,8 @@ line_: NEW_LINE {fprintf(flot_html,"</tr><tr>");}
 equation: BEGIN_EQUATION {fprintf(flot_html,"<p style=\"text-indent:2em\">");} body END_EQUATION {fprintf(flot_html,"</p>");}
 ;
 
-
+math: BEGIN_MATH_ML {fprintf(flot_html,"<span lang=\"latex\">");} body END_MATH_ML {fprintf(flot_html,"</span>");}
+;
 
 
 %%

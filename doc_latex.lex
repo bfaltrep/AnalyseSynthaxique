@@ -28,9 +28,8 @@ queue q;
 %s TAB
 %s FAT ITALIC UNDERLINE COLOR COMMENT
 %s SECTION SUBSECTION SUBSUBSECTION
-%s MAT
-%s EQUATION
-%s LAB
+%s EQUATION MATH_ML
+%x LAB
 %x PARAMTAB
 %x COLOR1
 %x IMAGE
@@ -45,7 +44,7 @@ queue q;
 "\\usepackage"("["[[:alnum:],]*"]")*("{"[[:alnum:],]*"}")* {;}
 
 "\\includegraphics"[[:alnum:]\[\]]*"{" {yy_push_state(IMAGE);}
-<IMAGE>[[:alnum:]._]+"}"   {printf("%s",yytext);yytext[yyleng-1]='\0';printf("%s",yytext);fprintf(flot_html,"<p><a href=%s><img src=%s ></p>",yytext,yytext);yy_pop_state();}
+<IMAGE>[[:alnum:]._]+"}"   {printf("%s",yytext);yytext[yyleng-1]='\0';printf("%s",yytext);fprintf(flot_html,"<p><a href=%s><img src=%s></a></p>",yytext,yytext);yy_pop_state();}
 
 
 "\\begin{itemize}"       {return(BEGIN_ITEMIZE); }
@@ -65,19 +64,21 @@ queue q;
 <PARAMTAB>"\{"[lrc]+"\}" {yy_pop_state();yy_push_state(TAB);tabular_param(param_tabular,yytext,(int)yyleng);index_param_tabular=0;return param(); }
 
 
-"\\begin{equation}"      {yy_push_state(EQUATION); return(BEGIN_EQUATION); }
-"\\end{equation}"        {yy_pop_state(); return(END_EQUATION); }
+"\\begin{equation}"|"\\begin{equation*}"|"$$"      {yy_push_state(EQUATION); return(BEGIN_EQUATION); }
+<EQUATION>"\\end{equation}"|"\\end{equation*}"|"$$"        {yy_pop_state(); return(END_EQUATION); }
 
 <EQUATION>"\\label{"     {yy_push_state(LAB); return(LABEL); }
 <LAB>"}"                 {yy_pop_state(); fprintf(flot_html,")</t>"); }
-  
+
+"\\("|"$"|"\\begin{math}"  {yy_push_state(MATH_ML); return(BEGIN_MATH_ML);}
+<MATH_ML>"\\)"|"$"|"\\end{math}"   {yy_pop_state(); return(END_MATH_ML);}
 
 "\\textbackslash "        {fprintf(flot_html,"\\"); printf("\\"); }
 "\\textbackslash\\textbackslash" {fprintf(flot_html,"\\\\"); printf("\\\\"); }
 "\\{"                    {fprintf(flot_html,"{"); printf("{"); }
 "\\}"                    {fprintf(flot_html,"}"); printf("}"); }
-"$\\left[ "               {yy_push_state(MAT);fprintf(flot_html,"["); printf("["); }
-<MAT>" \\right]$"         {yy_pop_state();fprintf(flot_html,"]"); printf("]"); }
+"\["                      {fprintf(flot_html,"["); printf("["); }
+"\]"                      {fprintf(flot_html,"]"); printf("]"); }
 "\\&"                    {fprintf(flot_html,"&"); printf("&"); }
 "\\$"                    {fprintf(flot_html,"$"); printf("$"); }
 "\\_"                    {fprintf(flot_html,"_"); printf("_"); }
