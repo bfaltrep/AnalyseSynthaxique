@@ -18,6 +18,7 @@ void g();
   * \return aie
  */
 int main(void){
+  //contient des < > qui ne sont pas traités par html
   char * c = "chocolat <chocolat> !";
   //on exploite les deux fonctions avant de retourner
   if(i == 0){
