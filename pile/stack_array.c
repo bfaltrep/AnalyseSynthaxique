@@ -108,13 +108,14 @@ char * stack_inside_variable(stack s, void * object){
     if(strtol(((char*)s->tab[i]),NULL,0) == 0){
       n = 0;
     }
+    //printf("%d, %s, %s et %s\n",s->head+1,(char*)s->tab[i],(char*)s->tab[i]+n, (char*)object); //TMP
+    fflush(stdout);
     if(strcmp((s->tab[i]+n),object) == 0){
       return s->tab[i];
     }
   }
   return NULL;
 }
-
 
 void stack_print(stack s){
   printf("\n");
@@ -123,14 +124,4 @@ void stack_print(stack s){
     printf(" %d %s -",i,(char*)s->tab[i]);
   }
   printf("\n");
-}
-
-char * stack_inside_after(stack s, void * object){
-  int i = s->head-1;
-  for(; i >= 0 ; i--){
-    if(strcmp(s->tab[i], object) == 0){
-      return s->tab[i];
-    }
-  }
-  return NULL;
 }

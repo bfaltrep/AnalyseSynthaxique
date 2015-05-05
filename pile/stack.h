@@ -39,14 +39,6 @@ extern int stack_inside(stack s, void * object);
 */
 extern char * stack_inside_variable(stack s, void * object);
 
-/*
-  return the object push inside s after the last 'object' push. If not 'object' find or it's the last object : return NULL;
-*/
-extern char * stack_inside_after(stack s, void * object);
-
-/*
-  used tu debug.
-*/
+//TMP
 void stack_print(stack s);
-
 #endif

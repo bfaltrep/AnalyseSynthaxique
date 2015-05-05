@@ -14,13 +14,6 @@ void ajout_balise_class(char * type, char * contenu){
   fprintf(flot_html, "%s%s%s%s%s", a, type, b, contenu, c);
 }
 
-void ajout_balise_id(char * type, char * contenu){
-  char * a = "\n<span id=\"",
-    *b = "\">",
-    *c = "</span>\n";
-  fprintf(flot_html, "%s%s%s%s%s", a, type, b, contenu, c);
-}
-
 void ajout_div( char * class){
   fprintf(flot_html,"%s%s%s","<div class=\"",class,"\" >");
 }
@@ -170,7 +163,6 @@ char *str_remplace (const char *s, unsigned int start, unsigned int lenght, cons
 
 void string_literal(){
   char * carac;
-  //sert a nettoyer la memoire entre les différents malloc
   char * tmp = NULL;
   int i;
   while((carac = strpbrk(yylval_string_numb,"<>")) != NULL){
@@ -179,22 +171,20 @@ void string_literal(){
       tmp = yylval_string_numb;
       i = carac - yylval_string_numb;
       yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&lt;");
-      free(tmp);
       break;
     case '>':
       tmp = yylval_string_numb;
       i = carac - yylval_string_numb;
       yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&gt;");
-      free(tmp);
       break;
     default :
       printf("erreur \n");
       break;
     }
   }
+  free(tmp);
   free(carac);
   ajout_balise_class("string_literal",yylval_string_numb);
-  free(yylval_string_numb);
 }
 
 void ajout_enTete_html (char * language, char * title){

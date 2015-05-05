@@ -40,7 +40,7 @@ void ajout_regles_css( char * selecteurs, char * regles);
 void ajout_enTete_html (char * language, char * title);
 
 void ajout_balise_class(char * type, char * contenu);
-void ajout_balise_id(char * type, char * contenu);
+//void ajout_balise_id(char * type, char * contenu);
 
 //fonctions de traitement de cas 
 void newline();

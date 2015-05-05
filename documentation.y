@@ -15,9 +15,8 @@
 #include "pile/stack.h"
 #include "list/list.h"
   
-  extern int yylex();
-  extern int yylex_destroy();
-  
+  int yylex();
+
   //-- locals functions
   
   void yyerror(const char *s);
@@ -108,7 +107,7 @@ primary_expression
 ;
 
 constant
-: I_CONSTANT { ajout_balise_class("number",yylval_string_numb); free(yylval_string_numb);}
+: I_CONSTANT { ajout_balise_class("number",yylval_string_numb);}
 | F_CONSTANT
 | ENUMERATION_CONSTANT /* after it has been defined as such */
 ;
@@ -295,7 +294,7 @@ init_declarator_list
 
 init_declarator
 : declarator '=' {fprintf(flot_html, "=");} initializer
-| declarator 
+| declarator {fprintf(flot_html, "-TOTO-");} 
 ;
 
 storage_class_specifier
@@ -413,7 +412,7 @@ direct_declarator
 : IDENTIFIER {/*declaration de variables*/
   nommerVariable(yylval_char);
   char * tmp = ((char *)stack_top(variables));
-  asprintf(&tmp,"var d %s",tmp);
+  asprintf(&tmp,"var declaration %s",tmp);
   ajout_balise_class(tmp,yylval_char);
   free(tmp);
   }
@@ -593,7 +592,7 @@ translation_unit
 ;
 external_declaration
 : function_definition
-| declaration 
+| declaration {fprintf(flot_html,"-declaration fonction-");}
 ;
 
 function_definition
@@ -606,10 +605,6 @@ declaration_list
 | declaration_list declaration
 ;
 
-
-
-
-
 %%
 
 void yyerror(const char *s){
@@ -620,28 +615,21 @@ void yyerror(const char *s){
 int main (){
   //initialiser
   yylval_char = malloc(sizeof(char)*50);
-  create_files("documentation_c");
-  
+  yylval_string_numb = malloc(sizeof(char)*50);
+  create_files("documentation");
   variables = stack_create();
-  //créer un fond de pile pour traiter distinction declaration/definition
-  char * tmp;
-  asprintf(&tmp,".");
-  stack_push(variables,tmp);
-  free(tmp);
-  
   variables_name = list_create();
   
   //parcourir
   yyparse();
   
-  printf("\n\n\nt\n\n\n");//TMP
+  printf("\n\nt\n\n\n");//TMP
   //nettoyer avant de fermer.
   finish();
   stack_destroy(variables);
   list_destroy(variables_name);
-  
   free(lect);
   free(yylval_char);
-  yylex_destroy();
+  free(yylval_string_numb);
   return EXIT_SUCCESS;
 }
