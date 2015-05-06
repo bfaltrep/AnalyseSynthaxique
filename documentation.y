@@ -95,10 +95,7 @@ static_
 primary_expression
 : IDENTIFIER {/*utilisation de variables*/
   char * surnom = retrouverVariable(yylval_char);
-  char * nom;
-  asprintf(&nom,"var %s",surnom);
-  ajout_balise_class(nom,yylval_char);
-  free(nom);
+  ajout_balise_variable(surnom,yylval_char);
 }
 | constant
 | string
@@ -269,8 +266,8 @@ constant_expression
 ;
 
 declaration
-: declaration_specifiers point_virgule
-| declaration_specifiers init_declarator_list point_virgule
+: declaration_specifiers point_virgule 
+| declaration_specifiers init_declarator_list point_virgule 
 | static_assert_declaration
 ;
 
@@ -294,7 +291,7 @@ init_declarator_list
 
 init_declarator
 : declarator '=' {fprintf(flot_html, "=");} initializer
-| declarator {fprintf(flot_html, "-TOTO-");} 
+| declarator {/*fprintf(flot_html,"-fin declarator-");stack_print(variables);*/} 
 ;
 
 storage_class_specifier
@@ -426,7 +423,7 @@ direct_declarator
 | direct_declarator c_ouvrant type_qualifier_list assignment_expression c_fermant
 | direct_declarator c_ouvrant type_qualifier_list c_fermant
 | direct_declarator c_ouvrant assignment_expression c_fermant
-| direct_declarator p_ouvrante parameter_type_list p_fermante
+| direct_declarator p_ouvrante parameter_type_list p_fermante { fprintf(flot_html, "-fonction-"); }
 | direct_declarator parentheses 
 | direct_declarator p_ouvrante identifier_list p_fermante
 ;
@@ -592,12 +589,16 @@ translation_unit
 ;
 external_declaration
 : function_definition
-| declaration {fprintf(flot_html,"-declaration fonction-");}
+| declaration {
+  fseek(flot_html,-(strlen("<br><br>")),SEEK_CUR);
+  char * nom_var = stack_inside_after(variables,".");
+  fprintf(flot_html,"<span id=\"%s\"></span><br><br>",nom_var);
+ }
 ;
 
 function_definition
 : declaration_specifiers declarator declaration_list compound_statement
-| declaration_specifiers declarator {fprintf(flot_html,"-DEFINITION-");} compound_statement
+| declaration_specifiers declarator {fprintf(flot_html,"-%d-DEFINITION-",$2);} compound_statement
 ;
 
 declaration_list
@@ -624,6 +625,7 @@ int main (){
   yyparse();
   
   printf("\n\nt\n\n\n");//TMP
+  
   //nettoyer avant de fermer.
   finish();
   stack_destroy(variables);

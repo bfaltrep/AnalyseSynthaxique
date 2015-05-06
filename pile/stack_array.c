@@ -117,6 +117,16 @@ char * stack_inside_variable(stack s, void * object){
   return NULL;
 }
 
+char * stack_inside_after(stack s, void * object){
+  int i = s->head-1;
+  for(; i >= 0 ; i--){
+    if(strcmp(s->tab[i],object) == 0){
+      return s->tab[i+1];
+    }
+  }
+  return NULL;
+}
+
 void stack_print(stack s){
   printf("\n");
   int i = 0;

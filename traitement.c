@@ -2,20 +2,19 @@
 
 /*Formate et ajoute un bloc associé a des selecteurs dans le css.*/
 void ajout_regles_css( char * selecteurs, char * regles){
-  char *a ="{\n",
-    *b = "}\n\n";
-  fprintf(flot_css,"%s%s%s%s", selecteurs, a, regles, b);
+  fprintf(flot_css,"%s{\n%s}\n\n", selecteurs,regles);
 }
 
 void ajout_balise_class(char * type, char * contenu){
-  char * a = "\n<span class=\"",
-    *b = "\">",
-    *c = "</span>\n";
-  fprintf(flot_html, "%s%s%s%s%s", a, type, b, contenu, c);
+  fprintf(flot_html, "\n<span class=\"%s\">%s</span>\n",type,contenu);
+}
+
+void ajout_balise_variable(char * surnom, char * nom){
+  fprintf(flot_html, "\n<a class=\"var %s\" href=\"#%s\">%s</a>", surnom,surnom, nom);
 }
 
 void ajout_div( char * class){
-  fprintf(flot_html,"%s%s%s","<div class=\"",class,"\" >");
+  fprintf(flot_html,"<div class=\"%s\">",class);
 }
 
 void div_fermante(){
@@ -38,6 +37,7 @@ void tab(){
 }
 
 void p_virgule(){
+  //nettoyer avant l'insertion
   fprintf(flot_html, ";");
   //on ne met pas a la ligne quand on est dans une boucle for
   if(!bool_cond){
@@ -62,10 +62,7 @@ void accolade_ouvrant(){
 void accolade_fermant(){
   //retirer une tabulation avant d'écrire l'accolade
   int size = strlen("&nbsp")*sizeof(char)*4;
-
   fseek(flot_html,-size,SEEK_CUR);
-
-  
   fprintf(flot_html, "</span>}");
   indentation--;
   if(indentation < 0)
@@ -103,7 +100,17 @@ void ajouterVariable(char * nom){
   asprintf(&tmp,nom);
   asprintf(&tmp2,nom);
   list_insert(variables_name,tmp);
+
+  //si on est au niveau d'indentation 0, on est a une déclaration/definition global. On veut donc mettre un point devant pour pouvoir retrouver la decl/def de la variable/fonction
+  if(indentation == 0){
+    char * point;
+    asprintf(&point,"." );
+    stack_push(variables,point);
+  }
   stack_push(variables,tmp2);
+
+
+  
   //fonctionnalité : cliquer sur accolade ouvrante, cache/affiche le contenu
   fprintf(flot_js,"$(\".%s\").hover(function() {\n    $(\".%s\").css(\"background-color\",\"black\");\n    $(\".declaration.%s\").css(\"background-color\",\"blue\");},function() {\n    $(\".%s\").css(\"background-color\",\"initial\");\n    $(\".declaration.%s\").css(\"background-color\",\"initial\");});\n\n",tmp,tmp,tmp,tmp,tmp);
   free(tmp);
@@ -221,14 +228,14 @@ int create_files(char * nom){
   ajout_regles_css(".key_word" ,"color : #FF6600;\n");
   ajout_regles_css(".type_specifier" ,"color : #0099FF;\n");
   ajout_regles_css(".string_literal","color : #DAA520;\n");
-  ajout_regles_css(".var","color : #66AA33;\n");
+  ajout_regles_css(".var","color : #66AA33;\ntext-decoration:none;\n");
   ajout_regles_css(".comment_line","color : #999999;\n");
   ajout_regles_css(".accolade","cursor:pointer;\n");
-
-  //js
-
-  fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
+  ajout_regles_css(".noname","color : white;\n");
   
+  //js
+  fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
+   fprintf(flot_js,"\n$('a[href^=\"#\"]').click(function(){\n    var id = $(this).attr(\"href\");\n    var offset = $(id).offset().top\n    $('html, body').animate({scrollTop: offset}, 'slow');\n    return false; \n});\n\n");
   return 0;
 }
 

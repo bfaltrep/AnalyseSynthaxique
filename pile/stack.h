@@ -35,10 +35,15 @@ extern int stack_size(stack s);
 extern int stack_inside(stack s, void * object);
 
 /*
-  return NULL if object is not inside the stack, else return the object;
+  return NULL if object is not inside the stack, else return the object
 */
 extern char * stack_inside_variable(stack s, void * object);
 
-//TMP
-void stack_print(stack s);
+/*
+  return value of the object pushed after the last 'object'. Do not control if the last pushed into the stack == 'object'
+*/
+extern char * stack_inside_after(stack s, void * object);
+
+
+extern void stack_print(stack s);
 #endif
