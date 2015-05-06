@@ -15,6 +15,7 @@ extern void yyerror(const char *);  /* prints grammar violation message */
  
  
 int param();
+void remplir_queue(queue q, int n, char s);
 void create_tdm();
   
 queue q;
@@ -181,14 +182,15 @@ queue q;
 <SUBSECTION>"}"          {yy_pop_state(); fprintf(flot_html,"</h2>"); }
 <SUBSUBSECTION>"}"       {yy_pop_state(); fprintf(flot_html,"</h3>"); }
 
-<SECTION>.               {yylval_char = strcpy(yylval_char, yytext); queue_push(q,1,yytext); printf(yytext); return(BODY); }
-<SUBSECTION>.            {yylval_char = strcpy(yylval_char, yytext); queue_push(q,2,yytext); printf(yytext); return(BODY); }
-<SUBSUBSECTION>.         {yylval_char = strcpy(yylval_char, yytext); queue_push(q,3,yytext); printf(yytext); return(BODY); }
+<SECTION>.               {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,1,yylval_char[0]); printf(yytext); return(BODY); }
+<SUBSECTION>.            {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,2,yylval_char[0]); printf(yytext); return(BODY); }
+<SUBSUBSECTION>.         {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,3,yylval_char[0]); printf(yytext); return(BODY); }
 
 [\t\v\f\n\r]              {fprintf(flot_html," ");}
 [\t\v\f\n\r][\t\v\f\n\r]+ {fprintf(flot_html,"</p><p style=\"text-indent:2em\">");}
 "\\\\"|"\\newline"        {fprintf(flot_html, "<br>");}
 
+"\\tableofcontents"       {create_tdm(); }
   
 .                         {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
 
@@ -204,6 +206,11 @@ int param(){
     return(NEW_CASE_R);}
 }
 
+void remplir_queue(queue q, int n, char s)
+{
+  queue_push(q,n,s);
+}
+
 void create_tdm()
 {
   while(!queue_empty(q))
@@ -211,20 +218,20 @@ void create_tdm()
       switch(queue_front_val1(q))
 	{
 	case 1:
-	  fprintf(flot_html,queue_front_val2(q));
+	  fprintf(flot_html,"%c",queue_front_val2(q));
 	  break;
 	case 2:
 	  fprintf(flot_html,"<t class=\"subsection\">");
-	  fprintf(flot_html,queue_front_val2(q));
+	  fprintf(flot_html,"%c",queue_front_val2(q));
 	  fprintf(flot_html,"</t>");
 	  break;
 	case 3:
 	  fprintf(flot_html,"<t class=\"subsubsection\">");
-	  fprintf(flot_html,queue_front_val2(q));
+	  fprintf(flot_html,"%c",queue_front_val2(q));
 	  fprintf(flot_html,"</t>");
 	  break;
+	default:fprintf(flot_html,"Erreur de Tdm");
 	  }
       queue_pop(q);
     }
 }
-

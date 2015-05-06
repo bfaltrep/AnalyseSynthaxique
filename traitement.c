@@ -91,8 +91,8 @@ int create_files(char* name_page, char* name_html){
   ajout_regles_css( "td","border: 1px solid black;\n");
   ajout_regles_css( "table","border-collapse: collapse;\n");
   ajout_regles_css( ".label_equation","margin-left: 5em;\n");
-  ajout_regles_css( ".subsection","margin-left: 2em;\n");
-  ajout_regles_css( ".subsubsection","margin-left: 2em;\n");
+  //ajout_regles_css( ".subsection","margin-left: 2em;\n");
+  //ajout_regles_css( ".subsubsection","margin-left: 2em;\n");
   //ajouter regle pour nomfonction+nomvariable avec une pile.
   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
   return 0;
