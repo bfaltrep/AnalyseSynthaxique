@@ -19,8 +19,6 @@ FILE *flot_js;
 FILE * flot_html2;
 
 char * buf;
-char *lect;
-
 
 //globales sont initialisées à 0 donc ok !
 int bool_cond;

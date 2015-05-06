@@ -12,12 +12,13 @@ void g();
 
 
 /**
-  * \brief fonction principale, lancée par l'exécutable
-  * \param a c
-  * \param d
-  * \return aie
+  * \fn int main(int argc, char *argv[])
+  * \brief fonction principale, lancee par l'executable
+  * \param argc contient le nombre d'arguments
+  * \param argv contient la liste des arguments stockee dans un tableau
+  * \return 0 si tout s'est bien passe
  */
-int main(void){
+int main(int argc, char *argv[]){
   char * c = "chocolat <chocolat> !";
   //on exploite les deux fonctions avant de retourner
   if(i == 0){
