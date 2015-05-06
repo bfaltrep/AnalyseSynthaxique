@@ -23,16 +23,17 @@ char * buf;
 //globales sont initialisées à 0 donc ok !
 int bool_cond;
 int indentation;
+int lock;
 
 extern void yyerror(const char *);
 extern char * yylval_char;
 extern char * yylval_string_numb;
 extern stack variables;
 extern list variables_name;
-extern int lock;
+int lock;
 
 int create_files();
-void finish();
+void finish_files();
 
 //fonctions spécifiques à l'ajout dans les fichiers
 void ajout_regles_css( char * selecteurs, char * regles);
@@ -40,7 +41,6 @@ void ajout_enTete_html (char * language, char * title);
 
 void ajout_balise_class(char * type, char * contenu);
 void ajout_balise_variable(char * surnom, char * nom);
-//void ajout_balise_id(char * type, char * contenu);
 
 //fonctions de traitement de cas 
 void new_line();

@@ -193,20 +193,22 @@ void string_literal(){
       tmp = yylval_string_numb;
       i = carac - yylval_string_numb;
       yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&lt;");
+      free(tmp);
       break;
     case '>':
       tmp = yylval_string_numb;
       i = carac - yylval_string_numb;
       yylval_string_numb = str_remplace (yylval_string_numb, i, 1, "&gt;");
+      free(tmp);
       break;
     default :
       printf("erreur \n");
       break;
     }
   }
-  free(tmp);
   free(carac);
   ajout_balise_class("string_literal",yylval_string_numb);
+  free(yylval_string_numb);
 }
 
 void ajout_enTete_html (char * language, char * title){
@@ -250,7 +252,7 @@ int create_files(char * nom){
   return 0;
 }
 
-void finish(){
+void finish_files(){
    
   char * buf = "\n<script src=\"site/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
   fprintf(flot_html,"%s",buf);

@@ -98,6 +98,7 @@ primary_expression
 : IDENTIFIER {/*utilisation de variables*/
   char * surnom = retrouver_variable(yylval_char);
   ajout_balise_variable(surnom,yylval_char);
+  free(yylval_char);
 }
 | constant
 | string
@@ -106,7 +107,7 @@ primary_expression
 ;
 
 constant
-: I_CONSTANT { ajout_balise_class("number",yylval_string_numb);}
+: I_CONSTANT { ajout_balise_class("number",yylval_string_numb); free(yylval_string_numb);}
 | F_CONSTANT
 | ENUMERATION_CONSTANT /* after it has been defined as such */
 ;
@@ -413,7 +414,8 @@ direct_declarator
   char * tmp = ((char *)stack_top(variables));
   asprintf(&tmp,"var declaration %s",tmp);
   ajout_balise_class(tmp,yylval_char);
-  free(tmp);  
+  free(tmp);
+  free(yylval_char);
   }
 | p_ouvrante declarator p_fermante
 | direct_declarator c_ouvrant c_fermant
@@ -638,8 +640,6 @@ void yyerror(const char *s){
 
 int main (){
   //initialiser
-  yylval_char = malloc(sizeof(char)*50);
-  yylval_string_numb = malloc(sizeof(char)*50);
   commandeActuelle = calloc(6, sizeof(*commandeActuelle)); //taille maximale de la longueur des commandes
   create_files("documentation");
   variables = stack_create();
@@ -648,16 +648,13 @@ int main (){
   //parcourir
   yyparse();
   
-  printf("\n\nt\n\n\n");//TMP
+  printf("\n\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir index.html avec votre navigateur. \n\n\n");
   
   //nettoyer avant de fermer.
-  finish();
+  finish_files();
   stack_destroy(variables);
   list_destroy(variables_name);
-  
-  free(yylval_char);
   free(commandeActuelle);
-  free(yylval_string_numb);
   yylex_destroy();
   return EXIT_SUCCESS;
 }

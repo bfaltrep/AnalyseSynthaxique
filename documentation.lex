@@ -113,13 +113,14 @@ static int check_type(void);
 "_Thread_local"         { return THREAD_LOCAL; }
 "__func__"              { return FUNC_NAME; }
 
-{L}{A}*			{ yylval_char = strcpy(yylval_char, yytext); return check_type();
+{L}{A}*			{ asprintf(&yylval_char,yytext);/*yylval_char = strcpy(yylval_char, yytext);*/
+  return check_type();
       }
 
-{HP}{H}+{IS}?		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
-{NZ}{D}*{IS}?		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
-"0"{O}*{IS}?		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
-{CP}?"'"([^\'\\\n]|{ES})+"'"		{ strcpy(yylval_string_numb, yytext); return I_CONSTANT; }
+{HP}{H}+{IS}?		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
+{NZ}{D}*{IS}?		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
+"0"{O}*{IS}?		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
+{CP}?"'"([^\'\\\n]|{ES})+"'"		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
 
 {D}+{E}{FS}?				{ return F_CONSTANT; }
 {D}*"."{D}+{E}?{FS}?			{ return F_CONSTANT; }
@@ -128,7 +129,10 @@ static int check_type(void);
 {HP}{H}*"."{H}+{P}{FS}?			{ return F_CONSTANT; }
 {HP}{H}+"."{P}{FS}?			{ return F_CONSTANT; }
 
-({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{ strcpy(yylval_string_numb, yytext); return STRING_LITERAL; }
+({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{/*pour une raison que je n'ai pas réussis a comprendre, il refuse asprintf ici... y aurait il une taille maximal possible pour les char * à faire passer ?*/
+  yylval_string_numb= malloc(sizeof(char)*(strlen(yytext)+1));
+  strcpy(yylval_string_numb, yytext);
+  /*asprintf(&yylval_string_numb,yytext);*/ return STRING_LITERAL; }
 
 "..."				{ return ELLIPSIS; }
 ">>="				{ return RIGHT_ASSIGN; }
