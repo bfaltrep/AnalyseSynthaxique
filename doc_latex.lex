@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 #include "y.tab.h"
 #include "traitement.h"
 #include "Pile/stack.h"
@@ -17,7 +18,8 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 int param();
 void remplir_queue(queue q, int n, char s);
 void create_tdm();
-  
+void date(void);
+ 
 queue q;
  
 %}
@@ -27,7 +29,7 @@ queue q;
 %option noyy_top_state
 
 %s TAB
-%s FAT ITALIC UNDERLINE COLOR COMMENT
+%s FAT ITALIC UNDERLINE COLOR COMMENT TITLE AUTHOR
 %s SECTION SUBSECTION SUBSUBSECTION
 %s EQUATION
 %x MATH_ML
@@ -156,7 +158,13 @@ queue q;
 "\\textasciicircum "      {fprintf(flot_html,"^"); printf("^"); }
 
 
+"\\title{"               {yy_push_state(TITLE);return(FORME_TITLE); }
+<TITLE>"}"               {yy_pop_state(); fprintf(flot_html,"</t></center>");}
 
+"\\date{\\today}"        {date(); }
+
+"\\author{"              {yy_push_state(AUTHOR);return(FORME_AUTHOR); }
+<AUTHOR>"}"              {yy_pop_state(); fprintf(flot_html,"</t></center>");}
 
 "\\texttt{"|"{\\bf"      {yy_push_state(FAT);return(FORME_FAT); }
 <FAT>"}"                 {yy_pop_state();fprintf(flot_html,"</b>"); }
@@ -234,4 +242,13 @@ void create_tdm()
 	  }
       queue_pop(q);
     }
+}
+
+void date(void)
+{
+    time_t secondes;
+    struct tm instant;
+    time(&secondes);
+    instant=*localtime(&secondes);
+    fprintf(flot_html,"<center>%d/%d/%d</center>", instant.tm_mday, instant.tm_mon+1, instant.tm_year+1900); 
 }

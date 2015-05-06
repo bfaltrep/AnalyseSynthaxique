@@ -89,8 +89,10 @@ int create_files(char* name_page, char* name_html){
   ajout_regles_css( "h3","color : #85981A;\n");
   ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
   ajout_regles_css( "td","border: 1px solid black;\n");
-  ajout_regles_css( "table","border-collapse: collapse;\n");
+  ajout_regles_css( ".title","font-size: 40px;\n");
   ajout_regles_css( ".label_equation","margin-left: 5em;\n");
+  ajout_regles_css( ".label_equation","margin-left: 5em;\n");
+  ajout_regles_css( ".tiny","font-size: 10px;\n");
   //ajout_regles_css( ".subsection","margin-left: 2em;\n");
   //ajout_regles_css( ".subsubsection","margin-left: 2em;\n");
   //ajouter regle pour nomfonction+nomvariable avec une pile.
@@ -99,7 +101,7 @@ int create_files(char* name_page, char* name_html){
 }
 
 void finish(){
-  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
+  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n<t class=\"tiny\"><center>Cette page HTML a été générée à partir d'un fichier LateX</center></t></body></html>";
   fprintf(flot_html,"%s",buf);
   fclose(flot_js);
   fclose(flot_html); 
