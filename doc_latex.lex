@@ -257,13 +257,13 @@ queue q;
 "\\textasciicircum "         {fprintf(flot_html,"^"); printf("^"); }
 
 
-"\\title{"               {yy_push_state(TITLE);return(FORME_TITLE); }
-<TITLE>"}"               {yy_pop_state(); fprintf(flot_html,"</t></center>");}
+"\\title{"                   {yy_push_state(TITLE);return(FORME_TITLE); }
+<TITLE>"}"                   {yy_pop_state(); fprintf(flot_html,"</t></center>");}
 
-"\\date{\\today}"        {date(); }
+"\\date{\\today}"            {date(); }
 
-"\\author{"              {yy_push_state(AUTHOR);return(FORME_AUTHOR); }
-<AUTHOR>"}"              {yy_pop_state(); fprintf(flot_html,"</t></center>");}
+"\\author{"                  {yy_push_state(AUTHOR);return(FORME_AUTHOR); }
+<AUTHOR>"}"                  {yy_pop_state(); fprintf(flot_html,"</t></center>");}
 
 "\\texttt{"|"{\\bf"          {yy_push_state(FAT);return(FORME_FAT); }
 <FAT>"}"                     {yy_pop_state();fprintf(flot_html,"</b>"); }
