@@ -29,7 +29,7 @@ void yyerror(const char *s);
 %token BEGIN_EQUATION END_EQUATION 
 %token BEGIN_MATH_ML END_MATH_ML 
 %token LABEL
-%token FORME_FAT FORME_ITALIC FORME_UNDERLINE
+%token FORME_FAT FORME_ITALIC FORME_UNDERLINE FORME_TITLE FORME_AUTHOR
 %token BEG_PARAGRAPH END_PARAGRAPH
 %token BODY
 
@@ -46,6 +46,8 @@ body: BODY {fprintf(flot_html,yylval_char); } body
 | equation body
 | math body
 | LABEL {fprintf(flot_html,"<t class=\"label_equation\">\(");} body
+| FORME_TITLE {fprintf(flot_html,"<center><t class=\"title\">");} body
+| FORME_AUTHOR{fprintf(flot_html,"<center><t class=\"author\">");} body 
 | FORME_FAT {fprintf(flot_html,"<b>");} body
 | FORME_ITALIC {fprintf(flot_html,"<i>");} body
 | FORME_UNDERLINE {fprintf(flot_html,"<u>");} body
