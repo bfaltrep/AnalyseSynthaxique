@@ -8,7 +8,7 @@ typedef struct queue_cell cell;
 struct queue_cell
 {
   int val1;
-  char* val2;
+  char val2;
   cell* next;
 };
 
@@ -30,8 +30,7 @@ queue queue_create(void){
 cell* create_cell()
 {
   cell* c = malloc(sizeof(cell));
-  c->val1 =0;
-  c->val2 ="";
+  c->val1 = 0;
   c->next = NULL;
   return c;
 }
@@ -50,7 +49,7 @@ int queue_empty(queue q){
   return 0;
 }
 
-void queue_push(queue q, int n, char *txt)
+void queue_push(queue q, int n, char txt)
 {
   cell* c = create_cell();
   c->val1 = n;
@@ -64,7 +63,7 @@ int queue_front_val1(queue q){
   return q->front->next->val1;
 }
 
-char* queue_front_val2(queue q){
+char queue_front_val2(queue q){
   assert(!queue_empty(q));
   return q->front->next->val2;
 }

@@ -16,7 +16,7 @@ void queue_destroy(queue s);
 int queue_empty(queue s);
 
 /* push an object on the back of the queue */
-void queue_push(queue s, int n, char *txt);
+void queue_push(queue s, int n, char txt);
 
 
 /* return the front element of the queue.
@@ -25,7 +25,7 @@ int queue_front_val1(queue s);
 
 /* return the front element of the queue.
    The queue must not be empty (as reported by queue_empty()) */
-char* queue_front_val2(queue s);
+char queue_front_val2(queue s);
 
 /* pop the front element off of the queue.
    The queue must not be empty (as reported by queue_empty()) */
