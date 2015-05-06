@@ -21,7 +21,7 @@ void div_fermante(){
   fprintf(flot_html, "</div>");
 }
 
-void newline(int size){
+void new_line(int size){
   fprintf(flot_html, "<br>");
   if(size == 0){
     fprintf(flot_html, "<br>");
@@ -41,7 +41,7 @@ void p_virgule(){
   fprintf(flot_html, ";");
   //on ne met pas a la ligne quand on est dans une boucle for
   if(!bool_cond){
-    newline(indentation);
+    new_line(indentation);
   }
 }
 
@@ -52,7 +52,7 @@ void accolade_ouvrant(){
     }
   fprintf(flot_html, "<span class=\"accolade\">{</span> <span >");
   indentation++;
-  newline(indentation);
+  new_line(indentation);
   //pour pouvoir traiter le crochet comme les nom de variables lorsque l'on supprime de la pile, on doit allouer de la mémoire.
   char * tmp;
   asprintf(&tmp,"{" );
@@ -69,14 +69,24 @@ void accolade_fermant(){
     {
       yyerror("syntax error. too many '}' \n");
     }
-  newline(indentation);
+  new_line(indentation);
   while(strcmp("{",stack_top(variables)) != 0){
     stack_pop(variables);
   }
   stack_pop(variables);
 }
 
-char * retrouverVariable(char * nom){
+/*
+  a la fin d'une declaration ou definition de fonction, on doit retirer les arguments, contenus dans l'entête, de la pile
+*/
+void fin_def_dec_fonction(){
+  while(strcmp("(",stack_top(variables)) != 0){
+    stack_pop(variables);
+  }
+  stack_pop(variables);
+}
+
+char * retrouver_variable(char * nom){
   char * surnom = stack_inside_variable(variables,nom);
   if(surnom == NULL){
     //message retiré car pose des problèmes pour les fonctions importées par des includes.
@@ -90,11 +100,10 @@ char * retrouverVariable(char * nom){
   return surnom;
 }
 
-
 /*
   ajoute le nouveau nom de variable dans la liste, dans la pile et dans le fichier javascript
 */
-void ajouterVariable(char * nom){
+void ajouter_variable(char * nom){
   char * tmp;
   char * tmp2;
   asprintf(&tmp,nom);
@@ -106,38 +115,44 @@ void ajouterVariable(char * nom){
     char * point;
     asprintf(&point,"." );
     stack_push(variables,point);
+    lock = 0;
   }
   stack_push(variables,tmp2);
 
-
-  
-  //fonctionnalité : cliquer sur accolade ouvrante, cache/affiche le contenu
-  fprintf(flot_js,"$(\".%s\").hover(function() {\n    $(\".%s\").css(\"background-color\",\"black\");\n    $(\".declaration.%s\").css(\"background-color\",\"blue\");},function() {\n    $(\".%s\").css(\"background-color\",\"initial\");\n    $(\".declaration.%s\").css(\"background-color\",\"initial\");});\n\n",tmp,tmp,tmp,tmp,tmp);
+  //fonctionnalité : survole variable => mise en valeur
+  fprintf(flot_js,"\n$(\".%s\").hover(function() {    $(\".%s\").css(\"background-color\",\"#2B2B2B\");\n    $(\".%s\").css(\"font-weight\",\"bold\");\n    $(\".declaration.%s\").css(\"background-color\",\"black\");},function() {\n    $(\".%s\").css(\"background-color\",\"initial\");\n    $(\".%s\").css(\"font-weight\",\"normal\");\n    });\n",tmp,tmp,tmp,tmp,tmp,tmp);
   free(tmp);
 }
 
 /*
   créer un nom unique à la variable déclarée
 */
-void nommerVariable(char * nom){
-  int pos = list_inside(variables_name,nom);
-  if(pos == -1){
-    ajouterVariable(nom);
-  }
-  //si ce nom existe déjà, on renomme la classe spécifique à la variable
-  int i = 2;
-  char * tmp;
-  do{
-    //nettoyage des noms testé mais déjà utilisés.
-    if(i > 2){
+void nommer_variable(char * nom){
+  //si il s'agit de globales
+  if(indentation == 0 && !lock){
+    ajouter_variable(nom);
+  }else{
+    int pos = list_inside(variables_name,nom);
+    if(pos == -1){
+      ajouter_variable(nom);
+    }
+    else{
+      //si ce nom existe déjà, on renomme la classe spécifique à la variable
+      int i = 2;
+      char * tmp;
+      do{
+	//nettoyage des noms testé mais déjà utilisés.
+	if(i > 2){
+	  free(tmp);
+	}
+	asprintf(&tmp,"%d%s",i,nom);
+	pos = list_inside(variables_name,tmp);
+	i++;
+      }while(pos != -1);
+      ajouter_variable(tmp);
       free(tmp);
     }
-    asprintf(&tmp,"%d%s",i,nom);
-    pos = list_inside(variables_name,tmp);
-    i++;
-  }while(pos != -1);
-  ajouterVariable(tmp);
-  free(tmp);
+  }
 }
 
 /*
@@ -195,11 +210,7 @@ void string_literal(){
 }
 
 void ajout_enTete_html (char * language, char * title){
-  char *a ="<head><meta charset=\"utf-8\" lang=\"",
-    *b = "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>",
-    *c = "</title></head>\n";
-
-  fprintf(flot_html,"%s%s%s%s%s", a, language, b, title, c);
+  fprintf(flot_html,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s </title></head>\n", language, title);
 }
 
 int create_files(char * nom){
@@ -233,9 +244,9 @@ int create_files(char * nom){
   ajout_regles_css(".accolade","cursor:pointer;\n");
   ajout_regles_css(".noname","color : white;\n");
   
-  //js
+  //js fonctionnalités : clique accolades ouvrantes. clique sur variables.
   fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
-   fprintf(flot_js,"\n$('a[href^=\"#\"]').click(function(){\n    var id = $(this).attr(\"href\");\n    var offset = $(id).offset().top\n    $('html, body').animate({scrollTop: offset}, 'slow');\n    return false; \n});\n\n");
+  fprintf(flot_js,"\n$('a[href^=\"#\"]').click(function(){\n    var id = $(this).attr(\"href\");\n    var offset = $(id).offset().top\n    $('html, body').animate({scrollTop: offset}, 'slow');\n    return false; \n});\n\n");
   return 0;
 }
 

@@ -4,6 +4,13 @@
 #define CONSTANTE 52
 int i;
 
+//typedef struct cellule * cell;
+
+//struct cellule{
+//  void * contenu;
+//  int suivant;
+//};
+
 /*
  fonctions locales
 */
@@ -18,7 +25,8 @@ void g();
   * \return aie
  */
 int main(void){
-  char * c = "chocolat <chocolat> !";
+  //comme on peut le voir, les < > et & ne sont pas interprétés par le html
+  char * c = "chocolat <au lait> &tralala !";
   //on exploite les deux fonctions avant de retourner
   if(i == 0){
     f(i);
@@ -31,7 +39,7 @@ int main(void){
   }while (i < 10);
   switch(i){
   case 10:
-    printf("toto");
+    printf("%s\n",i?"hello":"world");
     break;
   case 11 :
     printf("tata");
@@ -47,6 +55,8 @@ int f (int i){
   int j = 2;
   j++;
   i = i+2;
+  //if(i<5)
+  //  return i;
   return i;
 }
 
@@ -67,5 +77,6 @@ void g(int j){
   }
   //globale
   j--;
+  f(2);
 }
 

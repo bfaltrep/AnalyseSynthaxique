@@ -31,6 +31,7 @@ extern char * yylval_char;
 extern char * yylval_string_numb;
 extern stack variables;
 extern list variables_name;
+extern int lock;
 
 int create_files();
 void finish();
@@ -44,7 +45,7 @@ void ajout_balise_variable(char * surnom, char * nom);
 //void ajout_balise_id(char * type, char * contenu);
 
 //fonctions de traitement de cas 
-void newline();
+void new_line();
 void tab();
 void p_virgule();
 void accolade_ouvrant();
@@ -55,7 +56,8 @@ void condition_saut_ligne();
 void string_literal();
 
 //variables
-void nommerVariable(char * variable);
-char * retrouverVariable(char * nom);
+void nommer_variable(char * variable);
+char * retrouver_variable(char * nom);
+void fin_def_dec_fonction();
 
 #endif 

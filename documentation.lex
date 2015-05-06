@@ -195,7 +195,7 @@ static void preproc_commentline(int type, char * name){
          if(type){
             fprintf(flot_html, "</span>");
          }
-         newline(indentation);
+         new_line(indentation);
          return;
       }
       if(c == '<'){

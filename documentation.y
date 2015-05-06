@@ -5,7 +5,6 @@
 #define _GNU_SOURCE
 #endif
 
-  
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,8 +14,8 @@
 #include "pile/stack.h"
 #include "list/list.h"
   
-  int yylex();
-
+extern int yylex();
+extern int yylex_destroy () ;
   //-- locals functions
   
   void yyerror(const char *s);
@@ -27,6 +26,8 @@
   char * yylval_string_numb;
   stack variables;
   list variables_name;
+  //parametre != fonction/variable pr indentation 0.
+  int lock;
 
 %}
 
@@ -94,7 +95,7 @@ static_
 
 primary_expression
 : IDENTIFIER {/*utilisation de variables*/
-  char * surnom = retrouverVariable(yylval_char);
+  char * surnom = retrouver_variable(yylval_char);
   ajout_balise_variable(surnom,yylval_char);
 }
 | constant
@@ -291,7 +292,7 @@ init_declarator_list
 
 init_declarator
 : declarator '=' {fprintf(flot_html, "=");} initializer
-| declarator {/*fprintf(flot_html,"-fin declarator-");stack_print(variables);*/} 
+| declarator {/*fin declarator*/} 
 ;
 
 storage_class_specifier
@@ -407,11 +408,11 @@ declarator
 
 direct_declarator
 : IDENTIFIER {/*declaration de variables*/
-  nommerVariable(yylval_char);
+  nommer_variable(yylval_char);
   char * tmp = ((char *)stack_top(variables));
   asprintf(&tmp,"var declaration %s",tmp);
   ajout_balise_class(tmp,yylval_char);
-  free(tmp);
+  free(tmp);  
   }
 | p_ouvrante declarator p_fermante
 | direct_declarator c_ouvrant c_fermant
@@ -423,9 +424,24 @@ direct_declarator
 | direct_declarator c_ouvrant type_qualifier_list assignment_expression c_fermant
 | direct_declarator c_ouvrant type_qualifier_list c_fermant
 | direct_declarator c_ouvrant assignment_expression c_fermant
-| direct_declarator p_ouvrante parameter_type_list p_fermante { fprintf(flot_html, "-fonction-"); }
-| direct_declarator parentheses 
-| direct_declarator p_ouvrante identifier_list p_fermante
+| direct_declarator p_ouvrante {/*push parenthese*/
+  char * tmp;
+  asprintf(&tmp,"(" );
+  stack_push(variables,tmp);
+  lock = 1;
+ } parameter_type_list p_fermante {/**/ }
+| direct_declarator parentheses {
+  char * tmp;
+  asprintf(&tmp,"(" );
+  stack_push(variables,tmp);
+  lock = 1;
+ }
+| direct_declarator p_ouvrante {/*push parenthese*/
+  char * tmp;
+  asprintf(&tmp,"(" );
+  stack_push(variables,tmp);
+  lock = 1;
+ } identifier_list p_fermante 
 ;
 
 pointer
@@ -536,8 +552,8 @@ statement
 
 labeled_statement
 : IDENTIFIER deux_point statement
-| CASE {ajout_balise_class("key_word","case");} constant_expression deux_point {newline(indentation);} statement
-| DEFAULT {ajout_balise_class("key_word","default");} deux_point {newline(indentation);} statement
+| CASE {ajout_balise_class("key_word","case");} constant_expression deux_point {new_line(indentation);} statement
+| DEFAULT {ajout_balise_class("key_word","default");} deux_point {new_line(indentation);} statement
 ;
 
 compound_statement
@@ -588,17 +604,23 @@ translation_unit
 | translation_unit external_declaration
 ;
 external_declaration
-: function_definition
+: function_definition { /*retire de la pile les parametres de la fonction*/ fin_def_dec_fonction(); }
 | declaration {
+  /*place une balise de declaration pour le lien*/
   fseek(flot_html,-(strlen("<br><br>")),SEEK_CUR);
   char * nom_var = stack_inside_after(variables,".");
   fprintf(flot_html,"<span id=\"%s\"></span><br><br>",nom_var);
+  //retire les parametres de la pile. Seul le nom de la fonction peut être utilisé ensuite ensuite. 'if' pour pas avoir de problemes avec les variables globales.
+  if(stack_inside_variable(variables,"(") != NULL){
+    fin_def_dec_fonction();
+  }
+  lock = 0;
  }
 ;
 
 function_definition
 : declaration_specifiers declarator declaration_list compound_statement
-| declaration_specifiers declarator {fprintf(flot_html,"-%d-DEFINITION-",$2);} compound_statement
+| declaration_specifiers declarator {/*definition*/ lock = 0;} compound_statement
 ;
 
 declaration_list
@@ -633,5 +655,6 @@ int main (){
   free(lect);
   free(yylval_char);
   free(yylval_string_numb);
+  yylex_destroy();
   return EXIT_SUCCESS;
 }
