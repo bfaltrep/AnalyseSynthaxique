@@ -641,7 +641,7 @@ void yyerror(const char *s){
 
 int main (){
   //initialiser
-  commandeActuelle = calloc(6, sizeof(*commandeActuelle)); //taille maximale de la longueur des commandes
+  commandeActuelle = calloc(7, sizeof(*commandeActuelle)); //taille maximale de la longueur des commandes
   create_files("documentation");
   variables = stack_create();
   variables_name = list_create();
