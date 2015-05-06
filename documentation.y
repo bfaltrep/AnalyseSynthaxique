@@ -16,8 +16,9 @@
   
 extern int yylex();
 extern int yylex_destroy () ;
-  //-- locals functions
-  
+extern void unput(char c);
+ 
+  //-- locals functions  
   void yyerror(const char *s);
   
   //-- var globales
@@ -57,15 +58,15 @@ p_fermante
 parentheses
 : '(' ')' {fprintf(flot_html, "()");}
 a_ouvrant
-: '{' {accolade_ouvrant();}
+: '{' {accolade_ouvrante();}
 a_fermant
-: '}' {accolade_fermant();}
+: '}' {accolade_fermante();}
 c_ouvrant
 : '[' {fprintf(flot_html, "[");}
 c_fermant
 : ']' {fprintf(flot_html, "]");}
 p_fermant_a_ouvrant
-: ')' '{' {fprintf(flot_html, ")"); accolade_ouvrant();}
+: ')' '{' {fprintf(flot_html, ")"); accolade_ouvrante();}
 etoile
 : '*' {fprintf(flot_html, "*");}
 etoile_pointeur
@@ -81,7 +82,7 @@ string_literal
 for_
 : FOR { bool_cond = 1; ajout_balise_class("key_word","for"); }
 if_
-: IF { bool_cond = 1; ajout_balise_class("key_word","if");} p_ouvrante expression p_fermante statement
+: IF { bool_cond = 1; ajout_balise_class("key_word","if");} p_ouvrante expression p_fermante {/*char c = yylex(); if(c != '{'){ new_line(indentation+1);} unput(c);*/} statement
 alignas
 : ALIGNAS {ajout_balise_class("key_word","_Alignas");}
 sizeof_
@@ -89,7 +90,7 @@ sizeof_
 enum_
 : ENUM { ajout_balise_class("key_word","enum");}
 static_
-  : STATIC {ajout_balise_class("key_word","static");}
+: STATIC {ajout_balise_class("key_word","static");}
 
 
 
@@ -432,8 +433,8 @@ direct_declarator
   asprintf(&tmp,"(" );
   stack_push(variables,tmp);
   lock = 1;
- } parameter_type_list p_fermante {/**/ }
-| direct_declarator parentheses {
+ } parameter_type_list p_fermante 
+| direct_declarator parentheses {/*push parenthese*/
   char * tmp;
   asprintf(&tmp,"(" );
   stack_push(variables,tmp);
@@ -575,18 +576,18 @@ block_item
 ;
 
 expression_statement
-: point_virgule
-| expression point_virgule
+: point_virgule 
+| expression point_virgule 
 ;
 
 selection_statement
-: if_ ELSE {ajout_balise_class("key_word","else");} statement
+: if_ ELSE { bool_cond = 1; ajout_balise_class("key_word","else"); } statement
 | if_ 
 | SWITCH {ajout_balise_class("key_word","switch");} p_ouvrante expression p_fermante statement
 ;
 
 iteration_statement
-: WHILE {ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante statement
+: WHILE { bool_cond = 1; ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante statement
 | DO {ajout_balise_class("key_word","do");} statement WHILE {ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante point_virgule
 | for_ p_ouvrante expression_statement expression_statement p_fermante statement
 | for_ p_ouvrante expression_statement expression_statement expression p_fermante statement

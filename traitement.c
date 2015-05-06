@@ -45,7 +45,7 @@ void p_virgule(){
   }
 }
 
-void accolade_ouvrant(){
+void accolade_ouvrante(){
   if(bool_cond)
     {
       bool_cond = 0;
@@ -59,8 +59,9 @@ void accolade_ouvrant(){
   stack_push(variables,tmp);
 }
 
-void accolade_fermant(){
+void accolade_fermante(){
   //retirer une tabulation avant d'écrire l'accolade
+
   int size = strlen("&nbsp")*sizeof(char)*4;
   fseek(flot_html,-size,SEEK_CUR);
   fprintf(flot_html, "</span>}");
@@ -120,7 +121,7 @@ void ajouter_variable(char * nom){
   stack_push(variables,tmp2);
 
   //fonctionnalité : survole variable => mise en valeur
-  fprintf(flot_js,"\n$(\".%s\").hover(function() {    $(\".%s\").css(\"background-color\",\"#2B2B2B\");\n    $(\".%s\").css(\"font-weight\",\"bold\");\n    $(\".declaration.%s\").css(\"background-color\",\"black\");},function() {\n    $(\".%s\").css(\"background-color\",\"initial\");\n    $(\".%s\").css(\"font-weight\",\"normal\");\n    });\n",tmp,tmp,tmp,tmp,tmp,tmp);
+  fprintf(flot_js,"\n$(\".%s\").hover(function() {\n    $(\".%s\").css(\"color\",\"#99FF33\");\n    $(\".%s\").css(\"background-color\",\"#2B2B2B\");\n    $(\".%s\").css(\"font-weight\",\"bold\");\n    $(\".declaration.%s\").css(\"color\",\"black\");\n    $(\".declaration.%s\").css(\"background-color\",\"#99FF33\");},function() {\n    $(\".%s\").css(\"color\",\"#66AA33\");\n    $(\".%s\").css(\"background-color\",\"initial\");\n    $(\".%s\").css(\"font-weight\",\"normal\");\n    });\n\n",tmp,tmp,tmp,tmp,tmp,tmp,tmp,tmp,tmp);
   free(tmp);
 }
 

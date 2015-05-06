@@ -61,7 +61,7 @@ static int check_type(void);
 %%
 "/**"                   { BEGIN DOXY; }
 "/*!"                   { BEGIN DOXY; }
-<DOXY>"*"               { lecture_ecriture_doxy();}
+<DOXY>"*"               { lecture_ecriture_doxy(); }
 <DOXY>"*/"              { BEGIN INITIAL; }
 
 "/*"                    { comment(); }

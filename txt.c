@@ -4,13 +4,6 @@
 #define CONSTANTE 52
 int i;
 
-//typedef struct cellule * cell;
-
-//struct cellule{
-//  void * contenu;
-//  int suivant;
-//};
-
 /*
  fonctions locales
 */
@@ -28,9 +21,8 @@ void g();
 int main(int argc, char *argv[]){
   //comme on peut le voir, les < > et & ne sont pas interprétés par le html
   char * c = "chocolat <au lait> &tralala !";
-  if(i == 0){
+  if(i == 0)
     f(i);
-  }
   else{
     g(i);
   }
@@ -56,9 +48,7 @@ int f (int i){
   int j = 2;
   j++;
   i = i+2;
-  //if(i<5)
-  //  return i;
-  return i;
+  return j;
 }
 
 void g(int j){
