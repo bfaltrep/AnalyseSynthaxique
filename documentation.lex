@@ -29,6 +29,8 @@ WS  [ \t\v\n\f]
   
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
+#include <stdbool.h>
 #include "y.tab.h"
 #include "traitement.h"
 #include "pile/stack.h"
@@ -37,7 +39,7 @@ WS  [ \t\v\n\f]
   //-- var globales
 extern char * yylval_char;
 extern char * yylval_string_numb;
- 
+extern char * commandeActuelle;
 extern int indentation;
 
  //fonctions importées
@@ -53,12 +55,14 @@ static void preproc_commentline(int type, char* name);
 static int check_type(void);
 
 %}
-%option nounput
-%x COMMDOXY
+
+%x DOXY
 
 %%
-"/**"                   { comment();/*lecture_ecriture_doxy();*/ }
-"/*!"                   {comment(); /*lecture_ecriture_doxy();*/ }
+"/**"                   { BEGIN DOXY; }
+"/*!"                   { BEGIN DOXY; }
+<DOXY>"*"               { lecture_ecriture_doxy();}
+<DOXY>"*/"              { BEGIN INITIAL; }
 
 "/*"                    { comment(); }
 "//"                    { preproc_commentline(1,""); }
@@ -229,39 +233,50 @@ static void comment(void)
     yyerror("unterminated comment");
 }
 
+bool verifier_existance_commande(){ //verifie que \cmd existe bien en doxygen
+   return(
+      strcmp(commandeActuelle, "brief")==0 ||
+      strcmp(commandeActuelle, "param")==0 ||
+      strcmp(commandeActuelle, "return")==0||
+      strcmp(commandeActuelle, "fn")==0
+      );
+}
+
 void lecture_ecriture_doxy(void)
 {
    int c;
-    
-    while ((c = input()) != 0){
-       if(c == '*'){
-          c=input();
-          if(c == '/')
-             return;
-       }
-       else if(c == '\\'){
-          while((c=input()) != ' '){
-	    //fprintf(flot_html2, "%c", c);
-	    asprintf(&lect,"%s",yytext);             
-          }
-          if(strcmp(lect, "brief")==0){
-             printf("on est dans brief\n");
-          }
-          else if(strcmp(lect, "label")==0){
-             printf("on est dans label\n");
-          }
-          else if(strcmp(lect, "param")==0){
-             printf("on est dans param\n");
-          }
-          else if(strcmp(lect, "ref")==0){
-             printf("on est dans ref\n");
-             }
-          else if(strcmp(lect, "return")==0){
-             printf("on est dans return\n");
-          }
-       }
-    }
-    yyerror("unterminated comment");
+   int cptEspace = 0;
+   char * contenu= calloc(400, sizeof(*contenu)); //taille de la longueur de la commande
+   
+   while ((c = input()) != 0){
+      if(c == '\n'){ //si on est en fin de ligne, on sort de la fin et on
+                     //écrit dans le flux de sortie html
+         fprintf(flot_html2, "<div class=\"%s\"> %s </div><br/>", commandeActuelle, contenu);
+         unput(c);
+         free(contenu);
+         return;
+      }
+      else if(c == '\\'){ // mise à jour de la nouvelle commande doxygen
+         commandeActuelle[0]='\0';
+         while((c=input()) != ' '){
+            commandeActuelle = strcat( commandeActuelle, (char*)&c);
+         }
+         printf("%s\n", commandeActuelle);
+         assert(verifier_existance_commande() && "unterminated command");
+      }
+      else if(c == ' '){ // suppression des espaces inutiles
+         cptEspace++;
+         if (cptEspace==1){
+            contenu = strcat( contenu, (char*)&c);
+         }
+      }
+      else if(c != '*'){ // 
+         cptEspace=0;
+         contenu = strcat( contenu, (char*)&c);
+      }
+   }
+   free(contenu);
+   yyerror("unterminated comment");
 }
 
 static int check_type(void)

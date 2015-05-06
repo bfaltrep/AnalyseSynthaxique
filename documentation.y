@@ -24,6 +24,7 @@ extern int yylex_destroy () ;
   char * yytext;
   char * yylval_char;
   char * yylval_string_numb;
+  char * commandeActuelle;
   stack variables;
   list variables_name;
   //parametre != fonction/variable pr indentation 0.
@@ -639,6 +640,7 @@ int main (){
   //initialiser
   yylval_char = malloc(sizeof(char)*50);
   yylval_string_numb = malloc(sizeof(char)*50);
+  commandeActuelle = calloc(6, sizeof(*commandeActuelle)); //taille maximale de la longueur des commandes
   create_files("documentation");
   variables = stack_create();
   variables_name = list_create();
@@ -652,8 +654,9 @@ int main (){
   finish();
   stack_destroy(variables);
   list_destroy(variables_name);
-  free(lect);
+  
   free(yylval_char);
+  free(commandeActuelle);
   free(yylval_string_numb);
   yylex_destroy();
   return EXIT_SUCCESS;

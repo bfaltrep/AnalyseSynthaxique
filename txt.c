@@ -19,15 +19,15 @@ void g();
 
 
 /**
-  * \brief fonction principale, lancée par l'exécutable
-  * \param a c
-  * \param d
-  * \return aie
+  * \fn int main(int argc, char *argv[])
+  * \brief fonction principale, lancee par l'executable
+  * \param argc contient le nombre d'arguments
+  * \param argv contient la liste des arguments stockee dans un tableau
+  * \return 0 si tout s'est bien passe
  */
-int main(void){
+int main(int argc, char *argv[]){
   //comme on peut le voir, les < > et & ne sont pas interprétés par le html
   char * c = "chocolat <au lait> &tralala !";
-  //on exploite les deux fonctions avant de retourner
   if(i == 0){
     f(i);
   }
@@ -39,6 +39,7 @@ int main(void){
   }while (i < 10);
   switch(i){
   case 10:
+    //on voit que les ':' sont gérés distinctement
     printf("%s\n",i?"hello":"world");
     break;
   case 11 :
