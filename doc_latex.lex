@@ -190,7 +190,7 @@ queue q;
 <MATH_ML>"\\infty"           |
 <MATH_ML_SQRT>"\\infty"      |
 <MATH_ML_FRAC1>"\\infty"     |
-<MATH_ML_FRAC>"\\infty"      |
+<MATH_ML_FRAC2>"\\infty"     |
 <MATH_ML_SUP>"\\infty"       |
 <MATH_ML_SUB>"\\infty"       {fprintf(flot_html,"<mo>&infin;</mo>");}
 
@@ -205,7 +205,6 @@ queue q;
 <MATH_ML>">"                 {fprintf(flot_html,"<mo>&gt;</mo>");}
 <MATH_ML>"\\gg"              {fprintf(flot_html,"<mo>&gt;&gt;</mo>");}
 <MATH_ML>"\\geq"             {fprintf(flot_html,"<mo>&ge;</mo>");}
-<MATH_ML>"\\pm"              {fprintf(flot_html,"<mo>&plusmn;</mo>");}
 <MATH_ML>"\\cdot"            {fprintf(flot_html,"<mo>.</mo>");}
 <MATH_ML>"\\cdots"           {fprintf(flot_html,"<mo>...</mo>");}
 <MATH_ML>"\|"                {fprintf(flot_html,"<mo>||</mo>");}
