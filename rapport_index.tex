@@ -1,20 +1,28 @@
 \documentclass[10pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
-\usepackage{xcolor}
+\usepackage{color}
 \usepackage{graphicx}
 \usepackage{amsmath,amsfonts,amssymb}
+\definecolor {colortitre1}{rgb}{0.7,0.1,0.1}
+
 
 \begin{document}
 
 \title{Rapport d'Analyse Syntaxique et Projet de Programmation}
 
-
 \date{\today}
 
 \author{Claude Cugerone, Bérénice Faltrept, Amélie Guémon, Marin Liebert}
 
+\textcolor{colortitre1}{\section*{Objectif du projet}}
 
+\textcolor{colortitre1}{\section*{Présentation du code C}}
+\input{rapport_c} inclus par \jobname .tex
+\textcolor{colortitre1}{\section*{Documentation du code C}}
 
+\textcolor{colortitre1}{\section*{Présentation du code Latex}}
+
+\textcolor{colortitre1}{\section*{Conclusion}}
 
 \end{document}
