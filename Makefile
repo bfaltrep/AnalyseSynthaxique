@@ -15,8 +15,8 @@ documentation.tab.c : documentation.y traitement.h
 
 txt :
 	./documentation < txt.c
-	firefox index.html documentation.html &
-	emacs index.html style.css script.js documentation.html txt.c &
+	firefox index.html comDoxy.html &
+	emacs index.html style.css script.js comDoxy.html txt.c &
 
 clean:
 	rm -rf *.o documentation.c lex.yy.c documentation.tab.c documentation.tab.h *~ *.output *.tab.h  *.html *.css *.js ./pile/*~ ./pile/*.o ./list/*~ ./list/*.o 

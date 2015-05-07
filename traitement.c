@@ -214,6 +214,7 @@ void string_literal(){
 
 void ajout_enTete_html (char * language, char * title){
   fprintf(flot_html,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s </title></head>\n", language, title);
+  fprintf(flot_html2,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"cssDoxy.css\" /><title> comDoxy </title></head>\n", language);
 }
 
 int create_files(char * nom){
@@ -221,16 +222,19 @@ int create_files(char * nom){
   flot_html = fopen("index.html","w+");
   flot_css = fopen("style.css","w+");
   flot_js = fopen("script.js","w+");
-  flot_html2 = fopen("documentation.html", "w+");
+  flot_html2 = fopen("comDoxy.html", "w+");
+  flot_css2 = fopen("cssDoxy.css","w+");
   
   //html
   buf = "<!DOCTYPE html><html>";
   fprintf(flot_html,"%s",buf);
+  fprintf(flot_html2,"%s",buf);
   ajout_enTete_html ("fr", nom);
-   
+  
+  
   buf = "<body>";
   fprintf(flot_html,"%s",buf);
-   
+  fprintf(flot_html2,"%s",buf);
   //traitement
 
   //css
@@ -257,7 +261,8 @@ void finish_files(){
    
   char * buf = "\n<script src=\"site/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
   fprintf(flot_html,"%s",buf);
-
+  fprintf(flot_html2,"\n</body></html>");
+  
   fclose(flot_js);
   fclose(flot_html);
   fclose(flot_html2);

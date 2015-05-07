@@ -17,6 +17,7 @@ FILE *flot_html;
 FILE *flot_css;
 FILE *flot_js;
 FILE * flot_html2;
+FILE * flot_css2;
 
 char * buf;
 
