@@ -91,7 +91,6 @@ int create_files(char* name_page, char* name_html){
   ajout_regles_css( "td","border: 1px solid black;\n");
   ajout_regles_css( ".title","font-size: 40px;\n");
   ajout_regles_css( ".label_equation","margin-left: 5em;\n");
-  ajout_regles_css( ".label_equation","margin-left: 5em;\n");
   ajout_regles_css( ".tiny","font-size: 10px;\n");
   //ajout_regles_css( ".subsection","margin-left: 2em;\n");
   //ajout_regles_css( ".subsubsection","margin-left: 2em;\n");

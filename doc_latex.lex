@@ -32,7 +32,8 @@ queue q;
 %s SECTION SUBSECTION SUBSUBSECTION
 %s EQUATION
 %x MATH_ML MATH_ML_SQRT MATH_ML_FRAC1 MATH_ML_FRAC2 MATH_ML_SUP MATH_ML_SUB
-%x LAB
+%s REF LABEL
+%x REF_NAME LABEL_NAME
 %x PARAMTAB
 %x COLOR1
 %x IMAGE
@@ -67,11 +68,19 @@ queue q;
 <PARAMTAB>"\{"[lrc]+"\}"     {yy_pop_state();yy_push_state(TAB);tabular_param(param_tabular,yytext,(int)yyleng);index_param_tabular=0;return param(); }
 
 
-"\\begin{equation}"|"\\begin{equation*}"|"$$"      {yy_push_state(EQUATION); return(BEGIN_EQUATION); }
-<EQUATION>"\\end{equation}"|"\\end{equation*}"|"$$"        {yy_pop_state(); return(END_EQUATION); }
+"\\begin{equation}"|"$$"     {yy_push_state(EQUATION); return(BEGIN_EQUATION); }
+<EQUATION>"\\end{equation}"|"$$"  {yy_pop_state(); return(END_EQUATION); }
 
-<EQUATION>"\\label{"         {yy_push_state(LAB); return(LABEL); }
-<LAB>"}"                     {yy_pop_state(); fprintf(flot_html,")</t>"); }
+"\\begin{equation*}"         {return(BEGIN_EQUATION); }
+"\\end{equation*}"           {return(END_EQUATION); }
+
+"\\ref{"[[:alnum:]]+         {yy_push_state(REF_NAME); fprintf(flot_html,"<A NAME=\"%s\">",yytext+5); }
+<REF_NAME>"}{"               {yy_pop_state(); yy_push_state(REF); }
+<REF>"}"                     {yy_pop_state(); fprintf(flot_html,"</A>"); }
+
+"\\label{"[[:alnum:]]+       {yy_push_state(LABEL_NAME); fprintf(flot_html,"<A HREF=\"#%s\">",yytext+7); }
+<LABEL_NAME>"}{"             {yy_pop_state(); yy_push_state(LABEL); }
+<LABEL>"}"                   {yy_pop_state(); fprintf(flot_html,"</A>"); }
 
 "\\("|"$"|"\\begin{math}"    {yy_push_state(MATH_ML); return(BEGIN_MATH_ML);}
 <MATH_ML>"\\)"|"$"|"\\end{math}"   {yy_pop_state(); ;return(END_MATH_ML);}
@@ -239,10 +248,6 @@ queue q;
 
 
 
-
-
-
-
 "\\textbackslash "           {fprintf(flot_html,"\\"); printf("\\"); }
 "\\textbackslash\\textbackslash" {fprintf(flot_html,"\\\\"); printf("\\\\"); }
 "\\{"                        {fprintf(flot_html,"{"); printf("{"); }
@@ -270,6 +275,7 @@ queue q;
 <ITALIC>"}"                  {yy_pop_state();fprintf(flot_html,"</i>"); }
 "\\underline{"               {yy_push_state(UNDERLINE);return(FORME_UNDERLINE); }
 <UNDERLINE>"}"               {yy_pop_state();fprintf(flot_html,"</u>"); }
+
 "\\textcolor{"[[:alpha:]]+   {yy_push_state(COLOR1); fprintf(flot_html,"<font color=%s>",yytext+11); }
 <COLOR1>"}{"                 {yy_pop_state(); yy_push_state(COLOR);}
 <COLOR>"}"                   {yy_pop_state();fprintf(flot_html,"</font>"); }
