@@ -23,7 +23,7 @@ void ajout_enTete_html (char * language, char * title){
    //2 : langage. 1 : \0. 37, 59, 15 : code preforme
    char *a ="<head><meta charset=\"utf-8\" lang=\"",
      *b = "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>",
-     *c = "</title></head>";
+     *c = "</title><script type=\"text/javascript\" src=\"tdm.js\" charset=\"iso-8859-1\"></script><script type=\"text/javascript\"><!--\n function init(){\n tdm('tdm');\n }\n --> </script> </head>";
 
    fprintf(flot_html_latex,"%s%s%s%s%s", a, language, b, title, c);
 }
@@ -76,7 +76,7 @@ int create_files(char* name_page, char* name_html){
   fprintf(flot_html_latex,"%s",buf);
   ajout_enTete_html ("fr", name_page); //
    
-  buf = "<body>";
+  buf = "<body onload=\"init()\">";
   fprintf(flot_html_latex,"%s",buf);
    
   //traitement
@@ -98,13 +98,19 @@ int create_files(char* name_page, char* name_html){
 		    "content: counter(h1) \".\" counter(h2) \"  \"; counter-increment: h2;\n");
   ajout_regles_css( "h3:before",
 		    "content: counter(h1) \".\" counter(h2) \".\" counter(h3) \"  \"; counter-increment: h3;\n");
+  ajout_regles_css(".tdm-niveau-1","font-weight:bold;  \n");
+  ajout_regles_css(".tdm-niveau-2","margin-left:1em; \n");
+  ajout_regles_css(".tdm-niveau-3","margin-left:2em; \n");
+  ajout_regles_css(".tdm-niveau-4","margin-left:3em;\n");
+  ajout_regles_css(".tdm-niveau-5","margin-left:4em; \n");
+  ajout_regles_css(".tdm-niveau-6","margin-left:5em;\n");
   //ajouter regle pour nomfonction+nomvariable avec une pile.
   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
   return 0;
 }
 
 void finish(){
-  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n";
+  char * buf = "<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\"></script>\n";
   char *buf2 = "</body></html>";
   fprintf(flot_html_latex,"%s<t class=\"tiny\"><center>Cette page HTML a été générée à partir d'un fichier LateX</center></t>%s",buf,buf2);
   fclose(flot_js);

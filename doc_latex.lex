@@ -5,7 +5,6 @@
 #include "y.tab.h"
 #include "traitement.h"
 #include "Pile/stack.h"
-#include "File/queue.h"
 #define YY_NO_INPUT
 
 extern char * yylval_char;
@@ -15,11 +14,7 @@ extern void tabular_param(char * param_tabular,char * param, int length);
 extern void yyerror(const char *);  /* prints grammar violation message */
  
 int param();
-void remplir_queue(queue q, int n, char s);
-void create_tdm();
-void date(void);
- 
-queue q;
+void date(void); 
  
 %}
 
@@ -41,8 +36,8 @@ queue q;
 
 %%
 
-"\\begin{document}"          {fprintf(flot_html_latex,"<p style=\"text-indent:2em\">"); q = queue_create(); return(BEGIN_DOC); }
-"\\end{document}"            {fprintf(flot_html_latex,"</p>"); queue_destroy(q); return(END_DOC); }
+"\\begin{document}"          {fprintf(flot_html_latex,"<p style=\"text-indent:2em\">"); return(BEGIN_DOC); }
+"\\end{document}"            {fprintf(flot_html_latex,"</p>"); return(END_DOC); }
 
 
 "\\documentclass"("["[[:alnum:],]*"]")+("{"[[:alnum:],]*"}")+ {;}
@@ -296,9 +291,9 @@ queue q;
 <SUBSECTION>"}"              {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
 <SUBSUBSECTION>"}"           {yy_pop_state(); fprintf(flot_html_latex,"</h3>"); }
 
-<SECTION>.                   {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,1,yylval_char[0]); printf(yytext); return(BODY); }
-<SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,2,yylval_char[0]); printf(yytext); return(BODY); }
-<SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,3,yylval_char[0]); printf(yytext); return(BODY); }
+<SECTION>.                   {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
+<SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
+<SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
  
 "\\section*{"                 {yy_push_state(SECTION_S);fprintf(flot_html_latex,"<h1>"); return(BODY); }
 "\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>");  return(BODY);}
@@ -312,7 +307,7 @@ queue q;
 [\t\v\f\n\r][\t\v\f\n\r]+    {fprintf(flot_html_latex,"</p><p style=\"text-indent:2em\">");}
 "\\\\"|"\\newline"           {fprintf(flot_html_latex, "<br>");}
 
-"\\tableofcontents"          {create_tdm(); }
+"\\tableofcontents"          {fprintf(flot_html_latex, "<div id=\"tdm\"></div>"); }
   
 .                            {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
 
@@ -326,36 +321,6 @@ int param(){
     return(NEW_CASE_C);}
   else{
     return(NEW_CASE_R);}
-}
-
-void remplir_queue(queue q, int n, char s)
-{
-  queue_push(q,n,s);
-}
-
-void create_tdm()
-{
-  while(!queue_empty(q))
-    {
-      switch(queue_front_val1(q))
-	{
-	case 1:
-	  fprintf(flot_html_latex,"%c",queue_front_val2(q));
-	  break;
-	case 2:
-	  fprintf(flot_html_latex,"<t class=\"subsection\">");
-	  fprintf(flot_html_latex,"%c",queue_front_val2(q));
-	  fprintf(flot_html_latex,"</t>");
-	  break;
-	case 3:
-	  fprintf(flot_html_latex,"<t class=\"subsubsection\">");
-	  fprintf(flot_html_latex,"%c",queue_front_val2(q));
-	  fprintf(flot_html_latex,"</t>");
-	  break;
-	default:fprintf(flot_html_latex,"Erreur de Tdm");
-	  }
-      queue_pop(q);
-    }
 }
 
 void date(void)
