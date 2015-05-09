@@ -213,9 +213,12 @@ void string_literal(){
   free(yylval_string_numb);
 }
 
+
+
+
 void ajout_enTete_html (char * language, char * title){
   fprintf(flot_html_c,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s </title></head>\n", language, title);
-  fprintf(flot_html_doc,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"cssDoxy.css\" /><title> comDoxy </title></head>\n", language);
+  fprintf(flot_html_doc,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> comDoxy </title></head>\n", language);
 }
 
 int create_files(char * nom){

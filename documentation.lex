@@ -50,10 +50,13 @@ extern void yyerror(const char *);  /* prints grammar violation message */
  //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
-void lecture_ecriture_doxy(void);
+static void comment(void);
+static void ouverture_comm_doxy(void);
+static void fermeture_comm_doxy(void);
+static void lecture_ecriture_doxy(void);
 static void preproc_commentline(int type, char* name);
 static int check_type(void);
- void clear_balise(char c);
+void clear_balise(char c);
  
 %}
 
@@ -61,10 +64,10 @@ static int check_type(void);
 %x COMMENT
 
 %%
-"/**"                   { BEGIN DOXY; }
-"/*!"                   { BEGIN DOXY; }
+"/**"                   { ouverture_comm_doxy(); BEGIN DOXY; }
+"/*!"                   { ouverture_comm_doxy(); BEGIN DOXY; }
 <DOXY>"*"               { lecture_ecriture_doxy(); }
-<DOXY>"*/"              { BEGIN INITIAL; }
+<DOXY>"*/"              { fermeture_comm_doxy(); BEGIN INITIAL; }
 
 "/*"                    { BEGIN COMMENT; new_line(indentation); fprintf(flot_html_c,"<span class=\"comment\">/*");}
 <COMMENT>\n             { new_line(indentation+1); }
@@ -243,6 +246,13 @@ bool verifier_existance_commande(){ //verifie que \cmd existe bien en doxygen
       strcmp(commandeActuelle, "fn")==0
       );
 }
+void ouverture_comm_doxy(void){
+   fprintf(flot_html_doc, "<div class=\"fonction\"> ");
+}
+
+void fermeture_comm_doxy(void){
+   fprintf(flot_html_doc, "</div> ");
+}
 
 void lecture_ecriture_doxy(void)
 {
@@ -253,7 +263,7 @@ void lecture_ecriture_doxy(void)
    while ((c = input()) != 0){
       if(c == '\n'){ //si on est en fin de ligne, on sort de la fin et on
                      //écrit dans le flux de sortie html
-         fprintf(flot_html_doc, "<div class=\"%s\"> %s </div><br/>", commandeActuelle, contenu);
+         fprintf(flot_html_doc, "<div class=\"%s\"> %s </div>", commandeActuelle, contenu);
          unput(c);
          free(contenu);
          return;
@@ -263,7 +273,6 @@ void lecture_ecriture_doxy(void)
          while((c=input()) != ' '){
             commandeActuelle = strcat( commandeActuelle, (char*)&c);
          }
-         printf("%s\n", commandeActuelle);
          assert(verifier_existance_commande() && "unterminated command");
       }
       else if(c == ' '){ // suppression des espaces inutiles
