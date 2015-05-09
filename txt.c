@@ -52,6 +52,10 @@ int f (int i){
 }
 
 void g(int j){
+  int tableau[][];
+  //l'étoile est aussi considérée comme type de texte
+  char * texte;
+  
   //globale
   j++;
 
