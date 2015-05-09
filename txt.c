@@ -49,6 +49,12 @@ int main(int argc, char *argv[]){
   return 0;
 }
 
+/**
+  * \fn int f(int i)
+  * \brief test 1
+  * \param i parametre tres utile pour ce test
+  * \return un j inconnu au bataillon
+ */
 int f (int i){
   /* variable et commentaire indispensable... */
   int j = 2;
@@ -57,6 +63,11 @@ int f (int i){
   return j;
 }
 
+/**
+  * \fn int g(int j)
+  * \brief fonction de test secondaire. utilisation d'un tableau.
+  * \param variable globale j
+ */
 void g(int j){
   int tableau[][];
   //l'étoile est aussi considérée comme type de texte

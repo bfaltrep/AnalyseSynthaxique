@@ -303,6 +303,13 @@ void lecture_ecriture_doxy(void)
             commandeActuelle = strcat( commandeActuelle, (char*)&c);
          }
          assert(verifier_existance_commande() && "unterminated command");
+         //ajout de texte dans le doxyhtml
+         if (strcmp(commandeActuelle, "param")==0){
+            fprintf(flot_html_doc, "<div class=\"paramTitle\"> Parametre </div>");
+         }
+         else if (strcmp(commandeActuelle, "return")==0){
+            fprintf(flot_html_doc, "<div class=\"returnTitle\"> Renvoie </div>");
+         }
       }
       else if(c == ' '){ // suppression des espaces inutiles
          cptEspace++;
