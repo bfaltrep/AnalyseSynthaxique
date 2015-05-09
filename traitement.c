@@ -25,7 +25,7 @@ void ajout_enTete_html (char * language, char * title){
      *b = "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>",
      *c = "</title></head>";
 
-   fprintf(flot_html,"%s%s%s%s%s", a, language, b, title, c);
+   fprintf(flot_html_latex,"%s%s%s%s%s", a, language, b, title, c);
 }
 
 void ajout_balise_class(int type, char * contenu){
@@ -37,13 +37,13 @@ void ajout_balise_class(int type, char * contenu){
    /* res = strcat(res, "\">"); */
    /* res = strcat(res, contenu); */
    /* res = strcat(res, "</span>"); */
-   /* fprintf(flot_html,"%s",res); */
+   /* fprintf(flot_html_latex,"%s",res); */
    /* free(res); */
 
    char * a = "<span class=\"",
      *b = "\">",
      *c = "</span>";
-   fprintf(flot_html, "%s%s%s%s%s", a, type_to_string(type), b, contenu, c);
+   fprintf(flot_html_latex, "%s%s%s%s%s", a, type_to_string(type), b, contenu, c);
 }
 
 int create_menu()
@@ -52,12 +52,12 @@ int create_menu()
     *d = "\">",
     *e = "</a></li>";
 
-  fprintf(flot_html,"<ul id=\"menu\">");
-  fprintf(flot_html,"%s%s%s%s%s",c,"index.html",d,"Index",e);
-  fprintf(flot_html,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
-  fprintf(flot_html,"%s%s%s%s%s",c,"documentation.html",d,"Partie Documentation",e);
-  fprintf(flot_html,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
-  fprintf(flot_html,"</ul>");
+  fprintf(flot_html_latex,"<ul id=\"menu\">");
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"index.html",d,"Index",e);
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"documentation.html",d,"Partie Documentation",e);
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
+  fprintf(flot_html_latex,"</ul>");
   
   ajout_regles_css( "ul#menu li","display:inline;margin:10px;padding:10px;\n");
   ajout_regles_css( "ul#menu","text-align:center; margin:0;padding:0; list-style:none;\n");
@@ -67,17 +67,17 @@ int create_menu()
 
 int create_files(char* name_page, char* name_html){
   //créer les deux fichiers
-  flot_html = fopen(name_html,"w+"); //
+  flot_html_latex = fopen(name_html,"w+"); //
   flot_css = fopen("style.css","w+"); //
   flot_js = fopen("script.js","w+");
 
   //html
   buf = "<!DOCTYPE html><html>";
-  fprintf(flot_html,"%s",buf);
+  fprintf(flot_html_latex,"%s",buf);
   ajout_enTete_html ("fr", name_page); //
    
   buf = "<body>";
-  fprintf(flot_html,"%s",buf);
+  fprintf(flot_html_latex,"%s",buf);
    
   //traitement
 
@@ -106,8 +106,8 @@ int create_files(char* name_page, char* name_html){
 void finish(){
   char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n";
   char *buf2 = "</body></html>";
-  fprintf(flot_html,"%s<t class=\"tiny\"><center>Cette page HTML a été générée à partir d'un fichier LateX</center></t>%s",buf,buf2);
+  fprintf(flot_html_latex,"%s<t class=\"tiny\"><center>Cette page HTML a été générée à partir d'un fichier LateX</center></t>%s",buf,buf2);
   fclose(flot_js);
-  fclose(flot_html); 
+  fclose(flot_html_latex); 
   fclose(flot_css); 
 }

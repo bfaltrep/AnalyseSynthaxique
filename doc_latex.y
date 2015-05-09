@@ -38,35 +38,35 @@ void yyerror(const char *s);
 document: BEGIN_DOC body END_DOC
 ;
 
-body: BODY {fprintf(flot_html,yylval_char); } body
+body: BODY {fprintf(flot_html_latex,yylval_char); } body
 | itemize body
 | enumerate body
 | tabular body
 | equation body
 | math body
-| FORME_TITLE {fprintf(flot_html,"<center><t class=\"title\">");} body
-| FORME_AUTHOR{fprintf(flot_html,"<center><t class=\"author\">");} body 
-| FORME_FAT {fprintf(flot_html,"<b>");} body
-| FORME_ITALIC {fprintf(flot_html,"<i>");} body
-| FORME_UNDERLINE {fprintf(flot_html,"<u>");} body
+| FORME_TITLE {fprintf(flot_html_latex,"<center><t class=\"title\">");} body
+| FORME_AUTHOR{fprintf(flot_html_latex,"<center><t class=\"author\">");} body 
+| FORME_FAT {fprintf(flot_html_latex,"<b>");} body
+| FORME_ITALIC {fprintf(flot_html_latex,"<i>");} body
+| FORME_UNDERLINE {fprintf(flot_html_latex,"<u>");} body
 |
 ;
 
-itemize: BEGIN_ITEMIZE {fprintf(flot_html,"<ul>");} body_itemize END_ITEMIZE {fprintf(flot_html,"</ul>");}
+itemize: BEGIN_ITEMIZE {fprintf(flot_html_latex,"<ul>");} body_itemize END_ITEMIZE {fprintf(flot_html_latex,"</ul>");}
 ;
 
-body_itemize: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>");} body_itemize
+body_itemize: {fprintf(flot_html_latex,"<li>");} ITEM body {fprintf(flot_html_latex,"</li>");} body_itemize
 | 
 ;
 
-enumerate: BEGIN_ENUMERATE  {fprintf(flot_html,"<ol>");} body_enumerate END_ENUMERATE {fprintf(flot_html,"</ol>");}
+enumerate: BEGIN_ENUMERATE  {fprintf(flot_html_latex,"<ol>");} body_enumerate END_ENUMERATE {fprintf(flot_html_latex,"</ol>");}
 ;
 
-body_enumerate: {fprintf(flot_html,"<li>");} ITEM body {fprintf(flot_html,"</li>");} body_enumerate
+body_enumerate: {fprintf(flot_html_latex,"<li>");} ITEM body {fprintf(flot_html_latex,"</li>");} body_enumerate
 |
 ;
 
-tabular: BEGIN_TABULAR {fprintf(flot_html,"<table>");} {fprintf(flot_html,"<tr>");} body_tabular END_TABULAR {fprintf(flot_html,"</tr></table>");}
+tabular: BEGIN_TABULAR {fprintf(flot_html_latex,"<table>");} {fprintf(flot_html_latex,"<tr>");} body_tabular END_TABULAR {fprintf(flot_html_latex,"</tr></table>");}
 ;
 
 body_tabular: body_tabular_l
@@ -111,22 +111,22 @@ new_case_c: NEW_CASE_C case_c
 new_case_r: NEW_CASE_R case_r
 ;
 
-case_l:{fprintf(flot_html,"<td align=\"left\">");} body {fprintf(flot_html,"</td>");} new_case_
+case_l:{fprintf(flot_html_latex,"<td align=\"left\">");} body {fprintf(flot_html_latex,"</td>");} new_case_
 ;
 
-case_c:{fprintf(flot_html,"<td align=\"center\">");} body {fprintf(flot_html,"</td>");} new_case_
+case_c:{fprintf(flot_html_latex,"<td align=\"center\">");} body {fprintf(flot_html_latex,"</td>");} new_case_
 ;
 
-case_r:{fprintf(flot_html,"<td align=\"right\">");} body {fprintf(flot_html,"</td>");} new_case_
+case_r:{fprintf(flot_html_latex,"<td align=\"right\">");} body {fprintf(flot_html_latex,"</td>");} new_case_
 ;
 
-line_: NEW_LINE {fprintf(flot_html,"</tr><tr>");}
+line_: NEW_LINE {fprintf(flot_html_latex,"</tr><tr>");}
 ;
 
-equation: BEGIN_EQUATION {fprintf(flot_html,"<p style=\"text-indent:2em\">");} body END_EQUATION {fprintf(flot_html,"</p>");}
+equation: BEGIN_EQUATION {fprintf(flot_html_latex,"<p style=\"text-indent:2em\">");} body END_EQUATION {fprintf(flot_html_latex,"</p>");}
 ;
 
-math: BEGIN_MATH_ML {fprintf(flot_html,"<math display=\"inline\">");}  END_MATH_ML {fprintf(flot_html,"</mrow></math>");}
+math: BEGIN_MATH_ML {fprintf(flot_html_latex,"<math display=\"inline\">");}  END_MATH_ML {fprintf(flot_html_latex,"</mrow></math>");}
 ;
 
 

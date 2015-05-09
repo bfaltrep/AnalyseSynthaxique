@@ -3,7 +3,7 @@
 #include <string.h>
 
 //-- locals var
-FILE *flot_html;
+FILE *flot_html_latex;
 FILE *flot_css;
 FILE *flot_js;
 char * buf;
