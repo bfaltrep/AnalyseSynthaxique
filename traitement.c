@@ -37,7 +37,6 @@ void tab(){
 }
 
 void p_virgule(){
-  //nettoyer avant l'insertion
   fprintf(flot_html_c, ";");
   //on ne met pas a la ligne quand on est dans une boucle for
   if(!bool_cond){
@@ -50,7 +49,7 @@ void accolade_ouvrante(){
     {
       bool_cond = 0;
     }
-  fprintf(flot_html_c, "<span class=\"accolade\">{</span> <span >");
+  fprintf(flot_html_c, "<span class=\"accolade\">{</span> <span>");
   indentation++;
   new_line(indentation);
   //pour pouvoir traiter le crochet comme les nom de variables lorsque l'on supprime de la pile, on doit allouer de la mémoire.
@@ -167,7 +166,7 @@ char *str_remplace (const char *s, unsigned int start, unsigned int lenght, cons
 
    if (s != NULL && ct != NULL && start >= 0 && lenght > 0)
    {
-      size_t size = strlen (s);
+      int size = strlen (s);
 
       new_s = malloc (sizeof (*new_s) * (size - lenght + strlen (ct) + 1));
       if (new_s != NULL)

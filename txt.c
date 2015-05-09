@@ -1,6 +1,9 @@
 #include <stdio.h>
-#include "test5h"
+#include "test5.h"
 
+#ifndef TRAITEMENT_H
+#define TRAITEMENT_H
+#endif
 #define CONSTANTE 52
 int i;
 

@@ -50,13 +50,13 @@ extern void yyerror(const char *);  /* prints grammar violation message */
  //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
-static void comment(void);
 static void ouverture_comm_doxy(void);
 static void fermeture_comm_doxy(void);
 static void lecture_ecriture_doxy(void);
-static void preproc_commentline(int type, char* name);
+static void commentline();
+static void preproc();
 static int check_type(void);
-void clear_balise(char c);
+static void clear_balise(char c);
  
 %}
 
@@ -83,7 +83,7 @@ void clear_balise(char c);
   new_line(indentation); }
 
 
-"//"                    { preproc_commentline(1,""); }
+"//"                    { commentline(); }
 
 "auto"			{ return(AUTO); }
 "break"			{ return(BREAK); }
@@ -199,8 +199,8 @@ void clear_balise(char c);
 "|"				{ return '|'; }
 "?"				{ return '?'; }
 
-"#"("include"|"INCLUDE")  	{ preproc_commentline(0,"include"); }
-"#"("define"|"DEFINE")    	{ preproc_commentline(0,"define"); }
+"#"                     	{ preproc(); }
+
 {WS}			        { /* whitespace separates tokens */ }
 .				{ /* discard bad characters */ }
 
@@ -223,19 +223,48 @@ void clear_balise(char c){
   }
 }
 
-static void preproc_commentline(int type, char * name){
-   fprintf(flot_html_c,"\n<span class=\"%s\">%s%s%s",type?"comment_line":"preproc",type?"//":"#",name,type?"":"</span>");
+static void commentline(){
+   fprintf(flot_html_c,"\n<span class=\"comment_line\">//");
    int c;
    while ((c = input()) != 0){
-      if(c == '\n'){
-         if(type){
-            fprintf(flot_html_c, "</span>");
-         }
-         new_line(indentation);
-         return;
-      }
-      clear_balise(c);
+     if(c == '\n'){
+       fprintf(flot_html_c, "</span>");
+       new_line(indentation);
+       return;
+     }
+     clear_balise(c);
    }
+}
+
+static void preproc(){
+  fprintf(flot_html_c,"\n<span class=\"preproc\">#");
+  int c;
+  int name = 1;
+  while ((c = input()) != 0){
+    switch(c){
+    case '\n':
+      if(name){
+	name =0;
+	fprintf(flot_html_c, "</span>");
+      }
+      new_line(indentation);
+      return;
+    case '<':
+      fprintf(flot_html_c, "&lt;");
+      break;
+    case '>':
+      fprintf(flot_html_c, "&gt;");
+      break;
+    case ' ':
+      if(name){
+	name =0;
+	fprintf(flot_html_c, "</span>");
+      }
+    default:
+      fprintf(flot_html_c, "%c",c);
+      break;
+    }
+  }
 }
 
 bool verifier_existance_commande(){ //verifie que \cmd existe bien en doxygen
