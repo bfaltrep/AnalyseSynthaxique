@@ -247,7 +247,7 @@ int create_files(char * nom){
   ajout_regles_css(".type_specifier" ,"color : #0099FF;\n");
   ajout_regles_css(".string_literal","color : #DAA520;\n");
   ajout_regles_css(".var","color : #66AA33;\ntext-decoration:none;\n");
-  ajout_regles_css(".comment_line","color : #999999;\n");
+  ajout_regles_css(".comment_line, .comment","color : #999999;\n");
   ajout_regles_css(".accolade","cursor:pointer;\n");
   ajout_regles_css(".noname","color : white;\n");
   

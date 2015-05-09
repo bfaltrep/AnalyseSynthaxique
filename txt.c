@@ -6,6 +6,8 @@ int i;
 
 /*
  fonctions locales
+ f puis g
+ pleins de choses
 */
 int f(int i);
 void g();
@@ -45,9 +47,7 @@ int main(int argc, char *argv[]){
 }
 
 int f (int i){
-  /*
-    variable et commentaire indispensable...
-   */
+  /* variable et commentaire indispensable... */
   int j = 2;
   j++;
   i = i+2;

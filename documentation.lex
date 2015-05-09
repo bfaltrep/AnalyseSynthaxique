@@ -49,15 +49,16 @@ extern void yyerror(const char *);  /* prints grammar violation message */
 
  //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
-static void comment(void);
 
 void lecture_ecriture_doxy(void);
 static void preproc_commentline(int type, char* name);
 static int check_type(void);
-
+ void clear_balise(char c);
+ 
 %}
 
 %x DOXY
+%x COMMENT
 
 %%
 "/**"                   { BEGIN DOXY; }
@@ -65,7 +66,20 @@ static int check_type(void);
 <DOXY>"*"               { lecture_ecriture_doxy(); }
 <DOXY>"*/"              { BEGIN INITIAL; }
 
-"/*"                    { comment(); }
+"/*"                    { BEGIN COMMENT; new_line(indentation); fprintf(flot_html_c,"<span class=\"comment\">/*");}
+<COMMENT>\n             { new_line(indentation+1); }
+<COMMENT>.              { char c = yytext[0]; clear_balise(c);}
+<COMMENT>"*/"           { BEGIN INITIAL;
+  char c = yytext[-1];
+  if(c == '\n'){
+    fseek(flot_html_c,-(strlen("&nbsp")*4),SEEK_CUR);
+  }else if(c != ' '){
+    tab();
+  }
+  fprintf(flot_html_c,"*/</span>");
+  new_line(indentation); }
+
+
 "//"                    { preproc_commentline(1,""); }
 
 "auto"			{ return(AUTO); }
@@ -219,26 +233,6 @@ static void preproc_commentline(int type, char * name){
       }
       clear_balise(c);
    }
-}
-
-static void comment(void)
-{
-    int c;
-
-    while ((c = input()) != 0){
-       if (c == '*')
-       {
-          while ((c = input()) == '*')
-             ;
-          if (c == '/')
-             return;
-
-          if (c == 0)
-             break;
-       }
-       clear_balise(c);
-    }
-    yyerror("unterminated comment");
 }
 
 bool verifier_existance_commande(){ //verifie que \cmd existe bien en doxygen
