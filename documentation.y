@@ -17,6 +17,8 @@
 extern int yylex();
 extern int yylex_destroy () ;
 extern void unput(char c);
+
+//extern void unput(char c);
  
   //-- locals functions  
   void yyerror(const char *s);
@@ -611,9 +613,10 @@ external_declaration
 : function_definition { /*retire de la pile les parametres de la fonction*/ fin_def_dec_fonction(); }
 | declaration {
   /*place une balise de declaration pour le lien*/
-  fseek(flot_html,-(strlen("<br><br>")),SEEK_CUR);
+  fseek(flot_html,-(strlen("<\\code><br><code><\\code><br><code>")),SEEK_CUR);
   char * nom_var = stack_inside_after(variables,".");
-  fprintf(flot_html,"<span id=\"%s\"></span><br><br>",nom_var);
+  fprintf(flot_html,"<span id=\"%s\"></span>",nom_var);
+  new_line(indentation);
   //retire les parametres de la pile. Seul le nom de la fonction peut être utilisé ensuite ensuite. 'if' pour pas avoir de problemes avec les variables globales.
   if(stack_inside_variable(variables,"(") != NULL){
     fin_def_dec_fonction();

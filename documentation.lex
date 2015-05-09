@@ -41,10 +41,11 @@ extern char * yylval_char;
 extern char * yylval_string_numb;
 extern char * commandeActuelle;
 extern int indentation;
+ int type_struct;
 
  //fonctions importées
 extern void yyerror(const char *);  /* prints grammar violation message */
-extern int sym_type(const char *);  /* returns type from symbol table */
+//extern int sym_type(const char *);  /* returns type from symbol table */
 
  //fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
@@ -93,11 +94,11 @@ static int check_type(void);
 "signed"		{ return(SIGNED); }
 "sizeof"		{ return(SIZEOF); }
 "static"		{ return(STATIC); }
-"struct"		{ return(STRUCT); }
+"struct"		{  return(STRUCT); }
 "switch"		{ return(SWITCH); }
 "typedef"	        { return(TYPEDEF); }
 "union"			{ return(UNION); }
-"unsigned"		{ return(UNSIGNED); }
+ "unsigned"		{ return(UNSIGNED); }
 "void"			{ return(VOID); }
 "volatile"	        { return(VOLATILE); }
 "while"		        { return(WHILE); }
@@ -113,14 +114,12 @@ static int check_type(void);
 "_Thread_local"         { return THREAD_LOCAL; }
 "__func__"              { return FUNC_NAME; }
 
-{L}{A}*			{ asprintf(&yylval_char,yytext);/*yylval_char = strcpy(yylval_char, yytext);*/
-  return check_type();
-      }
+{L}{A}*			{ asprintf(&yylval_char,yytext); return check_type(); }
 
-{HP}{H}+{IS}?		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
-{NZ}{D}*{IS}?		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
-"0"{O}*{IS}?		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
-{CP}?"'"([^\'\\\n]|{ES})+"'"		{ asprintf(&yylval_string_numb,yytext);/*strcpy(yylval_string_numb, yytext);*/ return I_CONSTANT; }
+{HP}{H}+{IS}?		{ asprintf(&yylval_string_numb,yytext); return I_CONSTANT; }
+{NZ}{D}*{IS}?		{ asprintf(&yylval_string_numb,yytext); return I_CONSTANT; }
+"0"{O}*{IS}?		{ asprintf(&yylval_string_numb,yytext); return I_CONSTANT; }
+{CP}?"'"([^\'\\\n]|{ES})+"'"		{ asprintf(&yylval_string_numb,yytext); return I_CONSTANT; }
 
 {D}+{E}{FS}?				{ return F_CONSTANT; }
 {D}*"."{D}+{E}?{FS}?			{ return F_CONSTANT; }
@@ -132,7 +131,7 @@ static int check_type(void);
 ({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{/*pour une raison que je n'ai pas réussis a comprendre, il refuse asprintf ici... y aurait il une taille maximal possible pour les char * à faire passer ?*/
   yylval_string_numb= malloc(sizeof(char)*(strlen(yytext)+1));
   strcpy(yylval_string_numb, yytext);
-  /*asprintf(&yylval_string_numb,yytext);*/ return STRING_LITERAL; }
+  return STRING_LITERAL; }
 
 "..."				{ return ELLIPSIS; }
 ">>="				{ return RIGHT_ASSIGN; }
