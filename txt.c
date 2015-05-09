@@ -45,6 +45,9 @@ int main(int argc, char *argv[]){
 }
 
 int f (int i){
+  /*
+    variable et commentaire indispensable...
+   */
   int j = 2;
   j++;
   i = i+2;

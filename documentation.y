@@ -54,31 +54,31 @@ extern void unput(char c);
 %%
 
 p_ouvrante
-: '(' {fprintf(flot_html, "(");}
+: '(' {fprintf(flot_html_c, "(");}
 p_fermante
-: ')' {fprintf(flot_html, ")");}
+: ')' {fprintf(flot_html_c, ")");}
 parentheses
-: '(' ')' {fprintf(flot_html, "()");}
+: '(' ')' {fprintf(flot_html_c, "()");}
 a_ouvrant
 : '{' {accolade_ouvrante();}
 a_fermant
 : '}' {accolade_fermante();}
 c_ouvrant
-: '[' {fprintf(flot_html, "[");}
+: '[' {fprintf(flot_html_c, "[");}
 c_fermant
-: ']' {fprintf(flot_html, "]");}
+: ']' {fprintf(flot_html_c, "]");}
 p_fermant_a_ouvrant
-: ')' '{' {fprintf(flot_html, ")"); accolade_ouvrante();}
+: ')' '{' {fprintf(flot_html_c, ")"); accolade_ouvrante();}
 etoile
-: '*' {fprintf(flot_html, "*");}
+: '*' {fprintf(flot_html_c, "*");}
 etoile_pointeur
 : '*' {ajout_balise_class("type_specifier","*");}
 deux_point
-: ':' {fprintf(flot_html, ":");}
+: ':' {fprintf(flot_html_c, ":");}
 point_virgule
 : ';' {p_virgule();}
 virgule
-: ',' {fprintf(flot_html, ",");}
+: ',' {fprintf(flot_html_c, ",");}
 string_literal
 : STRING_LITERAL { string_literal(); }
 for_
@@ -143,10 +143,10 @@ postfix_expression
 | postfix_expression c_ouvrant expression c_fermant
 | postfix_expression parentheses
 | postfix_expression p_ouvrante argument_expression_list p_fermante
-| postfix_expression '.' { fprintf(flot_html, "."); } IDENTIFIER
-| postfix_expression PTR_OP { fprintf(flot_html, "-&gt;"); } IDENTIFIER
-| postfix_expression INC_OP { fprintf(flot_html, "++"); }
-| postfix_expression DEC_OP { fprintf(flot_html, "--"); }
+| postfix_expression '.' { fprintf(flot_html_c, "."); } IDENTIFIER
+| postfix_expression PTR_OP { fprintf(flot_html_c, "-&gt;"); } IDENTIFIER
+| postfix_expression INC_OP { fprintf(flot_html_c, "++"); }
+| postfix_expression DEC_OP { fprintf(flot_html_c, "--"); }
 | p_ouvrante type_name p_fermant_a_ouvrant initializer_list a_fermant
 | p_ouvrante type_name p_fermant_a_ouvrant initializer_list virgule a_fermant
 ;
@@ -158,8 +158,8 @@ argument_expression_list
 
 unary_expression
 : postfix_expression
-| INC_OP { fprintf(flot_html, "++"); } unary_expression
-| DEC_OP { fprintf(flot_html, "--"); } unary_expression
+| INC_OP { fprintf(flot_html_c, "++"); } unary_expression
+| DEC_OP { fprintf(flot_html_c, "--"); } unary_expression
 | unary_operator cast_expression
 | sizeof_ unary_expression
 | sizeof_ p_ouvrante type_name p_fermante
@@ -167,12 +167,12 @@ unary_expression
 ;
 
 unary_operator
-: '&' {fprintf(flot_html, "&amp;");}
-| '*' {fprintf(flot_html, "*");}
-| '+' {fprintf(flot_html, "+");}
-| '-' {fprintf(flot_html, "-");}
-| '~' {fprintf(flot_html, "~");}
-| '!' {fprintf(flot_html, "!");}
+: '&' {fprintf(flot_html_c, "&amp;");}
+| '*' {fprintf(flot_html_c, "*");}
+| '+' {fprintf(flot_html_c, "+");}
+| '-' {fprintf(flot_html_c, "-");}
+| '~' {fprintf(flot_html_c, "~");}
+| '!' {fprintf(flot_html_c, "!");}
 ;
 
 cast_expression
@@ -183,64 +183,64 @@ cast_expression
 multiplicative_expression
 : cast_expression
 | multiplicative_expression etoile cast_expression
-| multiplicative_expression '/' {fprintf(flot_html, "/");} cast_expression
-| multiplicative_expression '%' {fprintf(flot_html, "%%");} cast_expression
+| multiplicative_expression '/' {fprintf(flot_html_c, "/");} cast_expression
+| multiplicative_expression '%' {fprintf(flot_html_c, "%%");} cast_expression
 ;
 
 additive_expression
 : multiplicative_expression
-| additive_expression '+' {fprintf(flot_html, "+");} multiplicative_expression
-| additive_expression '-' {fprintf(flot_html, "-");} multiplicative_expression
+| additive_expression '+' {fprintf(flot_html_c, "+");} multiplicative_expression
+| additive_expression '-' {fprintf(flot_html_c, "-");} multiplicative_expression
 ;
 
 shift_expression
 : additive_expression
-| shift_expression LEFT_OP {fprintf(flot_html, "&lt;&lt;");} additive_expression
-| shift_expression RIGHT_OP {fprintf(flot_html, "&gt;&gt;");} additive_expression
+| shift_expression LEFT_OP {fprintf(flot_html_c, "&lt;&lt;");} additive_expression
+| shift_expression RIGHT_OP {fprintf(flot_html_c, "&gt;&gt;");} additive_expression
 ;
 
 relational_expression
 : shift_expression
-| relational_expression '<' {fprintf(flot_html, "&lt;");} shift_expression
-| relational_expression '>' {fprintf(flot_html, "&gt;");} shift_expression
-| relational_expression LE_OP {fprintf(flot_html, "&lt;=");} shift_expression
-| relational_expression GE_OP {fprintf(flot_html, "&gt;=");} shift_expression
+| relational_expression '<' {fprintf(flot_html_c, "&lt;");} shift_expression
+| relational_expression '>' {fprintf(flot_html_c, "&gt;");} shift_expression
+| relational_expression LE_OP {fprintf(flot_html_c, "&lt;=");} shift_expression
+| relational_expression GE_OP {fprintf(flot_html_c, "&gt;=");} shift_expression
 ;
 
 equality_expression
 : relational_expression
-| equality_expression EQ_OP {fprintf(flot_html, "==");} relational_expression
-| equality_expression NE_OP {fprintf(flot_html, "!=");} relational_expression
+| equality_expression EQ_OP {fprintf(flot_html_c, "==");} relational_expression
+| equality_expression NE_OP {fprintf(flot_html_c, "!=");} relational_expression
 ;
 
 and_expression
 : equality_expression
-| and_expression '&' {fprintf(flot_html, "&amp;");} equality_expression
+| and_expression '&' {fprintf(flot_html_c, "&amp;");} equality_expression
 ;
 
 exclusive_or_expression
 : and_expression
-| exclusive_or_expression '^' {fprintf(flot_html, "^");} and_expression
+| exclusive_or_expression '^' {fprintf(flot_html_c, "^");} and_expression
 ;
 
 inclusive_or_expression
 : exclusive_or_expression
-| inclusive_or_expression '|' {fprintf(flot_html, "|");} exclusive_or_expression
+| inclusive_or_expression '|' {fprintf(flot_html_c, "|");} exclusive_or_expression
 ;
 
 logical_and_expression
 : inclusive_or_expression
-| logical_and_expression AND_OP {fprintf(flot_html, "&amp;&amp;");} inclusive_or_expression
+| logical_and_expression AND_OP {fprintf(flot_html_c, "&amp;&amp;");} inclusive_or_expression
 ;
 
 logical_or_expression
 : logical_and_expression
-| logical_or_expression OR_OP {fprintf(flot_html, "||");} logical_and_expression
+| logical_or_expression OR_OP {fprintf(flot_html_c, "||");} logical_and_expression
 ;
 
 conditional_expression
 : logical_or_expression
-| logical_or_expression '?' {fprintf(flot_html, "?");} expression deux_point conditional_expression
+| logical_or_expression '?' {fprintf(flot_html_c, "?");} expression deux_point conditional_expression
 ;
 
 assignment_expression
@@ -249,17 +249,17 @@ assignment_expression
 ;
 
 assignment_operator
-: '=' {fprintf(flot_html, "=");}
-| MUL_ASSIGN {fprintf(flot_html, "*=");}
-| DIV_ASSIGN {fprintf(flot_html, "/=");}
-| MOD_ASSIGN {fprintf(flot_html, "%%=");}
-| ADD_ASSIGN {fprintf(flot_html, "+=");}
-| SUB_ASSIGN {fprintf(flot_html, "-=");}
-| LEFT_ASSIGN {fprintf(flot_html, "&lt;&lt;=");}
-| RIGHT_ASSIGN {fprintf(flot_html, "&gt;&gt;=");}
-| AND_ASSIGN {fprintf(flot_html, "&amp;=");}
-| XOR_ASSIGN {fprintf(flot_html, "^=");}
-| OR_ASSIGN {fprintf(flot_html, "|=");}
+: '=' {fprintf(flot_html_c, "=");}
+| MUL_ASSIGN {fprintf(flot_html_c, "*=");}
+| DIV_ASSIGN {fprintf(flot_html_c, "/=");}
+| MOD_ASSIGN {fprintf(flot_html_c, "%%=");}
+| ADD_ASSIGN {fprintf(flot_html_c, "+=");}
+| SUB_ASSIGN {fprintf(flot_html_c, "-=");}
+| LEFT_ASSIGN {fprintf(flot_html_c, "&lt;&lt;=");}
+| RIGHT_ASSIGN {fprintf(flot_html_c, "&gt;&gt;=");}
+| AND_ASSIGN {fprintf(flot_html_c, "&amp;=");}
+| XOR_ASSIGN {fprintf(flot_html_c, "^=");}
+| OR_ASSIGN {fprintf(flot_html_c, "|=");}
 ;
 
 expression
@@ -296,7 +296,7 @@ init_declarator_list
 ;
 
 init_declarator
-: declarator '=' {fprintf(flot_html, "=");} initializer
+: declarator '=' {fprintf(flot_html_c, "=");} initializer
 | declarator {/*fin declarator*/} 
 ;
 
@@ -381,7 +381,7 @@ enumerator_list
 ;
 
 enumerator /* identifiers must be flagged as ENUMERATION_CONSTANT */
-: enumeration_constant '=' {fprintf(flot_html, "=");} constant_expression
+: enumeration_constant '=' {fprintf(flot_html_c, "=");} constant_expression
 | enumeration_constant
 ;
 
@@ -463,7 +463,7 @@ type_qualifier_list
 ;
 
 parameter_type_list
-: parameter_list virgule ELLIPSIS {fprintf(flot_html,"...");}
+: parameter_list virgule ELLIPSIS {fprintf(flot_html_c,"...");}
 | parameter_list
 ;
 
@@ -531,7 +531,7 @@ initializer_list
 ;
 
 designation
-: designator_list '=' {fprintf(flot_html, "=");}
+: designator_list '=' {fprintf(flot_html_c, "=");}
 ;
 
 designator_list
@@ -540,8 +540,8 @@ designator_list
 ;
 
 designator
-: c_ouvrant constant_expression c_fermant
-| '.' {fprintf(flot_html, ".");} IDENTIFIER
+: c_ouvrant constant_expression c_fermant {fprintf(flot_html_c,"-LALA-");}
+| '.' {fprintf(flot_html_c, ".");} IDENTIFIER
 ;
 static_assert_declaration
 : STATIC_ASSERT p_ouvrante constant_expression virgule string_literal p_fermante point_virgule
@@ -613,9 +613,9 @@ external_declaration
 : function_definition { /*retire de la pile les parametres de la fonction*/ fin_def_dec_fonction(); }
 | declaration {
   /*place une balise de declaration pour le lien*/
-  fseek(flot_html,-(strlen("<\\code><br><code><\\code><br><code>")),SEEK_CUR);
+  fseek(flot_html_c,-(strlen("<br><br>")),SEEK_CUR);
   char * nom_var = stack_inside_after(variables,".");
-  fprintf(flot_html,"<span id=\"%s\"></span>",nom_var);
+  fprintf(flot_html_c,"<span id=\"%s\"></span>",nom_var);
   new_line(indentation);
   //retire les parametres de la pile. Seul le nom de la fonction peut être utilisé ensuite ensuite. 'if' pour pas avoir de problemes avec les variables globales.
   if(stack_inside_variable(variables,"(") != NULL){

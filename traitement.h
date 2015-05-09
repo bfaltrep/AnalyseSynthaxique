@@ -13,11 +13,10 @@
 #include "list/list.h"
 
 //-- global var
-FILE *flot_html;
-FILE *flot_css;
-FILE *flot_js;
-FILE * flot_html2;
-FILE * flot_css2;
+FILE * flot_html_c;
+FILE * flot_css;
+FILE * flot_js;
+FILE * flot_html_doc;
 
 char * buf;
 
@@ -52,6 +51,7 @@ void accolade_fermante();
 void ajout_div();
 void div_fermante();
 void condition_saut_ligne();
+//on veut que les strings litéraux puissent contenir des balises html qui ne seront pas traitées
 void string_literal();
 
 //variables

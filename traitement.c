@@ -6,25 +6,25 @@ void ajout_regles_css( char * selecteurs, char * regles){
 }
 
 void ajout_balise_class(char * type, char * contenu){
-  fprintf(flot_html, "\n<span class=\"%s\">%s</span>\n",type,contenu);
+  fprintf(flot_html_c, "\n<span class=\"%s\">%s</span>\n",type,contenu);
 }
 
 void ajout_balise_variable(char * surnom, char * nom){
-  fprintf(flot_html, "\n<a class=\"var %s\" href=\"#%s\">%s</a>", surnom,surnom, nom);
+  fprintf(flot_html_c, "\n<a class=\"var %s\" href=\"#%s\">%s</a>", surnom,surnom, nom);
 }
 
 void ajout_div( char * class){
-  fprintf(flot_html,"<div class=\"%s\">",class);
+  fprintf(flot_html_c,"<div class=\"%s\">",class);
 }
 
 void div_fermante(){
-  fprintf(flot_html, "</div>");
+  fprintf(flot_html_c, "</div>");
 }
 
 void new_line(int size){
-  fprintf(flot_html, "</code><br><code>");
+  fprintf(flot_html_c, "<br>");
   if(size == 0){
-    fprintf(flot_html, "</code><br><code>");
+    fprintf(flot_html_c, "<br>");
   }
   int i = 0;
   for(;i < size; i++){
@@ -33,12 +33,12 @@ void new_line(int size){
 }
 
 void tab(){
-  fprintf(flot_html, "&nbsp");
+  fprintf(flot_html_c, "&nbsp");
 }
 
 void p_virgule(){
   //nettoyer avant l'insertion
-  fprintf(flot_html, ";");
+  fprintf(flot_html_c, ";");
   //on ne met pas a la ligne quand on est dans une boucle for
   if(!bool_cond){
     new_line(indentation);
@@ -50,7 +50,7 @@ void accolade_ouvrante(){
     {
       bool_cond = 0;
     }
-  fprintf(flot_html, "<span class=\"accolade\">{</span> <span >");
+  fprintf(flot_html_c, "<span class=\"accolade\">{</span> <span >");
   indentation++;
   new_line(indentation);
   //pour pouvoir traiter le crochet comme les nom de variables lorsque l'on supprime de la pile, on doit allouer de la mémoire.
@@ -63,8 +63,8 @@ void accolade_fermante(){
   //retirer une tabulation avant d'écrire l'accolade
 
   int size = strlen("&nbsp")*sizeof(char)*4;
-  fseek(flot_html,-size,SEEK_CUR);
-  fprintf(flot_html, "</span>}");
+  fseek(flot_html_c,-size,SEEK_CUR);
+  fprintf(flot_html_c, "</span>}");
   indentation--;
   if(indentation < 0)
     {
@@ -95,7 +95,8 @@ char * retrouver_variable(char * nom){
       char * tmp;
       asprintf(&tmp,"%s%s","syntax error. variable undeclared : ",nom);
       yyerror(tmp);
-      free(tmp);*/
+      free(tmp);
+    */
     return "noname";
   }
   return surnom;
@@ -111,7 +112,7 @@ void ajouter_variable(char * nom){
   asprintf(&tmp2,nom);
   list_insert(variables_name,tmp);
 
-  //si on est au niveau d'indentation 0, on est a une déclaration/definition global. On veut donc mettre un point devant pour pouvoir retrouver la decl/def de la variable/fonction
+  //si on est au niveau d'indentation 0, on a une déclaration/definition global. On veut donc mettre un point devant pour pouvoir retrouver la decl/def de la variable/fonction
   if(indentation == 0){
     char * point;
     asprintf(&point,"." );
@@ -213,36 +214,32 @@ void string_literal(){
 }
 
 void ajout_enTete_html (char * language, char * title){
-  fprintf(flot_html,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s </title></head>\n<code>", language, title);
-  fprintf(flot_html2,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"cssDoxy.css\" /><title> comDoxy </title></head>\n", language);
+  fprintf(flot_html_c,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s </title></head>\n", language, title);
+  fprintf(flot_html_doc,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"cssDoxy.css\" /><title> comDoxy </title></head>\n", language);
 }
 
 int create_files(char * nom){
   //créer les fichiers du site
-  flot_html = fopen("index.html","w+");
+  flot_html_c = fopen("index.html","w+");
   flot_css = fopen("style.css","w+");
   flot_js = fopen("script.js","w+");
-  flot_html2 = fopen("comDoxy.html", "w+");
-  flot_css2 = fopen("cssDoxy.css","w+");
+  flot_html_doc = fopen("comDoxy.html", "w+");
   
   //html
   buf = "<!DOCTYPE html><html>";
-  fprintf(flot_html,"%s",buf);
-  fprintf(flot_html2,"%s",buf);
-  ajout_enTete_html ("fr", nom);
+  fprintf(flot_html_c,"%s",buf);
+  fprintf(flot_html_doc,"%s",buf);
+  ajout_enTete_html("fr", nom);
   
   
   buf = "<body>";
-  fprintf(flot_html,"%s",buf);
-  fprintf(flot_html2,"%s",buf);
+  fprintf(flot_html_c,"%s",buf);
+  fprintf(flot_html_doc,"%s",buf);
   //traitement
 
   //css
-  ajout_regles_css("body","background-color : #333333; \ncolor : white; \ncounter-reset : line;\n");
-  //gestion des numeros de lignes
-  ajout_regles_css("code","counter-increment: line;\n");
-  ajout_regles_css("code:before","content:counter(line); \npadding-right : 1%;\n");
-  
+  ajout_regles_css("body","background-color : #333333; \ncolor : white; \n");
+
   ajout_regles_css(".preproc","color : #FF9933;\n");
   
   ajout_regles_css(".number","color : #CC0000;\n");
@@ -264,13 +261,13 @@ void finish_files(){
    
   char * buf = "\n<script src=\"site/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
 
-  fseek(flot_html,-(strlen("<code>")),SEEK_CUR);
-  fprintf(flot_html,"%s",buf);
-  fprintf(flot_html2,"\n</body></html>");
+  fprintf(flot_html_c,"%s",buf);
+  fprintf(flot_html_doc,"\n</body></html>");
   
   fclose(flot_js);
-  fclose(flot_html);
-  fclose(flot_html2);
+  fclose(flot_html_c);
+  fclose(flot_html_doc);
   fclose(flot_css);
+  
 }
 

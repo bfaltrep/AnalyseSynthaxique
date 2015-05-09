@@ -194,26 +194,30 @@ int yywrap(void)        /* called at end of input */
   return 1;           /* terminate now */
 }
 
+void clear_balise(char c){
+  if(c == '<'){
+    fprintf(flot_html_c, "&lt;");
+  }
+  else if(c == '>'){
+    fprintf(flot_html_c, "&gt;");
+  }
+  else{
+    fprintf(flot_html_c, "%c",c);
+  }
+}
+
 static void preproc_commentline(int type, char * name){
-   fprintf(flot_html,"\n<span class=\"%s\">%s%s%s",type?"comment_line":"preproc",type?"//":"#",name,type?"":"</span>");
+   fprintf(flot_html_c,"\n<span class=\"%s\">%s%s%s",type?"comment_line":"preproc",type?"//":"#",name,type?"":"</span>");
    int c;
    while ((c = input()) != 0){
       if(c == '\n'){
          if(type){
-            fprintf(flot_html, "</span>");
+            fprintf(flot_html_c, "</span>");
          }
          new_line(indentation);
          return;
       }
-      if(c == '<'){
-         fprintf(flot_html, "&lt;");
-      }
-      else if(c == '>'){
-         fprintf(flot_html, "&gt;");
-      }
-      else{
-         fprintf(flot_html, "%c",c);
-      }
+      clear_balise(c);
    }
 }
 
@@ -232,6 +236,7 @@ static void comment(void)
           if (c == 0)
              break;
        }
+       clear_balise(c);
     }
     yyerror("unterminated comment");
 }
@@ -254,7 +259,7 @@ void lecture_ecriture_doxy(void)
    while ((c = input()) != 0){
       if(c == '\n'){ //si on est en fin de ligne, on sort de la fin et on
                      //écrit dans le flux de sortie html
-         fprintf(flot_html2, "<div class=\"%s\"> %s </div><br/>", commandeActuelle, contenu);
+         fprintf(flot_html_doc, "<div class=\"%s\"> %s </div><br/>", commandeActuelle, contenu);
          unput(c);
          free(contenu);
          return;
