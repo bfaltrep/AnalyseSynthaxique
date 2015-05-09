@@ -241,7 +241,7 @@ int create_files(char * nom){
   //traitement
 
   //css
-  ajout_regles_css("body","background-color : #333333; \ncolor : white; \n");
+  ajout_regles_css("body","background-color : #333333; \ncolor : white; \nfont-family : Arial; \nfont-size : 1.5vw; \n");
 
   ajout_regles_css(".preproc","color : #FF9933;\n");
   
@@ -253,6 +253,16 @@ int create_files(char * nom){
   ajout_regles_css(".comment_line, .comment","color : #999999;\n");
   ajout_regles_css(".accolade","cursor:pointer;\n");
   ajout_regles_css(".noname","color : white;\n");
+
+  ajout_regles_css(".fonction","background-color: rgba(83,164,255,0.2);\npadding: 1% 2% 2% 2%;\nborder : 3px #53A4FF solid;\nborder-radius: 7px;\n margin-bottom: 40px\n");
+  ajout_regles_css(".fn" ,"	font-size: 150%;\n	color: #53A4FF;\n");
+  ajout_regles_css(".brief" ,"padding-left: 3%;\n font-style: italic;\n	margin-bottom: 15px;\n");
+  ajout_regles_css(".paramTitle","color: #A39CF7;\n	font-weight: bold;\n");
+  ajout_regles_css(".param","padding-left: 3%;\n");
+  ajout_regles_css(".returnTitle","margin-top: 15px;\n color: #A39CF7;\n font-weight: bold;\n");
+  ajout_regles_css(".return","padding-left: 3%;\n");
+
+
   
   //js fonctionnalités : clique accolades ouvrantes. clique sur variables.
   fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
