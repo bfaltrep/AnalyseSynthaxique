@@ -30,10 +30,11 @@ queue q;
 %s TAB
 %s FAT ITALIC UNDERLINE COLOR COMMENT TITLE AUTHOR
 %s SECTION SUBSECTION SUBSUBSECTION
+%s SECTION_S SUBSECTION_S SUBSUBSECTION_S
 %s EQUATION
 %x MATH_ML MATH_ML_SQRT MATH_ML_FRAC1 MATH_ML_FRAC2 MATH_ML_SUP MATH_ML_SUB
 %s REF LABEL
-%x REF_NAME LABEL_NAME
+%x REF_NAME LABEL_NAME LABEL_STAR
 %x PARAMTAB
 %x COLOR1
 %x IMAGE
@@ -74,13 +75,16 @@ queue q;
 "\\begin{equation*}"         {return(BEGIN_EQUATION); }
 "\\end{equation*}"           {return(END_EQUATION); }
 
-"\\ref{"[[:alnum:]]+         {yy_push_state(REF_NAME); fprintf(flot_html,"<A NAME=\"%s\">",yytext+5); }
+"\\ref{"[[:alnum:]]+         {yy_push_state(REF_NAME); fprintf(flot_html,"<A HREF=\"#%s\">",yytext+5); }
 <REF_NAME>"}{"               {yy_pop_state(); yy_push_state(REF); }
 <REF>"}"                     {yy_pop_state(); fprintf(flot_html,"</A>"); }
 
-"\\label{"[[:alnum:]]+       {yy_push_state(LABEL_NAME); fprintf(flot_html,"<A HREF=\"#%s\">",yytext+7); }
+"\\label{"[[:alnum:]]+       {yy_push_state(LABEL_NAME); fprintf(flot_html,"<A NAME=\"%s\">",yytext+7); }
 <LABEL_NAME>"}{"             {yy_pop_state(); yy_push_state(LABEL); }
 <LABEL>"}"                   {yy_pop_state(); fprintf(flot_html,"</A>"); }
+
+"\\label*{"[[:alnum:]]+      {yy_push_state(LABEL_STAR); fprintf(flot_html,"<A NAME=\"%s\">",yytext+8); }
+<LABEL_STAR>"}"              {yy_pop_state(); fprintf(flot_html,"</A>"); }
 
 "\\("|"$"|"\\begin{math}"    {yy_push_state(MATH_ML); return(BEGIN_MATH_ML);}
 <MATH_ML>"\\)"|"$"|"\\end{math}"   {yy_pop_state(); ;return(END_MATH_ML);}
@@ -284,8 +288,6 @@ queue q;
 "%"                          {yy_push_state(COMMENT);fprintf(flot_html,"<!--"); }
 <COMMENT>("\n")+             {yy_pop_state();fprintf(flot_html,"-->"); }
 
-
-
 "\\section{"                 {yy_push_state(SECTION);fprintf(flot_html,"<h1>"); }
 "\\subsection{"              {yy_push_state(SUBSECTION); fprintf(flot_html,"<h2>"); }
 "\\subsubsection{"           {yy_push_state(SUBSUBSECTION); fprintf(flot_html,"<h3>"); }
@@ -297,6 +299,14 @@ queue q;
 <SECTION>.                   {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,1,yylval_char[0]); printf(yytext); return(BODY); }
 <SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,2,yylval_char[0]); printf(yytext); return(BODY); }
 <SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext); remplir_queue(q,3,yylval_char[0]); printf(yytext); return(BODY); }
+ 
+"\\section*{"                 {yy_push_state(SECTION_S);fprintf(flot_html,"<h1>"); return(BODY); }
+"\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html,"<h2>");  return(BODY);}
+"\\subsubsection*{"           {yy_push_state(SUBSUBSECTION_S); fprintf(flot_html,"<h3>");  return(BODY);}
+
+<SECTION_S>"}"               {yy_pop_state(); fprintf(flot_html,"</h1>"); }
+<SUBSECTION_S>"}"            {yy_pop_state(); fprintf(flot_html,"</h2>"); }
+<SUBSUBSECTION_S>"}"         {yy_pop_state(); fprintf(flot_html,"</h3>"); }
 
 [\t\v\f\n\r]                 {fprintf(flot_html," ");}
 [\t\v\f\n\r][\t\v\f\n\r]+    {fprintf(flot_html,"</p><p style=\"text-indent:2em\">");}

@@ -48,18 +48,16 @@ void ajout_balise_class(int type, char * contenu){
 
 int create_menu()
 {
-  char *a = "<ul id=\"", //menu
-    *b = "\">",
-    *c = "<li><a href=\"",//latex.html
+  char *c = "<li><a href=\"",//latex.html
     *d = "\">",
-    *e = "</a></li>",
-    *f = "</ul>";
+    *e = "</a></li>";
 
-  fprintf(flot_html,"%s%s%s",a,"menu",b);
+  fprintf(flot_html,"<ul id=\"menu\">");
   fprintf(flot_html,"%s%s%s%s%s",c,"index.html",d,"Index",e);
-  fprintf(flot_html,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
   fprintf(flot_html,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
-  fprintf(flot_html,"%s",f);
+  fprintf(flot_html,"%s%s%s%s%s",c,"documentation.html",d,"Partie Documentation",e);
+  fprintf(flot_html,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
+  fprintf(flot_html,"</ul>");
   
   ajout_regles_css( "ul#menu li","display:inline;margin:10px;padding:10px;\n");
   ajout_regles_css( "ul#menu","text-align:center; margin:0;padding:0; list-style:none;\n");
@@ -84,24 +82,31 @@ int create_files(char* name_page, char* name_html){
   //traitement
 
   //css
-  ajout_regles_css( "h1","color : #8291CF;\n");
-  ajout_regles_css( "h2","color : #8591CF;\n");
-  ajout_regles_css( "h3","color : #85981A;\n");
+  ajout_regles_css( "body","counter-reset: h1 h2 h3;\n");
+  ajout_regles_css( "h1","color : #8291CF;\n  counter-reset: h2;");
+  ajout_regles_css( "h1.unnumbered, h2.unnumbered", "counter-reset: none;\n" );
+  ajout_regles_css( "h1.unnumbered:before, h2.unnumbered:before, h3.unnumbered:before", "content: none; counter-increment: none;\n");
+  ajout_regles_css( "h2","color : #8591CF;\n  counter-reset: h3;");
+  ajout_regles_css( "h3","color : #85981A;\n;");
   ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
   ajout_regles_css( "td","border: 1px solid black;\n");
   ajout_regles_css( ".title","font-size: 40px;\n");
   ajout_regles_css( ".label_equation","margin-left: 5em;\n");
   ajout_regles_css( ".tiny","font-size: 10px;\n");
-  //ajout_regles_css( ".subsection","margin-left: 2em;\n");
-  //ajout_regles_css( ".subsubsection","margin-left: 2em;\n");
+  ajout_regles_css( "h1:before","content: counter(h1) \" \"; counter-increment: h1;\n");
+  ajout_regles_css( "h2:before",
+		    "content: counter(h1) \".\" counter(h2) \"  \"; counter-increment: h2;\n");
+  ajout_regles_css( "h3:before",
+		    "content: counter(h1) \".\" counter(h2) \".\" counter(h3) \"  \"; counter-increment: h3;\n");
   //ajouter regle pour nomfonction+nomvariable avec une pile.
   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
   return 0;
 }
 
 void finish(){
-  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n<t class=\"tiny\"><center>Cette page HTML a été générée à partir d'un fichier LateX</center></t></body></html>";
-  fprintf(flot_html,"%s",buf);
+  char * buf = "\n<script src=\"//code.jquery.com/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n";
+  char *buf2 = "</body></html>";
+  fprintf(flot_html,"%s<t class=\"tiny\"><center>Cette page HTML a été générée à partir d'un fichier LateX</center></t>%s",buf,buf2);
   fclose(flot_js);
   fclose(flot_html); 
   fclose(flot_css); 
