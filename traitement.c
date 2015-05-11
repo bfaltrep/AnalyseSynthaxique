@@ -45,10 +45,6 @@ void p_virgule(){
 }
 
 void accolade_ouvrante(){
-  if(bool_cond)
-    {
-      bool_cond = 0;
-    }
   fprintf(flot_html_c, "<span class=\"accolade\">{</span> <span>");
   indentation++;
   new_line(indentation);
@@ -84,6 +80,10 @@ void fin_def_dec_fonction(){
     stack_pop(variables);
   }
   stack_pop(variables);
+}
+
+void ajout_balise_id(char * nom_var){
+  fprintf(flot_html_c,"<span id=\"%s\"></span>",nom_var);
 }
 
 char * retrouver_variable(char * nom){
@@ -244,7 +244,7 @@ int create_files(char * nom){
 
   ajout_regles_css(".preproc","color : #FF9933;\n");
   
-  ajout_regles_css(".number","color : #CC0000;\n");
+  ajout_regles_css(".number","color : #993333;\n");
   ajout_regles_css(".key_word" ,"color : #FF6600;\n");
   ajout_regles_css(".type_specifier" ,"color : #0099FF;\n");
   ajout_regles_css(".string_literal","color : #DAA520;\n");

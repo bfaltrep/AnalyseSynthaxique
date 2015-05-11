@@ -14,23 +14,19 @@
 #include "pile/stack.h"
 #include "list/list.h"
   
-extern int yylex();
-extern int yylex_destroy () ;
-extern void unput(char c);
-
-//extern void unput(char c);
+  extern int yylex();
+  extern int yylex_destroy () ;
  
   //-- locals functions  
   void yyerror(const char *s);
   
   //-- var globales
-  char * yytext;
   char * yylval_char;
   char * yylval_string_numb;
   char * commandeActuelle;
   stack variables;
   list variables_name;
-  //parametre != fonction/variable pr indentation 0.
+  //parametre != fonction/variable pr indentation à 0.
   int lock;
 
 %}
@@ -67,6 +63,10 @@ c_ouvrant
 : '[' {fprintf(flot_html_c, "[");}
 c_fermant
 : ']' {fprintf(flot_html_c, "]");}
+c_ouvrant_declaration
+: '[' {ajout_balise_class("type_specifier","[");}
+c_fermant_declaration
+: ']' {ajout_balise_class("type_specifier","]");}
 p_fermant_a_ouvrant
 : ')' '{' {fprintf(flot_html_c, ")"); accolade_ouvrante();}
 etoile
@@ -84,7 +84,7 @@ string_literal
 for_
 : FOR { bool_cond = 1; ajout_balise_class("key_word","for"); }
 if_
-: IF { bool_cond = 1; ajout_balise_class("key_word","if");} p_ouvrante expression p_fermante {/*char c = yylex(); if(c != '{'){ new_line(indentation+1);} unput(c);*/} statement
+: IF { ajout_balise_class("key_word","if");} p_ouvrante expression p_fermante {condition_sans_accolade();} statement
 alignas
 : ALIGNAS {ajout_balise_class("key_word","_Alignas");}
 sizeof_
@@ -110,7 +110,7 @@ primary_expression
 ;
 
 constant
-: I_CONSTANT { ajout_balise_class("number",yylval_string_numb); free(yylval_string_numb);}
+: I_CONSTANT { ajout_balise_class("number",yylval_string_numb); free(yylval_string_numb); }
 | F_CONSTANT
 | ENUMERATION_CONSTANT /* after it has been defined as such */
 ;
@@ -421,15 +421,15 @@ direct_declarator
   free(yylval_char);
   }
 | p_ouvrante declarator p_fermante
-| direct_declarator c_ouvrant c_fermant
-| direct_declarator c_ouvrant etoile c_fermant
-| direct_declarator c_ouvrant static_ type_qualifier_list assignment_expression c_fermant
-| direct_declarator c_ouvrant static_ assignment_expression c_fermant
-| direct_declarator c_ouvrant type_qualifier_list etoile c_fermant
-| direct_declarator c_ouvrant type_qualifier_list static_ assignment_expression c_fermant
-| direct_declarator c_ouvrant type_qualifier_list assignment_expression c_fermant
-| direct_declarator c_ouvrant type_qualifier_list c_fermant
-| direct_declarator c_ouvrant assignment_expression c_fermant
+| direct_declarator c_ouvrant_declaration c_fermant_declaration
+| direct_declarator c_ouvrant_declaration etoile c_fermant_declaration
+| direct_declarator c_ouvrant_declaration static_ type_qualifier_list assignment_expression c_fermant_declaration
+| direct_declarator c_ouvrant_declaration static_ assignment_expression c_fermant_declaration
+| direct_declarator c_ouvrant_declaration type_qualifier_list etoile c_fermant_declaration
+| direct_declarator c_ouvrant_declaration type_qualifier_list static_ assignment_expression c_fermant_declaration
+| direct_declarator c_ouvrant_declaration type_qualifier_list assignment_expression c_fermant_declaration
+| direct_declarator c_ouvrant_declaration type_qualifier_list c_fermant_declaration
+| direct_declarator c_ouvrant_declaration assignment_expression c_fermant_declaration
 | direct_declarator p_ouvrante {/*push parenthese*/
   char * tmp;
   asprintf(&tmp,"(" );
@@ -496,22 +496,22 @@ abstract_declarator
 
 direct_abstract_declarator
 : p_ouvrante abstract_declarator p_fermante
-| c_ouvrant c_fermant
-| c_ouvrant etoile c_fermant
-| c_ouvrant static_ type_qualifier_list assignment_expression c_fermant
-| c_ouvrant static_ assignment_expression c_fermant
-| c_ouvrant type_qualifier_list static_ assignment_expression c_fermant
-| c_ouvrant type_qualifier_list assignment_expression c_fermant
-| c_ouvrant type_qualifier_list c_fermant
-| c_ouvrant assignment_expression c_fermant
-| direct_abstract_declarator c_ouvrant c_fermant
-| direct_abstract_declarator c_ouvrant etoile c_fermant
-| direct_abstract_declarator c_ouvrant static_ type_qualifier_list assignment_expression c_fermant
-| direct_abstract_declarator c_ouvrant static_ assignment_expression c_fermant
-| direct_abstract_declarator c_ouvrant type_qualifier_list assignment_expression c_fermant
-| direct_abstract_declarator c_ouvrant type_qualifier_list static_ assignment_expression c_fermant
-| direct_abstract_declarator c_ouvrant type_qualifier_list c_fermant
-| direct_abstract_declarator c_ouvrant assignment_expression c_fermant
+| c_ouvrant_declaration c_fermant_declaration
+| c_ouvrant_declaration etoile c_fermant_declaration
+| c_ouvrant_declaration static_ type_qualifier_list assignment_expression c_fermant_declaration
+| c_ouvrant_declaration static_ assignment_expression c_fermant
+| c_ouvrant_declaration type_qualifier_list static_ assignment_expression c_fermant_declaration
+| c_ouvrant_declaration type_qualifier_list assignment_expression c_fermant_declaration
+| c_ouvrant_declaration type_qualifier_list c_fermant_declaration
+| c_ouvrant_declaration assignment_expression c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration etoile c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration static_ type_qualifier_list assignment_expression c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration static_ assignment_expression c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration type_qualifier_list assignment_expression c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration type_qualifier_list static_ assignment_expression c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration type_qualifier_list c_fermant_declaration
+| direct_abstract_declarator c_ouvrant_declaration assignment_expression c_fermant_declaration
 | parentheses
 | p_ouvrante parameter_type_list p_fermante
 | direct_abstract_declarator parentheses
@@ -540,7 +540,7 @@ designator_list
 ;
 
 designator
-: c_ouvrant constant_expression c_fermant {fprintf(flot_html_c,"-LALA-");}
+: c_ouvrant constant_expression c_fermant
 | '.' {fprintf(flot_html_c, ".");} IDENTIFIER
 ;
 static_assert_declaration
@@ -583,18 +583,18 @@ expression_statement
 ;
 
 selection_statement
-: if_ ELSE { bool_cond = 1; ajout_balise_class("key_word","else"); } statement
+: if_ ELSE { ajout_balise_class("key_word","else"); } statement
 | if_ 
 | SWITCH {ajout_balise_class("key_word","switch");} p_ouvrante expression p_fermante statement
 ;
 
 iteration_statement
-: WHILE { bool_cond = 1; ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante statement
+: WHILE { ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante {condition_sans_accolade();} statement
 | DO {ajout_balise_class("key_word","do");} statement WHILE {ajout_balise_class("key_word","while");} p_ouvrante expression p_fermante point_virgule
-| for_ p_ouvrante expression_statement expression_statement p_fermante statement
-| for_ p_ouvrante expression_statement expression_statement expression p_fermante statement
-| for_ p_ouvrante declaration expression_statement p_fermante statement
-| for_ p_ouvrante declaration expression_statement expression p_fermante statement
+| for_ p_ouvrante expression_statement expression_statement p_fermante {condition_sans_accolade();} statement
+| for_ p_ouvrante expression_statement expression_statement expression p_fermante {condition_sans_accolade();} statement
+| for_ p_ouvrante declaration expression_statement p_fermante {condition_sans_accolade();} statement
+| for_ p_ouvrante declaration expression_statement expression p_fermante {condition_sans_accolade();} statement
 ;
 
 jump_statement
@@ -611,11 +611,10 @@ translation_unit
 ;
 external_declaration
 : function_definition { /*retire de la pile les parametres de la fonction*/ fin_def_dec_fonction(); }
-| declaration {
-  /*place une balise de declaration pour le lien*/
+| declaration {/*place une balise de declaration pour le lien*/
   fseek(flot_html_c,-(strlen("<br><br>")),SEEK_CUR);
   char * nom_var = stack_inside_after(variables,".");
-  fprintf(flot_html_c,"<span id=\"%s\"></span>",nom_var);
+  ajout_balise_id(nom_var);
   new_line(indentation);
   //retire les parametres de la pile. Seul le nom de la fonction peut être utilisé ensuite ensuite. 'if' pour pas avoir de problemes avec les variables globales.
   if(stack_inside_variable(variables,"(") != NULL){
@@ -652,7 +651,7 @@ int main (){
   //parcourir
   yyparse();
   
-  printf("\n\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir index.html avec votre navigateur. \n\n\n");
+  printf("\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir index.html avec votre navigateur. \n\n");
   
   //nettoyer avant de fermer.
   finish_files();

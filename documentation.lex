@@ -69,15 +69,24 @@ static void clear_balise(char c);
 <DOXY>"*"               { lecture_ecriture_doxy(); }
 <DOXY>"*/"              { fermeture_comm_doxy(); BEGIN INITIAL; }
 
-"/*"                    { BEGIN COMMENT; new_line(indentation); fprintf(flot_html_c,"<span class=\"comment\">/*");}
+"/*"                    { BEGIN COMMENT;
+  fprintf(flot_html_c,"<span class=\"comment\">/*");
+  char c = input();
+  //pour la lisibilité, s'il n'y a pas d'espace en début de commentaire, on le rajoute
+  if(c != ' '){
+    fprintf(flot_html_c," ");
+  }
+  unput(c); }
 <COMMENT>\n             { new_line(indentation+1); }
 <COMMENT>.              { char c = yytext[0]; clear_balise(c);}
 <COMMENT>"*/"           { BEGIN INITIAL;
   char c = yytext[-1];
+  //s'il y a eu un saut de ligne en dernier, on doit décrémenter l'indentation*/
   if(c == '\n'){
     fseek(flot_html_c,-(strlen("&nbsp")*4),SEEK_CUR);
-  }else if(c != ' '){
-    tab();
+  }else if (c != ' '){
+    //pour la lisibilité, on ajoute un espace avant de clore le commentaire s'il n'y en a pas
+    fprintf(flot_html_c," ");
   }
   fprintf(flot_html_c,"*/</span>");
   new_line(indentation); }
@@ -145,7 +154,7 @@ static void clear_balise(char c);
 {HP}{H}*"."{H}+{P}{FS}?			{ return F_CONSTANT; }
 {HP}{H}+"."{P}{FS}?			{ return F_CONSTANT; }
 
-({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{/*pour une raison que je n'ai pas réussis a comprendre, il refuse asprintf ici... y aurait il une taille maximal possible pour les char * à faire passer ?*/
+({SP}?\"([^\"\\\n]|{ES})*\"{WS}*)+	{/*pour une raison que je n'ai pas réussis a comprendre, il refuse asprintf ici... y aurait il une taille maximale possible pour les char * à faire passer ?*/
   yylval_string_numb= malloc(sizeof(char)*(strlen(yytext)+1));
   strcpy(yylval_string_numb, yytext);
   return STRING_LITERAL; }
@@ -241,6 +250,7 @@ static void preproc(){
   int c;
   int name = 1;
   while ((c = input()) != 0){
+    //on change les caractères spéciaux du langage html
     switch(c){
     case '\n':
       if(name){
@@ -337,4 +347,15 @@ static int check_type(void)
     default:                          /* includes undefined */
         return IDENTIFIER;
     }
+}
+
+void condition_sans_accolade(){
+  if(bool_cond){
+    bool_cond = 0;
+  }
+  char c = input();
+  if(c != '{'){
+    new_line(indentation+1);
+  }
+  unput(c);
 }
