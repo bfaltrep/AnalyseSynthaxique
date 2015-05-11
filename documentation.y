@@ -273,7 +273,7 @@ constant_expression
 
 declaration
 : declaration_specifiers point_virgule 
-| declaration_specifiers init_declarator_list point_virgule 
+| declaration_specifiers init_declarator_list {ajout_balise_id(stack_top(variables));}  point_virgule
 | static_assert_declaration
 ;
 
@@ -296,7 +296,7 @@ init_declarator_list
 ;
 
 init_declarator
-: declarator '=' {fprintf(flot_html_c, "=");} initializer
+: declarator '=' {fprintf(flot_html_c, "=");} initializer 
 | declarator {/*fin declarator*/} 
 ;
 
@@ -631,7 +631,7 @@ function_definition
 
 declaration_list
 : declaration
-| declaration_list declaration
+| declaration_list declaration 
 ;
 
 %%

@@ -44,6 +44,6 @@ extern char * stack_inside_variable(stack s, void * object);
 */
 extern char * stack_inside_after(stack s, void * object);
 
-
 extern void stack_print(stack s);
+
 #endif

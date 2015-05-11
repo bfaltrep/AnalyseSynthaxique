@@ -112,7 +112,7 @@ void ajouter_variable(char * nom){
   list_insert(variables_name,tmp);
 
   //si on est au niveau d'indentation 0, on a une déclaration/definition global. On veut donc mettre un point devant pour pouvoir retrouver la decl/def de la variable/fonction
-  if(indentation == 0){
+  if(indentation == 0 && !lock){
     char * point;
     asprintf(&point,"." );
     stack_push(variables,point);
@@ -203,7 +203,7 @@ void string_literal(){
       free(tmp);
       break;
     default :
-      printf("erreur \n");
+      printf("erreur string literal\n");
       break;
     }
   }
@@ -244,7 +244,7 @@ int create_files(char * nom){
 
   ajout_regles_css(".preproc","color : #FF9933;\n");
   
-  ajout_regles_css(".number","color : #993333;\n");
+  ajout_regles_css(".number","color : #CF3838;\n");
   ajout_regles_css(".key_word" ,"color : #FF6600;\n");
   ajout_regles_css(".type_specifier" ,"color : #0099FF;\n");
   ajout_regles_css(".string_literal","color : #DAA520;\n");
