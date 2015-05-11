@@ -1,10 +1,5 @@
 %{
 
-  //pour asprintf
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -651,7 +646,7 @@ int main (){
   //parcourir
   yyparse();
   
-  printf("\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir index.html avec votre navigateur. \n\n");
+  printf("\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir code_c.html ou index.html avec votre navigateur. \n\n");
   
   //nettoyer avant de fermer.
   finish_files();

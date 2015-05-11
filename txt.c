@@ -93,7 +93,7 @@ void g(int j){
     int j =7;
     j++;
   }
-  //globale
+  //parametre de la fonction
   j--;
   f(2);
 }

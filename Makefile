@@ -15,7 +15,7 @@ documentation.tab.c : documentation.y traitement.h
 
 txt :
 	./documentation < txt.c
-	firefox index.html comDoxy.html &
+	firefox code_c.html comDoxy.html &
 	emacs index.html style.css script.js comDoxy.html txt.c &
 
 clean:

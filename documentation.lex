@@ -23,10 +23,6 @@ WS  [ \t\v\n\f]
 
 %{
   
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-  
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
@@ -41,22 +37,25 @@ extern char * yylval_char;
 extern char * yylval_string_numb;
 extern char * commandeActuelle;
 extern int indentation;
- int type_struct;
 
- //fonctions importées
+//-- fonctions importées
 extern void yyerror(const char *);  /* prints grammar violation message */
 //extern int sym_type(const char *);  /* returns type from symbol table */
 
- //fonction locale
+ //-- fonction locale
 #define sym_type(identifier) IDENTIFIER /* with no symbol table, fake it */
 
 static void ouverture_comm_doxy(void);
 static void fermeture_comm_doxy(void);
 static void lecture_ecriture_doxy(void);
+ 
+static void clean_caractere(char c);
+static void commentaire_debut();
+static void commentaire_fin();
 static void commentline();
 static void preproc();
+ 
 static int check_type(void);
-static void clear_balise(char c);
  
 %}
 
@@ -70,29 +69,10 @@ static void clear_balise(char c);
 <DOXY>"*/"              { fermeture_comm_doxy(); BEGIN INITIAL; }
 
 
-"/*"                    { BEGIN COMMENT;
-  fprintf(flot_html_c,"<span class=\"comment\">/*");
-  char c = input();
-  //pour la lisibilité, s'il n'y a pas d'espace en début de commentaire, on le rajoute
-  if(c != ' '){
-    fprintf(flot_html_c," ");
-  }
-  unput(c);
-}
+"/*"                    { BEGIN COMMENT; commentaire_debut();}
 <COMMENT>\n             { new_line(indentation+1); }
-<COMMENT>.              { char c = yytext[0]; clear_balise(c);}
-<COMMENT>"*/"           { BEGIN INITIAL;
-  char c = yytext[-1];
-  //s'il y a eu un saut de ligne en dernier, on doit décrémenter l'indentation*/
-  if(c == '\n'){
-    fseek(flot_html_c,-(strlen("&nbsp")*4),SEEK_CUR);
-  }else if (c != ' '){
-    //pour la lisibilité, on ajoute un espace avant de clore le commentaire s'il n'y en a pas
-    fprintf(flot_html_c," ");
-  }
-  fprintf(flot_html_c,"*/</span>");
-  new_line(indentation);
- }
+<COMMENT>.              { char c = yytext[0]; clean_caractere(c);}
+<COMMENT>"*/"           { BEGIN INITIAL; commentaire_fin(); }
 
 
 "//"                    { commentline(); }
@@ -223,7 +203,7 @@ int yywrap(void)        /* called at end of input */
   return 1;           /* terminate now */
 }
 
-void clear_balise(char c){
+static void clean_caractere(char c){
   if(c == '<'){
     fprintf(flot_html_c, "&lt;");
   }
@@ -235,6 +215,29 @@ void clear_balise(char c){
   }
 }
 
+static void commentaire_debut(){
+  fprintf(flot_html_c,"<span class=\"comment\">/*");
+  char c = input();
+  //pour la lisibilité, s'il n'y a pas d'espace en début de commentaire, on le rajoute
+  if(c != ' '){
+    fprintf(flot_html_c," ");
+  }
+  unput(c);
+}
+
+void commentaire_fin(){
+  char c = yytext[-1];
+  //s'il y a eu un saut de ligne en dernier, on doit décrémenter l'indentation*/
+  if(c == '\n'){
+    fseek(flot_html_c,-(strlen("&nbsp")*4),SEEK_CUR);
+  }else if (c != ' '){
+    //pour la lisibilité, on ajoute un espace avant de clore le commentaire s'il n'y en a pas
+    fprintf(flot_html_c," ");
+  }
+  fprintf(flot_html_c,"*/</span>");
+  new_line(indentation);
+}
+
 static void commentline(){
    fprintf(flot_html_c,"\n<span class=\"comment_line\">//");
    int c;
@@ -244,7 +247,7 @@ static void commentline(){
        new_line(indentation);
        return;
      }
-     clear_balise(c);
+     clean_caractere(c);
    }
 }
 
@@ -355,7 +358,7 @@ static int check_type(void)
         return IDENTIFIER;
     }
 }
-
+/*déclaration dans traitement.h pour être utilisable dans documentation.y*/
 void condition_sans_accolade(){
   if(bool_cond){
     bool_cond = 0;

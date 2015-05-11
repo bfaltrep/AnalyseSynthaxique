@@ -159,6 +159,7 @@ void nommer_variable(char * nom){
 /*
  Fonction récupérée sur le site developpez.com/articles/libc/string
  permet de remplacer une chaine de caractère par une autre chaine, dans une chaine.
+ utilisée pour remplacer les caractères spéciaux du html dans les chaines de caractères
 */
 char *str_remplace (const char *s, unsigned int start, unsigned int lenght, const char *ct)
 {
@@ -212,9 +213,6 @@ void string_literal(){
   free(yylval_string_numb);
 }
 
-
-
-
 void ajout_enTete_html (char * language, char * title){
   fprintf(flot_html_c,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s </title></head>\n", language, title);
   fprintf(flot_html_doc,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> comDoxy </title></head>\n", language);
@@ -222,7 +220,7 @@ void ajout_enTete_html (char * language, char * title){
 
 int create_files(char * nom){
   //créer les fichiers du site
-  flot_html_c = fopen("index.html","w+");
+  flot_html_c = fopen("code_c.html","w+");
   flot_css = fopen("style.css","w+");
   flot_js = fopen("script.js","w+");
   flot_html_doc = fopen("comDoxy.html", "w+");
