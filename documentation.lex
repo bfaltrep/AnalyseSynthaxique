@@ -289,11 +289,13 @@ bool verifier_existance_commande(){ //verifie que \cmd existe bien en doxygen
       );
 }
 void ouverture_comm_doxy(void){
+   //supprime le \n présent après le /**
    int c;
    c=input();
    while(c!='\n'){
       c=input();
    }
+   //crée une balise contenant tous les commentaires relatifs à la fonction
    fprintf(flot_html_doc, "<div class=\"fonction\"> ");
 }
 
@@ -303,44 +305,43 @@ void fermeture_comm_doxy(void){
 
 void lecture_ecriture_doxy(void)
 {
-  int c;
-  int cptEspace = 0;
-  char * contenu= calloc(400, sizeof(*contenu)); //taille de la longueur de la commande
-   
-  while ((c = input()) != 0){
-    if(c == '\n'){ //si on est en fin de ligne, on sort de la fin et on
-                   //écrit dans le flux de sortie html
-      fprintf(flot_html_doc, "<div class=\"%s\"> %s </div>", commandeActuelle, contenu);
-      free(contenu);
-      return;
-    }
-    else if(c == '\\'){ // mise à jour de la nouvelle commande doxygen
-      commandeActuelle[0]='\0';
-      while((c=input()) != ' '){
-	commandeActuelle = strcat( commandeActuelle, (char*)&c);
+   int c;
+   int cptEspace = 0;
+   char * contenu= calloc(400, sizeof(*contenu)); //taille de la longueur de la commande
+  
+   while ((c = input()) != 0){
+      if(c == '\n'){ //si on est en fin de ligne, on sort de la fin et on
+         //écrit dans le flux de sortie html
+         fprintf(flot_html_doc, "<div class=\"%s\"> %s </div>", commandeActuelle, contenu);
+         free(contenu);
+         return;
       }
-      assert(verifier_existance_commande() && "unterminated command");
-      //ajout de texte dans le doxyhtml
-      if (strcmp(commandeActuelle, "param")==0){
-	fprintf(flot_html_doc, "<div class=\"paramTitle\"> Parametre </div>");
+      else if(c == '\\'){ // mise à jour de la nouvelle commande doxygen
+         commandeActuelle[0]='\0';
+         while((c=input()) != ' '){
+            commandeActuelle = strcat( commandeActuelle, (char*)&c);
+         }
+         assert(verifier_existance_commande() && "unterminated command");
+         if (strcmp(commandeActuelle, "param")==0){
+            fprintf(flot_html_doc, "<div class=\"paramTitle\"> Parametre </div>");
+         }
+         else if (strcmp(commandeActuelle, "return")==0){
+            fprintf(flot_html_doc, "<div class=\"returnTitle\"> Renvoie </div>");
+         }
       }
-      else if (strcmp(commandeActuelle, "return")==0){
-	fprintf(flot_html_doc, "<div class=\"returnTitle\"> Renvoie </div>");
+      else if(c == ' '){ // suppression des espaces inutiles
+         cptEspace++;
+         if (cptEspace==1){
+            contenu = strcat( contenu, (char*)&c);
+         }
       }
-    }
-    else if(c == ' '){ // suppression des espaces inutiles
-      cptEspace++;
-      if (cptEspace==1){
-	contenu = strcat( contenu, (char*)&c);
+      else if(c != '*'){ // ecrit tout le reste dans le doxygen
+         cptEspace=0;
+         contenu = strcat( contenu, (char*)&c);
       }
-    }
-    else if(c != '*'){ // 
-      cptEspace=0;
-      contenu = strcat( contenu, (char*)&c);
-    }
-  }
-  free(contenu);
-  yyerror("unterminated comment");
+   }
+   free(contenu);
+   yyerror("unterminated comment");
 }
 
 static int check_type(void)
