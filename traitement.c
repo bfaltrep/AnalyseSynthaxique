@@ -23,7 +23,7 @@ void ajout_enTete_html (char * language, char * title){
    //2 : langage. 1 : \0. 37, 59, 15 : code preforme
    char *a ="<head><meta charset=\"utf-8\" lang=\"",
      *b = "\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>",
-     *c = "</title><script type=\"text/javascript\" src=\"tdm.js\" charset=\"iso-8859-1\"></script><script type=\"text/javascript\"><!--\n function init(){\n tdm('tdm');\n }\n --> </script> </head>";
+     *c = "</title></script><script type=\"text/javascript\"><!--\n function init(){\n tdm('tdm');\n }\n --> </script> </head>";
 
    fprintf(flot_html_latex,"%s%s%s%s%s", a, language, b, title, c);
 }
@@ -64,7 +64,15 @@ int create_menu()
   return 0;
 }
 
-
+void ajout_fonctions_js_tdm()
+{
+  fprintf(flot_js,"function tdm(replace){\n var createBackLink = false;\n var sectionNoTemplate = document.createElement('span');\n	sectionNoTemplate.className = 'section-no';\n	var tdmItemNoTemplate = document.createElement('span');\n	tdmItemNoTemplate.className = 'tdm-item-no';\n	replace = document.getElementById(replace);\n	var backToContentsLabel = \"retour\";\n	var tdm = document.createElement(\"div\");\n	tdm.setAttribute('id','tdm');\n	var tdmBody = document.createElement(\"div\");\n	tdmBody.setAttribute('id','tdm-corps');\n	tdm.appendChild(tdmBody);\n 	var sectionNumbers = [0,0,0,0,0,0];\n	addSections(document.body, tdmBody, sectionNumbers);\n 	replace.parentNode.replaceChild(tdm, replace);\n\n");
+  
+  fprintf(flot_js,"function addSections(n, tdm, sectionNumbers) {\n	for(var m = n.firstChild; m != null; m = m.nextSibling) {\n	if ((m.nodeType == 1) && (m.tagName.length == 2) && (m.tagName.charAt(0) == \"H\")) {\n	var level = parseInt(m.tagName.charAt(1));\n	if (!isNaN(level)) {\n	var fragmentId = '';\n	sectionNumbers[level]++;\n  for(var i = level ; i < 6; i++) sectionNumbers[i] = 1;\n	var sectionNumber = \"\";\n	for(var i = 1; i < level+1 ; i++) {\n	sectionNumber += sectionNumbers[i];\n	if (i < level) sectionNumber += \".\";}\n if (m.getAttribute(\"id\")) {\n  fragmentId = m.getAttribute(\"id\");\n  } else {fragmentId = \"SECT\"+sectionNumber;\n	m.setAttribute(\"id\", fragmentId);}\n	if (createBackLink) {\n 	var anchor = document.createElement(\"span\");\n  anchor.className = 'tdm-retour';\n	var backlink = document.createElement(\"a\");\n backlink.setAttribute(\"href\", \"#tdm\");\n	backlink.appendChild(document.createTextNode(backToContentsLabel));\n		anchor.appendChild(backlink);\n 	n.insertBefore(anchor, m);}\n	var link = document.createElement(\"a\");\n	link.setAttribute(\"href\", \"#\" + fragmentId);\n	var sectionTitle = getTextContent(m);\n 	link.appendChild(document.createTextNode(sectionTitle));\n	var tdmItem = document.createElement(\"div\");\n	tdmItem.className = 'tdm-item tdm-niveau-' + i;\n	var tdmItemEntry = document.createElement(\"span\");\n	tdmItemEntry.className = 'tdm-item-texte';\n	tdmItemNoNode = tdmItemNoTemplate.cloneNode(false);\n	tdmItemNoNode.appendChild(document.createTextNode(sectionNumber+\" \"));\n	tdmItem.appendChild(tdmItemNoNode);\n	tdmItemEntry.appendChild(link);\n	tdmItem.appendChild(tdmItemEntry);\n	tdm.appendChild(tdmItem);\n	sectionNumberNode = sectionNoTemplate.cloneNode(false);\n  sectionNumberNode.appendChild(document.createTextNode(sectionNumber+\" \"));\n  m.insertBefore(sectionNumberNode, m.firstChild);}}\n  else {addSections(m, tdm, sectionNumbers);}}}\n\n");
+  
+  fprintf(flot_js,"function getTextContent(n) {\n  var s = '';\n  var children = n.childNodes;\n  for(var i = 0; i < children.length; i++) {\n  var child = children[i];\n  if (child.nodeType == 3) s += child.data;\n  else s += getTextContent(child);}\n  return s;}}\n\n");
+}
+    
 int create_files(char* name_page, char* name_html){
   //créer les deux fichiers
   flot_html_latex = fopen(name_html,"w+"); //
@@ -82,30 +90,25 @@ int create_files(char* name_page, char* name_html){
   //traitement
 
   //css
-  ajout_regles_css( "body","counter-reset: h1 h2 h3;\n");
-  ajout_regles_css( "h1","color : #8291CF;\n  counter-reset: h2;");
-  ajout_regles_css( "h1.unnumbered, h2.unnumbered", "counter-reset: none;\n" );
-  ajout_regles_css( "h1.unnumbered:before, h2.unnumbered:before, h3.unnumbered:before", "content: none; counter-increment: none;\n");
-  ajout_regles_css( "h2","color : #8591CF;\n  counter-reset: h3;");
-  ajout_regles_css( "h3","color : #85981A;\n;");
+  ajout_regles_css( "h1","color : #8291CF;\n");
+  ajout_regles_css( "h2","color : #8591CF;\n");
+  ajout_regles_css( "h3","color : #8591CF;\n;");
   ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
   ajout_regles_css( "td","border: 1px solid black;\n");
   ajout_regles_css( ".title","font-size: 40px;\n");
   ajout_regles_css( ".label_equation","margin-left: 5em;\n");
   ajout_regles_css( ".tiny","font-size: 10px;\n");
-  ajout_regles_css( "h1:before","content: counter(h1) \" \"; counter-increment: h1;\n");
-  ajout_regles_css( "h2:before",
-		    "content: counter(h1) \".\" counter(h2) \"  \"; counter-increment: h2;\n");
-  ajout_regles_css( "h3:before",
-		    "content: counter(h1) \".\" counter(h2) \".\" counter(h3) \"  \"; counter-increment: h3;\n");
-  ajout_regles_css(".tdm-niveau-1","font-weight:bold;  \n");
-  ajout_regles_css(".tdm-niveau-2","margin-left:1em; \n");
+  ajout_regles_css(".tdm-niveau-2, .tdm-niveau-3, .tdm-niveau-4, .tdm-niveau-5, .tdm-niveau-6","font-size: 25px;\n");
+  ajout_regles_css(".tdm-niveau-2","margin-left:1em;\nfont-weight:bold; \n");
   ajout_regles_css(".tdm-niveau-3","margin-left:2em; \n");
   ajout_regles_css(".tdm-niveau-4","margin-left:3em;\n");
   ajout_regles_css(".tdm-niveau-5","margin-left:4em; \n");
   ajout_regles_css(".tdm-niveau-6","margin-left:5em;\n");
   //ajouter regle pour nomfonction+nomvariable avec une pile.
   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
+
+  ajout_fonctions_js_tdm();
+  
   return 0;
 }
 
