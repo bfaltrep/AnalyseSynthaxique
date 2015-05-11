@@ -53,7 +53,7 @@ int par=0;
 "\\usepackage"("["[[:alnum:],]*"]")*("{"[[:alnum:],]*"}")* {;}
 
 "\\includegraphics"[[:alnum:]\[\]]*"{" {yy_push_state(IMAGE);}
-<IMAGE>[[:alnum:]._]+"}"     {printf("%s",yytext);yytext[yyleng-1]='\0';printf("%s",yytext);fprintf(flot_html_latex,"<p><a href=%s><img src=%s></a></p>",yytext,yytext);yy_pop_state();}
+<IMAGE>[[:alnum:]._]+"}"     {yytext[yyleng-1]='\0';fprintf(flot_html_latex,"<p><a href=%s><img src=%s></a></p>",yytext,yytext);yy_pop_state();}
 
 
 "\\begin{itemize}"           {return(BEGIN_ITEMIZE); }
@@ -266,17 +266,17 @@ int par=0;
 
 
 
-"\\textbackslash "           {fprintf(flot_html_latex,"\\"); printf("\\"); }
-"\\textbackslash\\textbackslash" {fprintf(flot_html_latex,"\\\\"); printf("\\\\"); }
-"\\{"                        {fprintf(flot_html_latex,"{"); printf("{"); }
-"\\}"                        {fprintf(flot_html_latex,"}"); printf("}"); }
-"\["                         {fprintf(flot_html_latex,"["); printf("["); }
-"\]"                         {fprintf(flot_html_latex,"]"); printf("]"); }
-"\\&"                        {fprintf(flot_html_latex,"&"); printf("&"); }
-"\\$"                        {fprintf(flot_html_latex,"$"); printf("$"); }
-"\\_"                        {fprintf(flot_html_latex,"_"); printf("_"); }
-"\\textasciitilde "          {fprintf(flot_html_latex,"~"); printf("~"); }
-"\\textasciicircum "         {fprintf(flot_html_latex,"^"); printf("^"); }
+"\\textbackslash "           {fprintf(flot_html_latex,"\\"); }
+"\\textbackslash\\textbackslash" {fprintf(flot_html_latex,"\\\\"); }
+"\\{"                        {fprintf(flot_html_latex,"{"); }
+"\\}"                        {fprintf(flot_html_latex,"}");}
+"\["                         {fprintf(flot_html_latex,"[");}
+"\]"                         {fprintf(flot_html_latex,"]"); }
+"\\&"                        {fprintf(flot_html_latex,"&"); }
+"\\$"                        {fprintf(flot_html_latex,"$"); }
+"\\_"                        {fprintf(flot_html_latex,"_"); }
+"\\textasciitilde "          {fprintf(flot_html_latex,"~"); }
+"\\textasciicircum "         {fprintf(flot_html_latex,"^"); }
 
 
 "\\title{"                   {yy_push_state(TITLE);return(FORME_TITLE); }
@@ -310,17 +310,21 @@ int par=0;
 <SUBSECTION>"}"              {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
 <SUBSUBSECTION>"}"           {yy_pop_state(); fprintf(flot_html_latex,"</h3>"); }
 
-<SECTION>.                   {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
-<SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
-<SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
+<SECTION>.                   {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
+<SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
+<SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
  
-"\\section*{"                 {yy_push_state(SECTION_S);fprintf(flot_html_latex,"<h1>"); return(BODY); }
-"\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>");  return(BODY);}
-"\\subsubsection*{"           {yy_push_state(SUBSUBSECTION_S); fprintf(flot_html_latex,"<h3>");  return(BODY);}
+"\\section*{"                 {yy_push_state(SECTION_S); fprintf(flot_html_latex,"<h1>"); }
+"\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>"); }
+"\\subsubsection*{"           {yy_push_state(SUBSUBSECTION_S); fprintf(flot_html_latex,"<h3>"); }
 
 <SECTION_S>"}"               {yy_pop_state(); fprintf(flot_html_latex,"</h1>"); }
 <SUBSECTION_S>"}"            {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
 <SUBSUBSECTION_S>"}"         {yy_pop_state(); fprintf(flot_html_latex,"</h3>"); }
+
+<SECTION_S>.                 {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
+<SUBSECTION_S>.              {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
+<SUBSUBSECTION_S>.           {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
 
 [\t\v\f\n\r]                 {fprintf(flot_html_latex," ");}
 [\t\v\f\n\r][\t\v\f\n\r]+    {fprintf(flot_html_latex,"</p><p style=\"text-indent:2em\">");}
