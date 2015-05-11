@@ -1,6 +1,5 @@
 "\\begin{equation}"{; }
 "\\end{equation}"{; }
-"\\label"{; }
 
 Changement de police ?
 
@@ -10,8 +9,6 @@ couleurs reconnues : black, white, red, green, blue, yellow, cyan, magenta, brow
 doit-on s'occuper des des caractères accentués ?
 
 Réferences / liens internes
-\label{marker}
-\ref{marker}
 \pageref{marker}
 
 ordre actégorie MathMl Operateur, Symboles Logique, Symboles, Ensembles

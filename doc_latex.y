@@ -27,7 +27,6 @@ FILE* file_env;
 %token BEGIN_ITEMIZE END_ITEMIZE
 %token BEGIN_ENUMERATE END_ENUMERATE
 %token ITEM
-%token BEGIN_SECTION END_SECTION BEGIN_SUBSECTION END_SUBSECTION BEGIN_SUBSUBSECTION END_SUBSUBSECTION
 %token BEGIN_TABULAR PARAM_TABULAR END_TABULAR
 %token NEW_CASE_L NEW_CASE_C NEW_CASE_R NEW_CASE NEW_LINE
 %token BEGIN_EQUATION END_EQUATION 
@@ -38,7 +37,6 @@ FILE* file_env;
 %token MATH_SQRT_BEG MATH_SQRT_ROOT_END
 %token MATH_ROOT_BEG MATH_ROOT_INTER
 %token MATH_FRAC_BEG MATH_FRAC_INTER MATH_FRAC_END
-%token LABEL
 %token FORME_FAT FORME_ITALIC FORME_UNDERLINE FORME_TITLE FORME_AUTHOR
 %token BEG_PARAGRAPH END_PARAGRAPH
 %token BODY
@@ -56,10 +54,6 @@ body: BODY {fprintf(flot_html_latex,yylval_char); } body
 | tabular body
 | equation body
 | math body
-| BEGIN_SECTION {fprintf(flot_html_latex,"<h1>");} body END_SECTION {fprintf(flot_html_latex,"</h1>");} body
-| BEGIN_SUBSECTION {fprintf(flot_html_latex,"<h2>");} body END_SUBSECTION {fprintf(flot_html_latex,"</h2>");} body
-| BEGIN_SUBSUBSECTION {fprintf(flot_html_latex,"<h3>");} body END_SUBSUBSECTION {fprintf(flot_html_latex,"</h1>");} body
-| LABEL {fprintf(flot_html_latex,"<t class=\"label_equation\">\(");} body
 | FORME_TITLE {fprintf(flot_html_latex,"<center><t class=\"title\">");} body
 | FORME_AUTHOR{fprintf(flot_html_latex,"<center><t class=\"author\">");} body 
 | FORME_FAT {fprintf(flot_html_latex,"<b>");} body

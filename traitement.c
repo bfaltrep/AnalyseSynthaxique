@@ -64,6 +64,10 @@ int create_menu()
   return 0;
 }
 
+void ajout_fonction_js_cite_code(){
+  fprintf(flot_js,"function cite_code(code1, code2) {\n var str1=document.getElementById(code1); \n var str2=document.getElementById(code2); var citeBody=document.createElement(\"div\");\n citeBody.setAttribute('id','cite-corps'); }\n");
+}
+
 void ajout_fonctions_js_tdm()
 {
   fprintf(flot_js,"function tdm(replace){\n var createBackLink = false;\n var sectionNoTemplate = document.createElement('span');\n	sectionNoTemplate.className = 'section-no';\n	var tdmItemNoTemplate = document.createElement('span');\n	tdmItemNoTemplate.className = 'tdm-item-no';\n	replace = document.getElementById(replace);\n	var backToContentsLabel = \"retour\";\n	var tdm = document.createElement(\"div\");\n	tdm.setAttribute('id','tdm');\n	var tdmBody = document.createElement(\"div\");\n	tdmBody.setAttribute('id','tdm-corps');\n	tdm.appendChild(tdmBody);\n 	var sectionNumbers = [0,0,0,0,0,0];\n	addSections(document.body, tdmBody, sectionNumbers);\n 	replace.parentNode.replaceChild(tdm, replace);\n\n");
@@ -84,7 +88,7 @@ int create_files(char* name_page, char* name_html){
   fprintf(flot_html_latex,"%s",buf);
   ajout_enTete_html ("fr", name_page); //
    
-  buf = "<body onload=\"init()\">";
+  buf = "<body onload=\"init(); init_cite_code();\">";
   fprintf(flot_html_latex,"%s",buf);
    
   //traitement
@@ -109,6 +113,7 @@ int create_files(char* name_page, char* name_html){
   //ajout_regles_css( "class=\"type_specifier\" ","color : #AAAAAA;\n");
 
   ajout_fonctions_js_tdm();
+  ajout_fonction_js_cite_code();
   
   return 0;
 }

@@ -22,6 +22,9 @@ void scan2(char*);
 FILE* file_cmd, file_env;
 long pos;
 int par=0;
+char cite_code1[1000];
+char cite_code2[1000]; 
+ 
  
 %}
 
@@ -37,8 +40,8 @@ int par=0;
 %s PARAM_CMD
 %x NEW_NAME_COMMAND NEW_PARAM_COMMAND NEW_CMD
 %x MATH_ML MATH_ML_SQRT MATH_ML_FRAC1 MATH_ML_FRAC2 MATH_ML_SUP MATH_ML_SUB
-%s REF LABEL
-%x REF_NAME LABEL_NAME LABEL_STAR
+%s REF LABEL CITE_CODE2
+%x REF_NAME LABEL_NAME LABEL_STAR CITE_CODE
 %x PARAMTAB
 %x COLOR1
 %x IMAGE
@@ -83,12 +86,18 @@ int par=0;
 <REF_NAME>"}{"               {yy_pop_state(); yy_push_state(REF); }
 <REF>"}"                     {yy_pop_state(); fprintf(flot_html_latex,"</A>"); }
 
-"\\label{"[[:alnum:]]+       {yy_push_state(LABEL_NAME); fprintf(flot_html_latex,"<A NAME=\"%s\">",yytext+7); }
+"\\label{"[[:alnum:]]+       {yy_push_state(LABEL_NAME); fprintf(flot_html_latex,"<A id=\"%s\" name=\"%s\">",yytext+7,yytext+7); }
 <LABEL_NAME>"}{"             {yy_pop_state(); yy_push_state(LABEL); }
 <LABEL>"}"                   {yy_pop_state(); fprintf(flot_html_latex,"</A>"); }
 
-"\\label*{"[[:alnum:]]+      {yy_push_state(LABEL_STAR); fprintf(flot_html_latex,"<A NAME=\"%s\">",yytext+8); }
+"\\label*{"[[:alnum:]]+      {yy_push_state(LABEL_STAR); fprintf(flot_html_latex,"<A id=\"%s\" name=\"%s\">",yytext+8,yytext+8); }
 <LABEL_STAR>"}"              {yy_pop_state(); fprintf(flot_html_latex,"</A>"); }
+
+"\\citecode{"[[:alnum:]]+"}{" {strncat(cite_code1,yytext+10,strlen(yytext+10)-2);yy_push_state(CITE_CODE);}
+
+<CITE_CODE>[[:alnum:]]+"}"   {strncat(cite_code2,yytext,strlen(yytext)-1);yy_pop_state(); fprintf(flot_html_latex,"<div>coucou</div>\n<script type=\"text/javascript\">\n <!--\n function init_cite_code(){\n cite_code('%s','%s');}\n -->\n </script>\n",cite_code1, cite_code2); }
+
+
 
 "\\("|"$"|"\\begin{math}"    {yy_push_state(MATH_ML); return(BEGIN_MATH_ML);}
 <MATH_ML>"\\)"|"$"|"\\end{math}"   {yy_pop_state(); ;return(END_MATH_ML);}
