@@ -172,7 +172,7 @@ void tabular_param(char * param_tabular,char * param, int length){
   }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
   yylval_char=malloc(sizeof(char)*60);
   param_tabular=malloc(sizeof(char)*10); //pas plus de 10 colonnes

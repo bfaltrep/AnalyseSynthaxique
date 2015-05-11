@@ -58,7 +58,8 @@ int par=0;
 "\\usepackage"("["[[:alnum:],]*"]")*("{"[[:alnum:],]*"}")* {;}
 
 "\\includegraphics"[[:alnum:]\[\]]*"{" {yy_push_state(IMAGE);}
-<IMAGE>[[:alnum:]._]+"}"     {printf("%s",yytext);yytext[yyleng-1]='\0';fprintf(flot_html_latex,"<p><a href=%s><img src=%s></a></p>",yytext,yytext);yy_pop_state();}
+
+<IMAGE>[[:alnum:]._]+"}"     {yytext[yyleng-1]='\0';fprintf(flot_html_latex,"<p><a href=%s><img src=%s></a></p>",yytext,yytext);yy_pop_state();}
 
 
 "\\begin{itemize}"           {return(BEGIN_ITEMIZE); }
@@ -270,6 +271,7 @@ int par=0;
 <MATH_ML>"\\varnothing"      {fprintf(flot_html_latex,"<mo>&#2205;</mo>");}
 
 
+
 "\\textbackslash "           {fprintf(flot_html_latex,"\\");}
 "\\textbackslash\\textbackslash" {fprintf(flot_html_latex,"\\\\");}
 "\\{"                        {fprintf(flot_html_latex,"{");}
@@ -306,9 +308,9 @@ int par=0;
 "%"                          {yy_push_state(COMMENT);fprintf(flot_html_latex,"<!--"); }
 <COMMENT>("\n")+             {yy_pop_state();fprintf(flot_html_latex,"-->"); }
 
-"\\section{"                 {yy_push_state(SECTION);fprintf(flot_html_latex,"<h1>"); }
-"\\subsection{"              {yy_push_state(SUBSECTION); fprintf(flot_html_latex,"<h2>"); }
-"\\subsubsection{"           {yy_push_state(SUBSUBSECTION); fprintf(flot_html_latex,"<h3>"); }
+"\\section{"                 {yy_push_state(SECTION);fprintf(flot_html_latex,"<h1 class=\"tdm_part\">"); }
+"\\subsection{"              {yy_push_state(SUBSECTION); fprintf(flot_html_latex,"<h2 class=\"tdm_part\">"); }
+"\\subsubsection{"           {yy_push_state(SUBSUBSECTION); fprintf(flot_html_latex,"<h3 class=\"tdm_part\">"); }
 
 <SECTION>"}"                 {yy_pop_state(); fprintf(flot_html_latex,"</h1>"); }
 <SUBSECTION>"}"              {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
@@ -317,14 +319,18 @@ int par=0;
 <SECTION>.                   {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
 <SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
 <SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
- 
-"\\section*{"                 {yy_push_state(SECTION_S);fprintf(flot_html_latex,"<h1>"); return(BODY); }
-"\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>");  return(BODY);}
-"\\subsubsection*{"           {yy_push_state(SUBSUBSECTION_S); fprintf(flot_html_latex,"<h3>");  return(BODY);}
+
+"\\section*{"                 {yy_push_state(SECTION_S); fprintf(flot_html_latex,"<h1>"); }
+"\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>"); }
+"\\subsubsection*{"           {yy_push_state(SUBSUBSECTION_S); fprintf(flot_html_latex,"<h3>"); }
 
 <SECTION_S>"}"               {yy_pop_state(); fprintf(flot_html_latex,"</h1>"); }
 <SUBSECTION_S>"}"            {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
 <SUBSUBSECTION_S>"}"         {yy_pop_state(); fprintf(flot_html_latex,"</h3>"); }
+
+<SECTION_S>.                 {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
+<SUBSECTION_S>.              {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
+<SUBSUBSECTION_S>.           {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
 
 [\t\v\f\n\r]                 {fprintf(flot_html_latex," ");}
 [\t\v\f\n\r][\t\v\f\n\r]+    {fprintf(flot_html_latex,"</p><p style=\"text-indent:2em\">");}
