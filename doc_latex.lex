@@ -14,7 +14,14 @@ extern void tabular_param(char * param_tabular,char * param, int length);
 extern void yyerror(const char *);  /* prints grammar violation message */
  
 int param();
-void date(void); 
+void date(void);
+void scan_cmd(char *, int);
+void scan();
+void scan2(char*);
+
+FILE* file_cmd, file_env;
+long pos;
+int par=0;
  
 %}
 
@@ -27,6 +34,8 @@ void date(void);
 %s SECTION SUBSECTION SUBSUBSECTION
 %s SECTION_S SUBSECTION_S SUBSUBSECTION_S
 %s EQUATION
+%s PARAM_CMD
+%x NEW_NAME_COMMAND NEW_PARAM_COMMAND NEW_CMD
 %x MATH_ML MATH_ML_SQRT MATH_ML_FRAC1 MATH_ML_FRAC2 MATH_ML_SUP MATH_ML_SUB
 %s REF LABEL
 %x REF_NAME LABEL_NAME LABEL_STAR
@@ -86,61 +95,71 @@ void date(void);
 <MATH_ML_SUP>"\\)"|"$"|"\\end{math}"   {fprintf(flot_html_latex,"</sup>");yy_pop_state();yy_pop_state();return(END_MATH_ML);}
 <MATH_ML_SUB>"\\)"|"$"|"\\end{math}"   {fprintf(flot_html_latex,"</sub>");yy_pop_state();yy_pop_state();return(END_MATH_ML);}
 
-
 <MATH_ML>[[:alpha:]]+        |
 <MATH_ML_SQRT>[[:alpha:]]+   |
 <MATH_ML_FRAC1>[[:alpha:]]+  |
 <MATH_ML_FRAC2>[[:alpha:]]+  |
 <MATH_ML_SUP>[[:alpha:]]+    |
-<MATH_ML_SUB>[[:alpha:]]+    {fprintf(flot_html_latex,"<mi>%s</mi>",yytext);}
+<MATH_ML_SUB>[[:alpha:]]+    {fprintf(flot_html_latex,"<mi>%s</mi>",yytext);return(MATH_BODY);}
 
 <MATH_ML>[[:digit:]]+        |
 <MATH_ML_SQRT>[[:digit:]]+   |    
 <MATH_ML_FRAC1>[[:digit:]]+  |   
 <MATH_ML_FRAC2>[[:digit:]]+  |  
 <MATH_ML_SUP>[[:digit:]]+    |
-<MATH_ML_SUB>[[:digit:]]+    {fprintf(flot_html_latex,"<mn>%s</mn>",yytext);}
+<MATH_ML_SUB>[[:digit:]]+    {fprintf(flot_html_latex,"<mn>%s</mn>",yytext);return(MATH_BODY);}
 
 <MATH_ML>[[:blank:]]+        |
 <MATH_ML_SQRT>[[:blank:]]+   |
 <MATH_ML_FRAC1>[[:blank:]]+  |
 <MATH_ML_FRAC2>[[:blank:]]+  |
 <MATH_ML_SUP>[[:blank:]]+    |
-<MATH_ML_SUB>[[:blank:]]+    {fprintf(flot_html_latex," ");}
+<MATH_ML_SUB>[[:blank:]]+    {fprintf(flot_html_latex," ");return(MATH_BODY);}
 
 <MATH_ML>"^"                 |
 <MATH_ML_SQRT>"^"            |
 <MATH_ML_FRAC1>"^"           | 
 <MATH_ML_FRAC2>"^"           |
 <MATH_ML_SUP>"^"             |
-<MATH_ML_SUB>"^"             {yy_push_state(MATH_ML_SUP);fprintf(flot_html_latex,"<sup>");}
-<MATH_ML_SUP>"}"             {yy_pop_state();fprintf(flot_html_latex,"</sup>");}
+<MATH_ML_SUB>"^"             {return(MATH_SUP);}
+<MATH_ML>"^{"                |
+<MATH_ML_SQRT>"^{"           |
+<MATH_ML_FRAC1>"^{"          | 
+<MATH_ML_FRAC2>"^{"          |
+<MATH_ML_SUP>"^{"            |
+<MATH_ML_SUB>"^{"            {yy_push_state(MATH_ML_SUP);return(MATH_SUP_BEG);}
+<MATH_ML_SUP>"}"             {yy_pop_state();return(MATH_SUP_END);}
 
 <MATH_ML>"_"                 |
 <MATH_ML_SQRT>"_"            |
 <MATH_ML_FRAC1>"_"           |
 <MATH_ML_FRAC2>"_"           |
 <MATH_ML_SUP>"_"             |
-<MATH_ML_SUB>"_"             {yy_push_state(MATH_ML_SUB);fprintf(flot_html_latex,"<sub>");}
-<MATH_ML_SUB>"}"             {yy_pop_state();fprintf(flot_html_latex,"</sub>");}
+<MATH_ML_SUB>"_"             {return(MATH_SUB);}
+<MATH_ML>"_{"                |
+<MATH_ML_SQRT>"_{"           |
+<MATH_ML_FRAC1>"_{"          |
+<MATH_ML_FRAC2>"_{"          |
+<MATH_ML_SUP>"_{"            |
+<MATH_ML_SUB>"_{"            {yy_push_state(MATH_ML_SUB);return(MATH_SUB_BEG);}
+<MATH_ML_SUB>"}"             {yy_pop_state();return(MATH_SUB_END);}
 
 <MATH_ML>"\\frac{"           |
 <MATH_ML_SQRT>"\\frac{"      |
 <MATH_ML_FRAC1>"\\frac{"     |
 <MATH_ML_FRAC2>"\\frac{"     |
 <MATH_ML_SUP>"\\frac{"       |
-<MATH_ML_SUB>"\\frac{"       {yy_push_state(MATH_ML_FRAC1);fprintf(flot_html_latex,"<mfrac><mrow>");}
-<MATH_ML_FRAC1>"}{"          {yy_pop_state();yy_push_state(MATH_ML_FRAC2);fprintf(flot_html_latex,"</mrow><mrow>");}
-<MATH_ML_FRAC2>"}"           {yy_pop_state();fprintf(flot_html_latex,"</mrow></mfrac>");}
+<MATH_ML_SUB>"\\frac{"       {yy_push_state(MATH_ML_FRAC1);return(MATH_FRAC_BEG);}
+<MATH_ML_FRAC1>"}{"          {yy_pop_state();yy_push_state(MATH_ML_FRAC2);return(MATH_FRAC_INTER);}
+<MATH_ML_FRAC2>"}"           {yy_pop_state();return(MATH_FRAC_END);}
 
 <MATH_ML>"\\sqrt{"           |
 <MATH_ML_SQRT>"\\sqrt{"      |
 <MATH_ML_FRAC1>"\\sqrt{"     |
 <MATH_ML_FRAC2>"\\sqrt{"     |
 <MATH_ML_SUP>"\\sqrt{"       |
-<MATH_ML_SUB>"\\sqrt{"       {yy_push_state(MATH_ML_SQRT);fprintf(flot_html_latex,"<msqrt>");}
-<MATH_ML_SQRT>"}"            {yy_pop_state();fprintf(flot_html_latex,"</msqrt>");}
-
+<MATH_ML_SUB>"\\sqrt{"       {yy_push_state(MATH_ML_SQRT);return(MATH_SQRT_BEG);}
+<MATH_ML_SQRT>"}"            {yy_pop_state();return(MATH_SQRT_ROOT_END);}
 
 <MATH_ML>"{"                 {fprintf(flot_html_latex,"<mrow>");}
 <MATH_ML>"}"                 {fprintf(flot_html_latex,"</mrow>");}
@@ -308,8 +327,27 @@ void date(void);
 "\\\\"|"\\newline"           {fprintf(flot_html_latex, "<br>");}
 
 "\\tableofcontents"          {fprintf(flot_html_latex, "<div id=\"tdm\"></div>"); }
-  
-.                            {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
+
+"\\newcommand{"[[:alpha:]]*  {++par;fputs("%",file_cmd);fputs(yytext+12,file_cmd);yy_push_state(NEW_NAME_COMMAND);return(COMMANDE_BEG);}
+
+<NEW_NAME_COMMAND>"}["[[:digit:]]*  {--par;fputs("%%",file_cmd);fputs(yytext+2,file_cmd);BEGIN(NEW_PARAM_COMMAND);return(COMMANDE_PARAM);}
+
+<NEW_PARAM_COMMAND>"]{"      {++par;fputs("%%%",file_cmd);BEGIN(NEW_CMD);return(COMMANDE_CODE);}
+
+<NEW_NAME_COMMAND>"}{"       {fputs("%%0%%\n",file_cmd);fputs("%%%",file_cmd);BEGIN(NEW_CMD);return(COMMANDE_CODE);}
+
+<NEW_CMD>"{"                 {++par;fputs(yytext,file_cmd);}
+
+<NEW_CMD>"}"                 {--par;{if (par==0){yy_pop_state();return(COMMANDE_END);} else {fputs(yytext,file_cmd);}}}
+
+<NEW_CMD>[^{}]               {fputs(yytext,file_cmd);}
+
+"\\newenvironment"           {;}
+
+"\\"[[:alpha:]]+"["[^\]]"]"  {pos=ftell(file_cmd);scan_cmd(yytext+1,yyleng-1);fprintf(flot_html_latex,"%s",yytext+1);yy_push_state(PARAM_CMD);}
+"\\"[[:alpha:]]+             {pos=ftell(file_cmd);scan_cmd(yytext+1,yyleng-1);fseek(file_cmd,pos,SEEK_SET);fprintf(flot_html_latex,"%s",yytext+1);}
+
+.                            {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
 
 
 %%
@@ -330,4 +368,64 @@ void date(void)
     time(&secondes);
     instant=*localtime(&secondes);
     fprintf(flot_html_latex,"<center>%d/%d/%d</center>", instant.tm_mday, instant.tm_mon+1, instant.tm_year+1900); 
+}
+
+void scan_cmd(char * tex, int t){
+  char tmp[t+2];
+  char tmp2[t+3];
+  tmp2[0]='%';
+  int i =1;
+  while( i<t+1){
+    tmp2[i]=tex[i-1];
+    ++i;
+  }
+  tmp2[i]='%';
+  tmp2[i+1]='\0';
+  //printf("je vais scanner les commmandes !");
+  rewind(file_cmd);
+  //printf("taille de %s est de %d\n",tex,t);
+  //printf("La variable tmp2 vaut %s\n",tmp2);
+  while (fgets(tmp, t+3, file_cmd)){
+    if (strcmp(tmp,tmp2)==0){
+      //printf("youuupi\n");
+      scan(tmp,t);
+      break;}
+  }
+}
+
+void scan(char * tmp, int t){
+  char* c1="%%%";
+  char* c2="\n";
+  char* fichier=NULL;
+  /* printf("1er while tmp:%s et c1:%s et c2:%s\n",tmp,c1,c2); */
+  while (strcmp(tmp,c2)!=0){
+    /* printf("boucle1\n"); */
+    fgets(tmp, 2, file_cmd);
+    /* printf("%s\n",tmp); */
+  }
+  fgets(tmp, 2, file_cmd);
+  /* printf("%s\n",tmp); */
+  while (strcmp(tmp,c2)!=0){
+    /* printf("boucle2\n"); */
+    fgets(tmp, 2, file_cmd);
+    /* printf("%s\n",tmp); */
+  }
+  /* printf("2eme while\n"); */
+  fgets(tmp, 4, file_cmd);
+  /* printf("test %s et %s\n",tmp, c1); */
+  if (strcmp(tmp,c1)==0){
+    /* printf("youhou, je suis dans le code !\n"); */
+    scan2(fichier);
+  }
+}
+
+void scan2(char* fich){
+  /* int stdin = dup(0); */
+  /* close(0); */
+  /* int fp = open("Latex_commandes", O_RDONLY, "r"); */
+  /* dup2(fp, 0); */
+  /* yyparse(); */
+  /* close(fp); */
+  /* dup2(0, stdin); */
+  /* printf("fin scan2 %s\n",fich); */
 }
