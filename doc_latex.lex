@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <fcntl.h>
 #include "y.tab.h"
 #include "traitement.h"
 #include "Pile/stack.h"
@@ -15,11 +16,13 @@ extern void yyerror(const char *);  /* prints grammar violation message */
  
 int param();
 void date(void);
-void scan_cmd(char *, int);
-void scan();
-void scan2(char*);
+void empiler(char *);
+void scan_cmd(char *);
+void scan_cmd2(char *);
 
-FILE* file_cmd, file_env;
+FILE * file=NULL;
+char file_name[80];
+stack file_stack;
 long pos;
 int par=0;
  
@@ -35,7 +38,9 @@ int par=0;
 %s SECTION_S SUBSECTION_S SUBSUBSECTION_S
 %s EQUATION
 %s PARAM_CMD
-%x NEW_NAME_COMMAND NEW_PARAM_COMMAND NEW_CMD
+%x NB_PARAM_CMD
+%x NEW_CMD
+%x NEW_ENV
 %x MATH_ML MATH_ML_SQRT MATH_ML_FRAC1 MATH_ML_FRAC2 MATH_ML_SUP MATH_ML_SUB
 %s REF LABEL
 %x REF_NAME LABEL_NAME LABEL_STAR
@@ -53,7 +58,7 @@ int par=0;
 "\\usepackage"("["[[:alnum:],]*"]")*("{"[[:alnum:],]*"}")* {;}
 
 "\\includegraphics"[[:alnum:]\[\]]*"{" {yy_push_state(IMAGE);}
-<IMAGE>[[:alnum:]._]+"}"     {printf("%s",yytext);yytext[yyleng-1]='\0';printf("%s",yytext);fprintf(flot_html_latex,"<p><a href=%s><img src=%s></a></p>",yytext,yytext);yy_pop_state();}
+<IMAGE>[[:alnum:]._]+"}"     {printf("%s",yytext);yytext[yyleng-1]='\0';fprintf(flot_html_latex,"<p><a href=%s><img src=%s></a></p>",yytext,yytext);yy_pop_state();}
 
 
 "\\begin{itemize}"           {return(BEGIN_ITEMIZE); }
@@ -265,18 +270,17 @@ int par=0;
 <MATH_ML>"\\varnothing"      {fprintf(flot_html_latex,"<mo>&#2205;</mo>");}
 
 
-
-"\\textbackslash "           {fprintf(flot_html_latex,"\\"); printf("\\"); }
-"\\textbackslash\\textbackslash" {fprintf(flot_html_latex,"\\\\"); printf("\\\\"); }
-"\\{"                        {fprintf(flot_html_latex,"{"); printf("{"); }
-"\\}"                        {fprintf(flot_html_latex,"}"); printf("}"); }
-"\["                         {fprintf(flot_html_latex,"["); printf("["); }
-"\]"                         {fprintf(flot_html_latex,"]"); printf("]"); }
-"\\&"                        {fprintf(flot_html_latex,"&"); printf("&"); }
-"\\$"                        {fprintf(flot_html_latex,"$"); printf("$"); }
-"\\_"                        {fprintf(flot_html_latex,"_"); printf("_"); }
-"\\textasciitilde "          {fprintf(flot_html_latex,"~"); printf("~"); }
-"\\textasciicircum "         {fprintf(flot_html_latex,"^"); printf("^"); }
+"\\textbackslash "           {fprintf(flot_html_latex,"\\");}
+"\\textbackslash\\textbackslash" {fprintf(flot_html_latex,"\\\\");}
+"\\{"                        {fprintf(flot_html_latex,"{");}
+"\\}"                        {fprintf(flot_html_latex,"}");}
+"\["                         {fprintf(flot_html_latex,"[");}
+"\]"                         {fprintf(flot_html_latex,"]");}
+"\\&"                        {fprintf(flot_html_latex,"&");}
+"\\$"                        {fprintf(flot_html_latex,"$");}
+"\\_"                        {fprintf(flot_html_latex,"_");}
+"\\textasciitilde "          {fprintf(flot_html_latex,"~");}
+"\\textasciicircum "         {fprintf(flot_html_latex,"^");}
 
 
 "\\title{"                   {yy_push_state(TITLE);return(FORME_TITLE); }
@@ -310,9 +314,9 @@ int par=0;
 <SUBSECTION>"}"              {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
 <SUBSUBSECTION>"}"           {yy_pop_state(); fprintf(flot_html_latex,"</h3>"); }
 
-<SECTION>.                   {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
-<SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
-<SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext); printf(yytext); return(BODY); }
+<SECTION>.                   {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
+<SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
+<SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
  
 "\\section*{"                 {yy_push_state(SECTION_S);fprintf(flot_html_latex,"<h1>"); return(BODY); }
 "\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>");  return(BODY);}
@@ -328,24 +332,28 @@ int par=0;
 
 "\\tableofcontents"          {fprintf(flot_html_latex, "<div id=\"tdm\"></div>"); }
 
-"\\newcommand{"[[:alpha:]]*  {++par;fputs("%",file_cmd);fputs(yytext+12,file_cmd);yy_push_state(NEW_NAME_COMMAND);return(COMMANDE_BEG);}
+"\\newcommand{\\"[[:alpha:]]+"}{"  {++par;strcpy(file_name,"Latex_com_");strncat(file_name,yytext+13,strlen(yytext+12)-3);printf("%s",file_name);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_CMD);return(COMMANDE_BEG);}
 
-<NEW_NAME_COMMAND>"}["[[:digit:]]*  {--par;fputs("%%",file_cmd);fputs(yytext+2,file_cmd);BEGIN(NEW_PARAM_COMMAND);return(COMMANDE_PARAM);}
+"\\newcommand{\\"[[:alpha:]]+"}["[[:digit:]]"]{"  {++par;strcpy(file_name,"Latex_com_");strncat(file_name,yytext+13,strlen(yytext+12)-6);strcat(file_name,"_");strncat(file_name,&yytext[yyleng-3],1);printf("%s",file_name);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_CMD);return(COMMANDE_BEG);}
 
-<NEW_PARAM_COMMAND>"]{"      {++par;fputs("%%%",file_cmd);BEGIN(NEW_CMD);return(COMMANDE_CODE);}
+<NEW_CMD>"{"                 {++par;fputs(yytext,file);}
 
-<NEW_NAME_COMMAND>"}{"       {fputs("%%0%%\n",file_cmd);fputs("%%%",file_cmd);BEGIN(NEW_CMD);return(COMMANDE_CODE);}
+<NEW_CMD>"}"                 {--par;{if (par==0){yy_pop_state();fprintf(file,"\n\\end{document}\n");fclose(file);return(COMMANDE_END);} else {fputs(yytext,file);}}}
 
-<NEW_CMD>"{"                 {++par;fputs(yytext,file_cmd);}
+<NEW_CMD>[^{}]               {fputs(yytext,file);}
 
-<NEW_CMD>"}"                 {--par;{if (par==0){yy_pop_state();return(COMMANDE_END);} else {fputs(yytext,file_cmd);}}}
+"\\newenvironment{"[[:alpha:]]+"}{"  {++par;strcpy(file_name,"Latex_env_");strncat(file_name,yytext+12,strlen(yytext+12)-2);printf("%s",file_name);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_ENV);return(ENVIRONMENT_BEG);}
 
-<NEW_CMD>[^{}]               {fputs(yytext,file_cmd);}
+"\\newenvironment{"[[:alpha:]]+"}["[[:digit:]]"]{"  {++par;strcpy(file_name,"Latex_env_");strncat(file_name,yytext+12,strlen(yytext+12)-5);strcat(file_name,"_");strncat(file_name,&yytext[yyleng-3],1);empiler(file_name);;file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_ENV);return(ENVIRONMENT_BEG);}
 
-"\\newenvironment"           {;}
+<NEW_ENV>"{"                 {++par;fputs(yytext,file);}
 
-"\\"[[:alpha:]]+"["[^\]]"]"  {pos=ftell(file_cmd);scan_cmd(yytext+1,yyleng-1);fprintf(flot_html_latex,"%s",yytext+1);yy_push_state(PARAM_CMD);}
-"\\"[[:alpha:]]+             {pos=ftell(file_cmd);scan_cmd(yytext+1,yyleng-1);fseek(file_cmd,pos,SEEK_SET);fprintf(flot_html_latex,"%s",yytext+1);}
+<NEW_ENV>"}"                 {--par;{if (par==0){yy_pop_state();fprintf(file,"\n\\end{document}\n");fclose(file);return(ENVIRONMENT_END);} else {fputs(yytext,file);}}}
+
+<NEW_ENV>[^{}]               {fputs(yytext,file);}
+
+
+"\\"[[:alpha:]]+             {scan_cmd(yytext+1);}
 
 .                            {yylval_char = strcpy(yylval_char, yytext); return(BODY); }
 
@@ -370,62 +378,53 @@ void date(void)
     fprintf(flot_html_latex,"<center>%d/%d/%d</center>", instant.tm_mday, instant.tm_mon+1, instant.tm_year+1900); 
 }
 
-void scan_cmd(char * tex, int t){
-  char tmp[t+2];
-  char tmp2[t+3];
-  tmp2[0]='%';
-  int i =1;
-  while( i<t+1){
-    tmp2[i]=tex[i-1];
-    ++i;
+void empiler(char * s){
+  char * tmp;
+  asprintf(&tmp, s);
+  stack_push(file_stack,tmp);
+}
+
+void scan_cmd(char * tex){
+  strcpy(file_name,"Latex_com_");
+  strcat(file_name,tex);
+  FILE * fp_in = fopen(file_name,"r");
+  if (fp_in){
+    YY_BUFFER_STATE test = yy_create_buffer(fp_in,YY_BUF_SIZE);
+    yypush_buffer_state(test);
+    yyparse();
+    yypop_buffer_state();
   }
-  tmp2[i]='%';
-  tmp2[i+1]='\0';
-  //printf("je vais scanner les commmandes !");
-  rewind(file_cmd);
-  //printf("taille de %s est de %d\n",tex,t);
-  //printf("La variable tmp2 vaut %s\n",tmp2);
-  while (fgets(tmp, t+3, file_cmd)){
-    if (strcmp(tmp,tmp2)==0){
-      //printf("youuupi\n");
-      scan(tmp,t);
-      break;}
+  else{
+    fclose(fp_in);
+    strcpy(file_name,"Latex_env_");
+    strcat(file_name,tex);
+    FILE * fp_in2 = fopen(file_name,"r");
+    if (fp_in2){
+      printf("env \n");
+      YY_BUFFER_STATE test2 = yy_create_buffer(fp_in2,YY_BUF_SIZE);
+      yypush_buffer_state(test2);
+      yyparse();
+      yypop_buffer_state();
+    }
+    else{
+      fclose(fp_in2);
+      yyerror("pas de commande correspondant à cette macro\n");
+    }
   }
 }
 
-void scan(char * tmp, int t){
-  char* c1="%%%";
-  char* c2="\n";
-  char* fichier=NULL;
-  /* printf("1er while tmp:%s et c1:%s et c2:%s\n",tmp,c1,c2); */
-  while (strcmp(tmp,c2)!=0){
-    /* printf("boucle1\n"); */
-    fgets(tmp, 2, file_cmd);
-    /* printf("%s\n",tmp); */
+void scan_cmd2(char * tex){
+  strcpy(file_name,"Latex_com_");
+  strncat(file_name,tex,strlen(tex)-3);
+  FILE * fp_in = fopen(file_name,"r");
+  if (fp_in){
+    YY_BUFFER_STATE test = yy_create_buffer(fp_in,YY_BUF_SIZE);
+    yypush_buffer_state(test);
+    yyparse();
+    yypop_buffer_state();
   }
-  fgets(tmp, 2, file_cmd);
-  /* printf("%s\n",tmp); */
-  while (strcmp(tmp,c2)!=0){
-    /* printf("boucle2\n"); */
-    fgets(tmp, 2, file_cmd);
-    /* printf("%s\n",tmp); */
+  else{
+    yyerror("pas de commande correspondant à cette macro\n");
   }
-  /* printf("2eme while\n"); */
-  fgets(tmp, 4, file_cmd);
-  /* printf("test %s et %s\n",tmp, c1); */
-  if (strcmp(tmp,c1)==0){
-    /* printf("youhou, je suis dans le code !\n"); */
-    scan2(fichier);
-  }
-}
-
-void scan2(char* fich){
-  /* int stdin = dup(0); */
-  /* close(0); */
-  /* int fp = open("Latex_commandes", O_RDONLY, "r"); */
-  /* dup2(fp, 0); */
-  /* yyparse(); */
-  /* close(fp); */
-  /* dup2(0, stdin); */
-  /* printf("fin scan2 %s\n",fich); */
+  fclose(fp_in);
 }

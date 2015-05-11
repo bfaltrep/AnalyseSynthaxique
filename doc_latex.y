@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "traitement.h"
+#include "Pile/stack.h"
 
 int yylex();
 
@@ -14,8 +15,8 @@ char * param_tabular;
 int index_param_tabular;
 void tabular_param(char * param_tabular,char * param, int length);
 void yyerror(const char *s);
-FILE* file_cmd;
-FILE* file_env;
+stack file_stack;
+
 
 
 %}
@@ -23,11 +24,12 @@ FILE* file_env;
 %output "y.tab.c"
 
 %token BEGIN_DOC END_DOC
-%token COMMANDE_BEG COMMANDE_PARAM COMMANDE_CODE COMMANDE_END
+%token COMMANDE_BEG COMMANDE_END
+%token ENVIRONMENT_BEG ENVIRONMENT_END
+%token NB_PARAM_CMD_BEG NB_PARAM_CMD_END
 %token BEGIN_ITEMIZE END_ITEMIZE
 %token BEGIN_ENUMERATE END_ENUMERATE
 %token ITEM
-%token BEGIN_SECTION END_SECTION BEGIN_SUBSECTION END_SUBSECTION BEGIN_SUBSUBSECTION END_SUBSUBSECTION
 %token BEGIN_TABULAR PARAM_TABULAR END_TABULAR
 %token NEW_CASE_L NEW_CASE_C NEW_CASE_R NEW_CASE NEW_LINE
 %token BEGIN_EQUATION END_EQUATION 
@@ -38,7 +40,6 @@ FILE* file_env;
 %token MATH_SQRT_BEG MATH_SQRT_ROOT_END
 %token MATH_ROOT_BEG MATH_ROOT_INTER
 %token MATH_FRAC_BEG MATH_FRAC_INTER MATH_FRAC_END
-%token LABEL
 %token FORME_FAT FORME_ITALIC FORME_UNDERLINE FORME_TITLE FORME_AUTHOR
 %token BEG_PARAGRAPH END_PARAGRAPH
 %token BODY
@@ -50,26 +51,20 @@ document: BEGIN_DOC body END_DOC
 ;
 
 body: BODY {fprintf(flot_html_latex,yylval_char); } body
-| COMMANDE_BEG {fputs("%\n",file_cmd);} commande body
+| COMMANDE_BEG COMMANDE_END body
+| ENVIRONMENT_BEG ENVIRONMENT_END body
+| NB_PARAM_CMD_BEG NB_PARAM_CMD_END body
 | itemize body
 | enumerate body
 | tabular body
 | equation body
 | math body
-| BEGIN_SECTION {fprintf(flot_html_latex,"<h1>");} body END_SECTION {fprintf(flot_html_latex,"</h1>");} body
-| BEGIN_SUBSECTION {fprintf(flot_html_latex,"<h2>");} body END_SUBSECTION {fprintf(flot_html_latex,"</h2>");} body
-| BEGIN_SUBSUBSECTION {fprintf(flot_html_latex,"<h3>");} body END_SUBSUBSECTION {fprintf(flot_html_latex,"</h1>");} body
-| LABEL {fprintf(flot_html_latex,"<t class=\"label_equation\">\(");} body
 | FORME_TITLE {fprintf(flot_html_latex,"<center><t class=\"title\">");} body
 | FORME_AUTHOR{fprintf(flot_html_latex,"<center><t class=\"author\">");} body 
 | FORME_FAT {fprintf(flot_html_latex,"<b>");} body
 | FORME_ITALIC {fprintf(flot_html_latex,"<i>");} body
 | FORME_UNDERLINE {fprintf(flot_html_latex,"<u>");} body
 |
-;
-
-commande:  COMMANDE_PARAM {fputs("%%\n",file_cmd);} COMMANDE_CODE COMMANDE_END {fputs("%%%\n",file_cmd);}
-| COMMANDE_CODE COMMANDE_END {fputs("%%%\n",file_cmd);}
 ;
 
 math_body: MATH_BODY math_body
@@ -183,15 +178,22 @@ int main()
   param_tabular=malloc(sizeof(char)*10); //pas plus de 10 colonnes
   index_param_tabular=0;
   create_files("Partie LateX","latex.html");
-  file_cmd=fopen("Latex_commandes","w+");
-  file_env=fopen("Latex_environnements","w+");
+  file_stack = stack_create();
   create_menu();
   yyparse();
   finish();
-  fclose(file_cmd);
-  fclose(file_env);
   free(yylval_char);
   free(param_tabular);
+  printf("pile vide ? %s\n",stack_empty(file_stack)?"oui":"non");
+  stack_print(file_stack);
+  while (!stack_empty(file_stack)){
+  	printf("test %s\n",(char *)stack_top(file_stack));
+  	remove(stack_top(file_stack));
+	stack_pop(file_stack);
+	stack_print(file_stack);
+  	printf("je m'efface ");
+  } 
+  stack_destroy(file_stack);
   return EXIT_SUCCESS;
     
 }
