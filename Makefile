@@ -1,10 +1,10 @@
 
 LDLIBS=-ly -lfl
-CFLAGS=-Wall -Werror -g
+CFLAGS=-Wall -Werror -g -D_GNU_SOURCE
 
 YACC=bison -d -v
 
-doc_latex : doc_latex.c lex_latex.yy.c traitement.c
+doc_latex : doc_latex.c lex_latex.yy.c traitement.c ./Pile/stack_array.c
 
 lex_latex.yy.c : doc_latex.lex
 	flex -olex_latex.yy.c doc_latex.lex
