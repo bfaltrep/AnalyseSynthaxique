@@ -283,9 +283,9 @@ void date(void);
 "%"                          {yy_push_state(COMMENT);fprintf(flot_html_latex,"<!--"); }
 <COMMENT>("\n")+             {yy_pop_state();fprintf(flot_html_latex,"-->"); }
 
-"\\section{"                 {yy_push_state(SECTION);fprintf(flot_html_latex,"<h1>"); }
-"\\subsection{"              {yy_push_state(SUBSECTION); fprintf(flot_html_latex,"<h2>"); }
-"\\subsubsection{"           {yy_push_state(SUBSUBSECTION); fprintf(flot_html_latex,"<h3>"); }
+"\\section{"                 {yy_push_state(SECTION);fprintf(flot_html_latex,"<h1 class=\"tdm_part\">"); }
+"\\subsection{"              {yy_push_state(SUBSECTION); fprintf(flot_html_latex,"<h2 class=\"tdm_part\">"); }
+"\\subsubsection{"           {yy_push_state(SUBSUBSECTION); fprintf(flot_html_latex,"<h3 class=\"tdm_part\">"); }
 
 <SECTION>"}"                 {yy_pop_state(); fprintf(flot_html_latex,"</h1>"); }
 <SUBSECTION>"}"              {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
