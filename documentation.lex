@@ -289,6 +289,11 @@ bool verifier_existance_commande(){ //verifie que \cmd existe bien en doxygen
       );
 }
 void ouverture_comm_doxy(void){
+   int c;
+   c=input();
+   while(c!='\n'){
+      c=input();
+   }
    fprintf(flot_html_doc, "<div class=\"fonction\"> ");
 }
 
@@ -304,7 +309,7 @@ void lecture_ecriture_doxy(void)
    
   while ((c = input()) != 0){
     if(c == '\n'){ //si on est en fin de ligne, on sort de la fin et on
-      //écrit dans le flux de sortie html
+                   //écrit dans le flux de sortie html
       fprintf(flot_html_doc, "<div class=\"%s\"> %s </div>", commandeActuelle, contenu);
       free(contenu);
       return;
