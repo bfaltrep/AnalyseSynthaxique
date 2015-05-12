@@ -311,7 +311,7 @@ int create_files(int exec, char * nom, char * fichier){
   ajout_regles_css(".accolade","cursor:pointer;\n");
   ajout_regles_css(".noname","color : white;\n");
 
-  ajout_regles_css(".fonction","background-color: rgba(83,164,255,0.2);\npadding: 1% 2% 2% 2%;\nborder : 3px #53A4FF solid;\nborder-radius: 7px;\n margin-bottom: 40px\n");
+  ajout_regles_css(".fonction","background-color: rgba(83,164,255,0.2);\npadding: 1% 2% 2% 2%;\nborder : 3px #53A4FF solid;\nborder-radius: 7px;\n margin-top: 40px\n");
   ajout_regles_css(".fn" ,"	font-size: 150%;\n	color: #53A4FF;\n");
   ajout_regles_css(".brief" ,"padding-left: 3%;\n font-style: italic;\n	margin-bottom: 15px;\n");
   ajout_regles_css(".paramTitle","color: #A39CF7;\n	font-weight: bold;\n");
