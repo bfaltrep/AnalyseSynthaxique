@@ -190,6 +190,8 @@ int main(int argc, char *argv[])
   file_stack = stack_create();
   
   yyparse();
+
+  printf("Analyse de votre fichier latex terminée. Veuillez ouvrir index.html avec votre navigateur.\n");
   
   finish_files(0);
   free(yylval_char);

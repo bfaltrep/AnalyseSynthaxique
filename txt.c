@@ -98,32 +98,6 @@ void g(int j){
   f(2);
 }
 
-void g2(int j){
-  printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
-  printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
- printf("saut de ligne");
-   printf("saut de ligne");
-   printf("saut de ligne");
-   printf("saut de ligne");
-   printf("saut de ligne");
-}
-
 /**
  * \fn int create_files(char *nom)
  * \brief creer les fichiers html, css et javascript permettant la

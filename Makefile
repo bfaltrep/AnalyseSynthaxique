@@ -24,5 +24,5 @@ lex_latex.yy.c : doc_latex.lex
 doc_latex.tab.c : doc_latex.y traitement.h
 
 clean:
-	rm -rf *.o doc_latex.c documentation.c lex.yy.c doc_latex.tab.c documentation.tab.c *~ *.output *.tab.h  *.html *.css *.js ./pile/*~ ./pile/*.o ./list/*~ ./list/*.o doc_latex
+	rm -rf *.o doc_latex.c documentation.c lex.yy.c doc_latex.tab.c documentation.tab.c *~ *.output *.tab.h  *.html *.css *.js ./pile/*~ ./pile/*.o ./list/*~ ./list/*.o doc_latex *.toc *.log 
 

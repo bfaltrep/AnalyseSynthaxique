@@ -173,6 +173,7 @@ static int create_menu(FILE * f)
 
   fprintf(f,"<ul id=\"menu\">");
   fprintf(f,"%s%s%s%s%s",c,"index.html",d,"Index",e);
+  fprintf(f,"%s%s%s%s%s",c,"rapport_c.html",d,"Rapport C",e);
   fprintf(f,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
   fprintf(f,"%s%s%s%s%s",c,"com_doxy.html",d,"Partie Documentation",e);
   fprintf(f,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);

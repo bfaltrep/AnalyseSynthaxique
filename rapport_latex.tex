@@ -14,8 +14,7 @@
 \tableofcontents
 
 \section{La grammaire}
-
-\section{Les caractères spéciaux}
+Pour la partie LaTeX, nous avons conçu une grammaire. Elle débute au moment où l'on rencontre un {\bf begin\{document\}} dans le fichier tex. Alors on parcourt le BODY dans lequel on retrouve tout ce qui est parsé dans le fichier latex. Certains cas tels que l'appel de listes, de tableaux et d'autres appelent des règles qui leur sont propres. Le parcours de cette grammaire se finit dès que l'on rencontre un {\bf end\{document\}}.
 
 \section{Les commandes de présentation}
 \subsection{Gras, italique, sur-ligné}
@@ -27,7 +26,17 @@ Les couleurs reconnues sont : \textcolor{black}{black}, \textcolor{white}{white}
 
 \section{Les environnements de base}
 \subsection{Les listes}
+Pour convertir les \underline{listes} en html, on envoie un {\bf token} afin d'arriver dans la règle {\bf begin_itemize} de la grammaire, nous permettant ainsi d'inclure des balises html correspondant aux listes et son corps qui se compose des items et de la règle body de la grammaire. Cela nous permet de pouvoir imbriquer différentes balises dans nos structures, une liste numérotée de tableaux par exemple.
+\begin{itemize}
+\item premier item
+\item second item
+\end{itemize}
 \subsection{Les listes numérotées}
+Pour les \underline{listes numérotées}, le fonctionnement est le même que pour les listes à la différence que nous n'utilisons pas la même balise html pour les retranscrire.
+\begin{enumerate}
+\item enum1
+\item enum2
+\end{enumerate}
 \subsection{les tableaux}
 
 \begin{tabular}{lccr}
@@ -50,9 +59,15 @@ Les tableaux sont créés avec l'aide des variables param_tabular et index_param
 
 \section{Le mécanisme des sections}
 \subsection{les sections}
+Les \underline{sections} sont tous les titres que vous voyez sur notre page Html. Pour avoir ces titres depuis un fichier tex, on récupère ce qui se trouve entre les accolades de la commande section, subsection, subsubsection, ainsi que leurs homologues avec une étoile. pour ce faire, nous avons copié le contenu de {\bf yytext} et l'avons stocké dans une variable tout en parcourant le Body de notre grammaire.
 \subsection{la table des matières}
-
+La \underline{table des matières} était une difficulté à surmonter. Nous avions pensé à plusieurs approches. Tout d'abord la mettre en fin de fichier, étant donné que nous n'avons pas tous les titres avant d'arriver à la fin du fichier. Nous avons ensuite pensé à faire deux parcours du fichier tex : un pour récupérer les titres, et l'autre pour créer la table des matières en début de page. Nous avons finalement opté pour une fonction javascript nous permettant de récupérer tous les titres html et ainsi de créer une table des matières à l'endroit où on le souhaite.
 \section{Les liens internes}
+Ceux-ci correspondent aux liens permettant de naviguer dans celui-ci, et non vers d'autres fichiers. En laTeX, on utilise des {\bf label} et des {\bf label*} pour placer une ancre, et des {\bf ref} pour retourner à l'emplacement de cette ancre. La retranscription de cette fonctionnalité est gérée dan la partie Lex du projet. On récupère l'id du label ainsi que le texte à afficher (sauf si c'est un label*). On fait la même opération pour le ref, à la différence que l'id de la réference sera l'ancre accrochée au label que la commande a spécifié. Comme ceci :
+\ref{1}{Remontez}
+
+\section{La citation de code}
+Une \underline{citation de code} marche de la manière suivante : une fois la commande {\bf citecode} reconnue avec ses deux paramètres(qui sont des liens), une fonction Javascript permet de créer une balise html englobant tout ce qui se trouve entre ces deux liens, et nous copions ensuite le contenu de cette balise à l'endroit souhaité. Nous aurions voulu faire marcher cette fonctionnalité en utilisant du javascript car c'était à nos yeux la seule façon de procéder. Cependant, notre niveau en JavaScript ainsi que notre manque de temps ne nous a pas permis de finaliser cette fonctionnalité.
 
 \section{Les formules mathématiques}
 
