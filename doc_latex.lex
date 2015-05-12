@@ -95,6 +95,7 @@ int par=0;
 "\\label*{"[[:alnum:]]+      {yy_push_state(LABEL_STAR); fprintf(flot_html_latex,"<A NAME=\"%s\">",yytext+8); }
 <LABEL_STAR>"}"              {yy_pop_state(); fprintf(flot_html_latex,"</A>"); }
 
+
 "\\("|"$"|"\\begin{math}"    {yy_push_state(MATH_ML); return(BEGIN_MATH_ML);}
 <MATH_ML>"\\)"|"$"|"\\end{math}"   {yy_pop_state(); ;return(END_MATH_ML);}
 <MATH_ML_SUP>"\\)"|"$"|"\\end{math}"   {fprintf(flot_html_latex,"</sup>");yy_pop_state();yy_pop_state();return(END_MATH_ML);}
@@ -169,20 +170,19 @@ int par=0;
 <MATH_ML>"{"                 {fprintf(flot_html_latex,"<mrow>");}
 <MATH_ML>"}"                 {fprintf(flot_html_latex,"</mrow>");}
 
-<MATH_ML>"\\left("                 |
-<MATH_ML_SQRT>"\\left("            | 
-<MATH_ML_FRAC1>"\\left("           |  
-<MATH_ML_FRAC2>"\\left("           |  
-<MATH_ML_SUP>"\\left("             |
-<MATH_ML_SUB>"\\left("             {fprintf(flot_html_latex,"<mrow><mo>(</mo><mrow>");}
+<MATH_ML>"\\left("           |
+<MATH_ML_SQRT>"\\left("      | 
+<MATH_ML_FRAC1>"\\left("     |  
+<MATH_ML_FRAC2>"\\left("     |  
+<MATH_ML_SUP>"\\left("       |
+<MATH_ML_SUB>"\\left("       {fprintf(flot_html_latex,"<mrow><mo>(</mo><mrow>");}
 
-<MATH_ML>"\\right)"                 |
-<MATH_ML_SQRT>"\\right)"            |
-<MATH_ML_FRAC1>"\\right)"           |
-<MATH_ML_FRAC2>"\\right)"           |
-<MATH_ML_SUP>"\\right)"             |
-<MATH_ML_SUB>"\\right)"             {fprintf(flot_html_latex,"</mrow><mo>)</mo></mrow>");}
-
+<MATH_ML>"\\right)"          |
+<MATH_ML_SQRT>"\\right)"     |
+<MATH_ML_FRAC1>"\\right)"    |
+<MATH_ML_FRAC2>"\\right)"    |
+<MATH_ML_SUP>"\\right)"      |
+<MATH_ML_SUB>"\\right)"      {fprintf(flot_html_latex,"</mrow><mo>)</mo></mrow>");}
 
 <MATH_ML>"-"                 |
 <MATH_ML_SQRT>"-"            |
@@ -239,9 +239,9 @@ int par=0;
 <MATH_ML>"\\geq"             {fprintf(flot_html_latex,"<mo>&ge;</mo>");}
 <MATH_ML>"\\cdot"            {fprintf(flot_html_latex,"<mo>.</mo>");}
 <MATH_ML>"\\cdots"           {fprintf(flot_html_latex,"<mo>...</mo>");}
-<MATH_ML>"|"                {fprintf(flot_html_latex,"<mo>||</mo>");}
+<MATH_ML>"|"                 {fprintf(flot_html_latex,"<mo>||</mo>");}
 <MATH_ML>":"                 {fprintf(flot_html_latex,"<mo>:</mo>");}
-<MATH_ML>"%"                {fprintf(flot_html_latex,"<mo>%%</mo>");}
+<MATH_ML>"%"                 {fprintf(flot_html_latex,"<mo>%%</mo>");}
 <MATH_ML>"!"                 {fprintf(flot_html_latex,"!");}
 
 <MATH_ML>"\\neg"             {fprintf(flot_html_latex,"<mo>&not</mo>;");}
@@ -319,9 +319,9 @@ int par=0;
 <SUBSECTION>.                {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
 <SUBSUBSECTION>.             {yylval_char = strcpy(yylval_char, yytext);return(BODY); }
 
-"\\section*{"                 {yy_push_state(SECTION_S); fprintf(flot_html_latex,"<h1>"); }
-"\\subsection*{"              {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>"); }
-"\\subsubsection*{"           {yy_push_state(SUBSUBSECTION_S); fprintf(flot_html_latex,"<h3>"); }
+"\\section*{"                {yy_push_state(SECTION_S); fprintf(flot_html_latex,"<h1>"); }
+"\\subsection*{"             {yy_push_state(SUBSECTION_S); fprintf(flot_html_latex,"<h2>"); }
+"\\subsubsection*{"          {yy_push_state(SUBSUBSECTION_S); fprintf(flot_html_latex,"<h3>"); }
 
 <SECTION_S>"}"               {yy_pop_state(); fprintf(flot_html_latex,"</h1>"); }
 <SUBSECTION_S>"}"            {yy_pop_state(); fprintf(flot_html_latex,"</h2>"); }
