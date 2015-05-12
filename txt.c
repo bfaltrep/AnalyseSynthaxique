@@ -152,13 +152,13 @@ void finish_files();
 void ajout_regles_css( char * selecteurs, char * regles);
 
 /**
- * \fn void ajout_enTete_html (char * language, char * title)
+ * \fn void ajout_enTete_html (char * language, char * titre)
  * \brief ajoute le debut conventionnel d'un fichier html ainsi que les
  * dependances avec les fichiers css et Js
  * \param language donne en quel langage est ecrit la page html
- * \param title titre de la page html
+ * \param titre de la page html
  */
-void ajout_enTete_html (char * language, char * title);
+void ajout_enTete_html (char * language, char * titre);
 
 /**
  * \fn void ajout_balise_class(char * type, char * contenu)
