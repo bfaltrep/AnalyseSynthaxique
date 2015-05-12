@@ -185,12 +185,10 @@ int main(int argc, char *argv[])
   finish();
   free(yylval_char);
   free(param_tabular);
-  stack_print(file_stack);
   while (!stack_empty(file_stack)){
   	remove(stack_top(file_stack));
 	free(stack_top(file_stack));
 	stack_pop(file_stack);
-	stack_print(file_stack);
   } 
   stack_destroy(file_stack);
   yylex_destroy();

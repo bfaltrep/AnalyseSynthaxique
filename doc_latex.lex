@@ -169,19 +169,19 @@ int par=0;
 <MATH_ML>"{"                 {fprintf(flot_html_latex,"<mrow>");}
 <MATH_ML>"}"                 {fprintf(flot_html_latex,"</mrow>");}
 
-<MATH_ML>"("                 |
-<MATH_ML_SQRT>"("            | 
-<MATH_ML_FRAC1>"("           |  
-<MATH_ML_FRAC2>"("           |  
-<MATH_ML_SUP>"("             |
-<MATH_ML_SUB>"("             {fprintf(flot_html_latex,"<mrow><mo>(</mo><mrow>");}
+<MATH_ML>"\\left("                 |
+<MATH_ML_SQRT>"\\left("            | 
+<MATH_ML_FRAC1>"\\left("           |  
+<MATH_ML_FRAC2>"\\left("           |  
+<MATH_ML_SUP>"\\left("             |
+<MATH_ML_SUB>"\\left("             {fprintf(flot_html_latex,"<mrow><mo>(</mo><mrow>");}
 
-<MATH_ML>")"                 |
-<MATH_ML_SQRT>")"            |
-<MATH_ML_FRAC1>")"           |
-<MATH_ML_FRAC2>")"           |
-<MATH_ML_SUP>")"             |
-<MATH_ML_SUB>")"             {fprintf(flot_html_latex,"</mrow><mo>)</mo></mrow>");}
+<MATH_ML>"\\right)"                 |
+<MATH_ML_SQRT>"\\right)"            |
+<MATH_ML_FRAC1>"\\right)"           |
+<MATH_ML_FRAC2>"\\right)"           |
+<MATH_ML_SUP>"\\right)"             |
+<MATH_ML_SUB>"\\right)"             {fprintf(flot_html_latex,"</mrow><mo>)</mo></mrow>");}
 
 
 <MATH_ML>"-"                 |
@@ -239,9 +239,9 @@ int par=0;
 <MATH_ML>"\\geq"             {fprintf(flot_html_latex,"<mo>&ge;</mo>");}
 <MATH_ML>"\\cdot"            {fprintf(flot_html_latex,"<mo>.</mo>");}
 <MATH_ML>"\\cdots"           {fprintf(flot_html_latex,"<mo>...</mo>");}
-<MATH_ML>"\|"                {fprintf(flot_html_latex,"<mo>||</mo>");}
+<MATH_ML>"|"                {fprintf(flot_html_latex,"<mo>||</mo>");}
 <MATH_ML>":"                 {fprintf(flot_html_latex,"<mo>:</mo>");}
-<MATH_ML>"\%"                {fprintf(flot_html_latex,"<mo>%%</mo>");}
+<MATH_ML>"%"                {fprintf(flot_html_latex,"<mo>%%</mo>");}
 <MATH_ML>"!"                 {fprintf(flot_html_latex,"!");}
 
 <MATH_ML>"\\neg"             {fprintf(flot_html_latex,"<mo>&not</mo>;");}
