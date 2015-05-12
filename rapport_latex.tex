@@ -18,14 +18,35 @@
 \section{Les caractères spéciaux}
 
 \section{Les commandes de présentation}
-\subsection{Gras, italique, surligné}
+\subsection{Gras, italique, sur-ligné}
+\texttt{Gras}, \textit{italique} et \underline{sur-ligné} fonctionnent.
+On aurait pu rajouter le sur-lignage, mais ceci demandé encore à l'utilisateur d'utiliser une nouvelle commande avec des paramètres (ce qui ne fonctionne pas ici).
 \subsection{La couleur du texte}
+Les couleurs reconnues sont : \textcolor{black}{black}, \textcolor{white}{white}, \textcolor{red}{red}, \textcolor{green}{green}, \textcolor{blue}{blue}, \textcolor{yellow}{yellow}, \textcolor{cyan}{cyan}, \textcolor{magenta}{magenta}, \textcolor{brown}{brown}, \textcolor{orange}{orange}, \textcolor{violet}{violet}, \textcolor{purple}{purple}, \textcolor{gray}{gray}, \textcolor{lightgray}{lightgray} & \textcolor{darkgray}{darkgray}\\Pour les utiliser depuis un fichier tex, il faut penser à rajouter le package xcolor.
+
 
 \section{Les environnements de base}
 \subsection{Les listes}
 \subsection{Les listes numérotées}
-\subsection{Les équations}
 \subsection{les tableaux}
+
+\begin{tabular}{lccr}
+Mon & Tableau & semble & être fonctionnel \\
+$1$ & $1+2$ & $1+2+3$ & $1+2+3+4$\\
+\end{tabular}
+
+\begin{tabular}{rcl}
+\begin{tabular}{cc}
+T & a \\
+\end{tabular}
+& b &l \\
+\begin{tabular}{cc}
+E & a \\
+\end{tabular}
+& u &x \\
+\end{tabular}
+
+Les tableaux sont créés avec l'aide des variables param_tabular et index_param_tabular. On aurait pu implémenter plus "proprement", mais le temps nous a manqué.
 
 \section{Le mécanisme des sections}
 \subsection{les sections}
@@ -35,8 +56,26 @@
 
 \section{Les formules mathématiques}
 
-\section{les nouvelles commandes}
+Dans ce projet, on fait la distinction entre 2 types de formules mathématiques:
+\begin{enumerate}
+\item Les formules de type MathML -- \$ qui s'intégrent directement au texte
+\item Les formules de type equation -- \$\$ qui sont centrées par rapport au texte
+\end{enumerate}
 
-\section{Les nouveaux environnements}
+Dans l'environnement de MathML, les indices $u_{n+1}$, les exposants $u^{n+1}$, les fractions $\frac{u+1}{v+2}$ et les racines $\sqrt{8+\sqrt{u+1}} +3$ sont fonctionnelles.
+\\De plus, de nombreux symboles ont été implémentés:
+\begin{enumerate}
+\item Operateur : $ \left( \right) - \times \div \neq \equiv \sim \approx < \ll \leq > \gg \geq \pm \cdot \cdots : % + =  \in \notin  $
+\item Symboles Logiques : $|  /  \neg \wedge \vee \oplus \Rightarrow \Leftarrow \Leftrightarrow \exists \forall \& \cap \cup \supset \subset $
+\item Autres Symboles : $\prime \lfloor \rfloor \infty \emptyset  $
+\end{enumerate}
+
+
+On notera que les équations et les formules MathML auraient pû être codées sous le même format MathML, car il existe une option 'display' permettant de choisir de rendre l'expression mathématique dans son propre paragraphe <math display='block'> ou sur la même ligne que le texte ambiant <math display='inline'>.
+
+\section{les nouvelles commandes et les nouveaux environnements}
+
+Les nouvelles commandes et les nouveaux environnements sont enregistrés dans des fichiers qui leurs sont propres, empilés afin de conserver tout les fichiers qui ont été créés, puis sont ensuites supprimés à la fin du parse.\\On a fait le choix d'une pile car celle-ci été déjà implémentée, mais on aurait pû utliser d'autres structures de données.
+Toutes les commandes sans arguments optionnels fonctionnent, mais pas celles avec arguments.\\En effet, nous avons rencontrés des problèmes au niveau du parser, quand on a cherché à reconnaitre les expressions de type  \textbackslash\textbackslash"[[:alpha:]+(``{``[[:alnum:]]+''}'')+ .
 
 \end{document}

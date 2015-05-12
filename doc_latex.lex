@@ -278,7 +278,8 @@ char cite_code2[1000];
 <MATH_ML>"\\varnothing"      {fprintf(flot_html_latex,"<mo>&#2205;</mo>");}
 
 
-
+"<"                        {fprintf(flot_html_latex,"&lt");}
+">"                        {fprintf(flot_html_latex,"&gt");}
 "\\textbackslash "           {fprintf(flot_html_latex,"\\");}
 "\\textbackslash\\textbackslash" {fprintf(flot_html_latex,"\\\\");}
 "\\{"                        {fprintf(flot_html_latex,"{");}
