@@ -65,7 +65,7 @@ int create_menu()
 }
 
 void ajout_fonction_js_cite_code(){
-  fprintf(flot_js,"function cite_code(code1, code2) {\n var str1=document.getElementById(code1); \n var str2=document.getElementById(code2); var citeBody=document.createElement(\"div\");\n citeBody.setAttribute('id','cite-corps'); }\n");
+  fprintf(flot_js,"function cite_code(code1, code2) {\n var str1=document.getElementById(code1); \n var str2=document.getElementById(code2); }\n");
 }
 
 void ajout_fonctions_js_tdm()
