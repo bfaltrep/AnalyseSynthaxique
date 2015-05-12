@@ -188,7 +188,6 @@ int main(int argc, char *argv[])
   index_param_tabular=0;
   create_files(0, argv[1], argv[2]);
   file_stack = stack_create();
-  create_menu();
   
   yyparse();
   

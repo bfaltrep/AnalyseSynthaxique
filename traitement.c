@@ -1,5 +1,7 @@
 #include "traitement.h"
 
+static int create_menu(FILE * f);
+
 /*Formate et ajoute un bloc associé a des selecteurs dans le css.*/
 void ajout_regles_css( char * selecteurs, char * regles){
   fprintf(flot_css,"%s{\n%s}\n\n", selecteurs,regles);
@@ -163,21 +165,19 @@ void nommer_variable(char * nom){
   }
 }
 
-int create_menu()
+static int create_menu(FILE * f)
 {
   char *c = "<li><a href=\"",//latex.html
     *d = "\">",
     *e = "</a></li>";
 
-  fprintf(flot_html_latex,"<ul id=\"menu\">");
-  fprintf(flot_html_latex,"%s%s%s%s%s",c,"index.html",d,"Index",e);
-  fprintf(flot_html_latex,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
-  fprintf(flot_html_latex,"%s%s%s%s%s",c,"com_doxy.html",d,"Partie Documentation",e);
-  fprintf(flot_html_latex,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
-  fprintf(flot_html_latex,"</ul>");
+  fprintf(f,"<ul id=\"menu\">");
+  fprintf(f,"%s%s%s%s%s",c,"index.html",d,"Index",e);
+  fprintf(f,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
+  fprintf(f,"%s%s%s%s%s",c,"com_doxy.html",d,"Partie Documentation",e);
+  fprintf(f,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
+  fprintf(f,"</ul>");
   
-  ajout_regles_css( "ul#menu li","display:inline;margin:10px;padding:10px;\n");
-  ajout_regles_css( "ul#menu","text-align:center; margin:0;padding:0; list-style:none;\n");
   return 0;
 }
 
@@ -260,7 +260,8 @@ int create_files(int exec, char * nom, char * fichier){
   //html
   buf = "<!DOCTYPE html><html>";
   char * debut = "<head><meta charset=\"utf-8\" lang=\"";
-  
+
+  //gestion du c
   if(exec){
     flot_html_c = fopen(fichier,"w+");
     flot_html_doc = fopen("com_doxy.html", "w+");
@@ -275,14 +276,19 @@ int create_files(int exec, char * nom, char * fichier){
     buf = "<body>";
     fprintf(flot_html_c,"%s",buf);
     fprintf(flot_html_doc,"%s",buf);
+
+    create_menu(flot_html_c);
+    create_menu(flot_html_doc);
   }
   else{
+    //gestion du latex
     flot_html_latex = fopen(fichier,"w+");
     
     fprintf(flot_html_latex,"%s",buf);
     fprintf(flot_html_latex,"%s%s\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>%s_LaTeX</title></script><script type=\"text/javascript\"><!--\n function init(){\n tdm('tdm');\n }\n --> </script> </head>",debut, "fr", nom);
     buf = "<body onload=\"init(); init_cite_code();\">";
     fprintf(flot_html_latex,"%s",buf);
+    create_menu(flot_html_latex);
   }
   
   //css
@@ -290,6 +296,8 @@ int create_files(int exec, char * nom, char * fichier){
   ajout_regles_css("body","background-color : #333333; \ncolor : white; \nfont-family : Arial; \nfont-size : 1.5vw; \n");
   
   ajout_regles_css( "a, h1, h2, h3","color : #8291CF;\n");
+  ajout_regles_css( "ul#menu li","display:inline;margin:10px;padding:10px;\n");
+  ajout_regles_css( "ul#menu","text-align:center; margin:0;padding:0; list-style:none;\n");
 
   //-- c
   ajout_regles_css(".preproc","color : #FF9933;\n");
@@ -344,7 +352,7 @@ int create_files(int exec, char * nom, char * fichier){
  void finish_files(int exec){
    
    char * buf = "\n<script src=\"site/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n";
-   char *buf2 = "</body></html>";
+   char * buf2 = "</body></html>";
    if(exec){
      fprintf(flot_html_c,"%s%s",buf,buf2);
      fprintf(flot_html_doc,"\n%s",buf2);

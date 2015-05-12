@@ -646,7 +646,7 @@ int main (){
   //parcourir
   yyparse();
   
-  printf("\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir code_c.html ou index.html avec votre navigateur. \n\n");
+  printf("\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir index.html avec votre navigateur. \n\n");
   
   //nettoyer avant de fermer.
   finish_files(1);

@@ -32,8 +32,6 @@ int create_files(int, char *, char *);
 
 void finish_files(int);
 
-int create_menu();
-
 //fonctions spécifiques à l'ajout dans les fichiers
 
 void ajout_regles_css( char * selecteurs, char * regles);
