@@ -95,6 +95,7 @@ int create_files(char* name_page, char* name_html){
   ajout_regles_css( "h3","color : #8591CF;\n;");
   ajout_regles_css( ".type_specifier","color : #AAAAAA;\n");
   ajout_regles_css( "td","border: 1px solid black;\n");
+  ajout_regles_css( "table","border-collapse: collapse;\n");
   ajout_regles_css( ".title","font-size: 40px;\n");
   ajout_regles_css( ".label_equation","margin-left: 5em;\n");
   ajout_regles_css( ".tiny","font-size: 10px;\n");
