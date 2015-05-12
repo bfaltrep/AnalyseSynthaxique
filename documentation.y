@@ -21,9 +21,9 @@
   char * commandeActuelle;
   stack variables;
   list variables_name;
-  //parametre != fonction/variable pr indentation à 0.
-  int lock;
-
+  int indent_switch;
+  
+  
 %}
 
 %output "y.tab.c"
@@ -53,7 +53,7 @@ parentheses
 a_ouvrant
 : '{' {accolade_ouvrante();}
 a_fermant
-: '}' {accolade_fermante();}
+: '}' {accolade_fermante();indent_switch =0;}
 c_ouvrant
 : '[' {fprintf(flot_html_c, "[");}
 c_fermant
@@ -69,7 +69,7 @@ etoile
 etoile_pointeur
 : '*' {ajout_balise_class("type_specifier","*");}
 deux_point
-: ':' {fprintf(flot_html_c, ":");}
+: ':' {fprintf(flot_html_c, ":");    if(!bool_cond && indent_switch){ new_line(indentation); }}
 point_virgule
 : ';' {p_virgule();}
 virgule
@@ -553,8 +553,8 @@ statement
 
 labeled_statement
 : IDENTIFIER deux_point statement
-| CASE {ajout_balise_class("key_word","case");} constant_expression deux_point {new_line(indentation);} statement
-| DEFAULT {ajout_balise_class("key_word","default");} deux_point {new_line(indentation);} statement
+| CASE { fseek(flot_html_c,-(strlen("&nbsp")*4),SEEK_CUR); ajout_balise_class("key_word","case"); } constant_expression deux_point statement
+| DEFAULT { fseek(flot_html_c,-(strlen("&nbsp")*4),SEEK_CUR);  ajout_balise_class("key_word","default"); } deux_point statement
 ;
 
 compound_statement
@@ -580,7 +580,7 @@ expression_statement
 selection_statement
 : if_ ELSE { ajout_balise_class("key_word","else"); } statement
 | if_ 
-| SWITCH {ajout_balise_class("key_word","switch");} p_ouvrante expression p_fermante statement
+| SWITCH {ajout_balise_class("key_word","switch"); indent_switch = 1; indentation++; } p_ouvrante expression p_fermante statement
 ;
 
 iteration_statement

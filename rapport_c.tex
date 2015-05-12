@@ -46,5 +46,13 @@ Pour retrouver le nom de la fonction, j'ai alors opté pour empiler un symbole n
 
 	\includegraphics[height=10cm]{site/survol.png} 
 	\newline
-\textit{Mise en valeur des occurences d'une variable au survol, avec distinction de la déclaration}
+\textit{Mise en valeur des occurrences d'une variable au survol, avec distinction de la déclaration}
+\newline 
+ma solution est partielle, car cette manipulation permet de placer un identifiant avec le surnom de chaque fonction sur sa ligne de déclaration. Cependant, pour avoir un lien vers les déclarations de variables, je place aussi des balises supplémentaires qui peuvent faire doublons sur les fonctions. Je n'ai pas encore trouvée de solution pour éviter ce doublon et donc avoir un code html cohérent, bien que mes liens soient fonctionnels actuellement. \newline
 
+\subsubsection*{afficher ou cacher les accolades}
+Le contenu des accolades peut être caché ou affiché en cliquant sur les accolades ouvrantes. \newline
+C'est implémenté avec une simple fonction java-script. \newline
+Cette fonctionnalité n'a pas posée de réels problème, excepté lorsque j'ai voulue numéroter les lignes en utilisant uniquement le css. les balises code qui devaient encadrées chaque ligne entraient en conflit avec la balise span qui encadre le contenu des accolades. Cela aurait été résolu en plaçant la balise span a l'extérieur des balises de code qui encadrent la ligne où se trouve l'accolade ouvrante.
+\includegraphics[height=10cm]{site/numerote.png} 
+\textit{la structure des balises si j'avais pu mettre les numérotations}

@@ -55,10 +55,16 @@ void accolade_ouvrante(){
 }
 
 void accolade_fermante(){
+  if(indent_switch){
+    indentation--;
+    indent_switch = 0;
+    int size = strlen("&nbsp")*sizeof(char)*4;
+    fseek(flot_html_c,-size,SEEK_CUR);
+  }
   //retirer une tabulation avant d'écrire l'accolade
-
   int size = strlen("&nbsp")*sizeof(char)*4;
   fseek(flot_html_c,-size,SEEK_CUR);
+  
   fprintf(flot_html_c, "</span>}");
   indentation--;
   if(indentation < 0)
@@ -261,8 +267,9 @@ int create_files(char * nom){
 
 
   
-  //js fonctionnalités : clique accolades ouvrantes. clique sur variables.
+  //js fonctionnalité : clique accolades ouvrantes.
   fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
+  //fonctionnalité : lien sur variable mène vers déclaration.
   fprintf(flot_js,"\n$('a[href^=\"#\"]').click(function(){\n    var id = $(this).attr(\"href\");\n    var offset = $(id).offset().top\n    $('html, body').animate({scrollTop: offset}, 'slow');\n    return false; \n});\n\n");
   return 0;
 }

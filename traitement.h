@@ -19,6 +19,7 @@ char * buf;
 //globales sont initialisées à 0 donc ok !
 int bool_cond;
 int indentation;
+//parametre != fonction/variable pr indentation à 0.
 int lock;
 
 extern void yyerror(const char *);
@@ -26,7 +27,7 @@ extern char * yylval_char;
 extern char * yylval_string_numb;
 extern stack variables;
 extern list variables_name;
-int lock;
+extern int indent_switch;
 
 int create_files();
 
