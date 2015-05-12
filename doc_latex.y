@@ -5,8 +5,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "traitement.h"
+#include "Pile/stack.h"
 
 int yylex();
+extern int yylex_destroy();
 
 //-- locals functions
 char * yylval_char;
@@ -14,8 +16,8 @@ char * param_tabular;
 int index_param_tabular;
 void tabular_param(char * param_tabular,char * param, int length);
 void yyerror(const char *s);
-FILE* file_cmd;
-FILE* file_env;
+stack file_stack;
+
 
 
 %}
@@ -23,7 +25,9 @@ FILE* file_env;
 %output "y.tab.c"
 
 %token BEGIN_DOC END_DOC
-%token COMMANDE_BEG COMMANDE_PARAM COMMANDE_CODE COMMANDE_END
+%token COMMANDE_BEG COMMANDE_END
+%token ENVIRONMENT_BEG ENVIRONMENT_END
+%token NB_PARAM_CMD_BEG NB_PARAM_CMD_END
 %token BEGIN_ITEMIZE END_ITEMIZE
 %token BEGIN_ENUMERATE END_ENUMERATE
 %token ITEM
@@ -48,7 +52,9 @@ document: BEGIN_DOC body END_DOC
 ;
 
 body: BODY {fprintf(flot_html_latex,yylval_char); } body
-| COMMANDE_BEG {fputs("%\n",file_cmd);} commande body
+| COMMANDE_BEG COMMANDE_END body
+| ENVIRONMENT_BEG ENVIRONMENT_END body
+| NB_PARAM_CMD_BEG NB_PARAM_CMD_END body
 | itemize body
 | enumerate body
 | tabular body
@@ -60,10 +66,6 @@ body: BODY {fprintf(flot_html_latex,yylval_char); } body
 | FORME_ITALIC {fprintf(flot_html_latex,"<i>");} body
 | FORME_UNDERLINE {fprintf(flot_html_latex,"<u>");} body
 |
-;
-
-commande:  COMMANDE_PARAM {fputs("%%\n",file_cmd);} COMMANDE_CODE COMMANDE_END {fputs("%%%\n",file_cmd);}
-| COMMANDE_CODE COMMANDE_END {fputs("%%%\n",file_cmd);}
 ;
 
 math_body: MATH_BODY math_body
@@ -176,16 +178,20 @@ int main(int argc, char *argv[])
   yylval_char=malloc(sizeof(char)*60);
   param_tabular=malloc(sizeof(char)*10); //pas plus de 10 colonnes
   index_param_tabular=0;
-  create_files(argv[1],argv[2]);
-  file_cmd=fopen("Latex_commandes","w+");
-  file_env=fopen("Latex_environnements","w+");
+  create_files("Partie LateX","latex.html");
+  file_stack = stack_create();
   create_menu();
   yyparse();
   finish();
-  fclose(file_cmd);
-  fclose(file_env);
   free(yylval_char);
   free(param_tabular);
+  while (!stack_empty(file_stack)){
+  	remove(stack_top(file_stack));
+	free(stack_top(file_stack));
+	stack_pop(file_stack);
+  } 
+  stack_destroy(file_stack);
+  yylex_destroy();
   return EXIT_SUCCESS;
     
 }

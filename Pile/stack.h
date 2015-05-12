@@ -34,7 +34,6 @@ extern int stack_size(stack s);
 */
 extern int stack_inside(stack s, void * object);
 
-
-
+extern void stack_print(stack s);
 
 #endif

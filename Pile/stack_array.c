@@ -92,3 +92,12 @@ int stack_inside(stack s, void * object){
   }
   return -1;
 }
+
+void stack_print(stack s){
+printf("\n");
+int i = 0;
+for(; i <= s->head ; i++){
+printf(" %d %s -",i,(char*)s->tab[i]);
+}
+printf("\n");
+}
