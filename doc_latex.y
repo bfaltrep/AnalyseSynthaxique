@@ -8,6 +8,7 @@
 #include "Pile/stack.h"
 
 int yylex();
+extern int yylex_destroy();
 
 //-- locals functions
 char * yylval_char;
@@ -184,16 +185,15 @@ int main(int argc, char *argv[])
   finish();
   free(yylval_char);
   free(param_tabular);
-  printf("pile vide ? %s\n",stack_empty(file_stack)?"oui":"non");
   stack_print(file_stack);
   while (!stack_empty(file_stack)){
-  	printf("test %s\n",(char *)stack_top(file_stack));
   	remove(stack_top(file_stack));
+	free(stack_top(file_stack));
 	stack_pop(file_stack);
 	stack_print(file_stack);
-  	printf("je m'efface ");
   } 
   stack_destroy(file_stack);
+  yylex_destroy();
   return EXIT_SUCCESS;
     
 }

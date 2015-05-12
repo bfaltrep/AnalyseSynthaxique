@@ -18,7 +18,6 @@ int param();
 void date(void);
 void empiler(char *);
 void scan_cmd(char *);
-void scan_cmd2(char *);
 
 FILE * file=NULL;
 char file_name[80];
@@ -338,9 +337,9 @@ int par=0;
 
 "\\tableofcontents"          {fprintf(flot_html_latex, "<div id=\"tdm\"></div>"); }
 
-"\\newcommand{\\"[[:alpha:]]+"}{"  {++par;strcpy(file_name,"Latex_com_");strncat(file_name,yytext+13,strlen(yytext+12)-3);printf("%s",file_name);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_CMD);return(COMMANDE_BEG);}
+"\\newcommand{\\"[[:alpha:]]+"}{"  {++par;strcpy(file_name,"Latex_com_");strncat(file_name,yytext+13,strlen(yytext+12)-3);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_CMD);return(COMMANDE_BEG);}
 
-"\\newcommand{\\"[[:alpha:]]+"}["[[:digit:]]"]{"  {++par;strcpy(file_name,"Latex_com_");strncat(file_name,yytext+13,strlen(yytext+12)-6);strcat(file_name,"_");strncat(file_name,&yytext[yyleng-3],1);printf("%s",file_name);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_CMD);return(COMMANDE_BEG);}
+"\\newcommand{\\"[[:alpha:]]+"}["[[:digit:]]"]{"  {++par;strcpy(file_name,"Latex_com_");strncat(file_name,yytext+13,strlen(yytext+12)-6);strcat(file_name,"_");strncat(file_name,&yytext[yyleng-3],1);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_CMD);return(COMMANDE_BEG);}
 
 <NEW_CMD>"{"                 {++par;fputs(yytext,file);}
 
@@ -348,7 +347,7 @@ int par=0;
 
 <NEW_CMD>[^{}]               {fputs(yytext,file);}
 
-"\\newenvironment{"[[:alpha:]]+"}{"  {++par;strcpy(file_name,"Latex_env_");strncat(file_name,yytext+12,strlen(yytext+12)-2);printf("%s",file_name);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_ENV);return(ENVIRONMENT_BEG);}
+"\\newenvironment{"[[:alpha:]]+"}{"  {++par;strcpy(file_name,"Latex_env_");strncat(file_name,yytext+12,strlen(yytext+12)-2);empiler(file_name);file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_ENV);return(ENVIRONMENT_BEG);}
 
 "\\newenvironment{"[[:alpha:]]+"}["[[:digit:]]"]{"  {++par;strcpy(file_name,"Latex_env_");strncat(file_name,yytext+12,strlen(yytext+12)-5);strcat(file_name,"_");strncat(file_name,&yytext[yyleng-3],1);empiler(file_name);;file=fopen(file_name,"w+");fprintf(file,"\\begin{document}\n");yy_push_state(NEW_ENV);return(ENVIRONMENT_BEG);}
 
@@ -357,7 +356,6 @@ int par=0;
 <NEW_ENV>"}"                 {--par;{if (par==0){yy_pop_state();fprintf(file,"\n\\end{document}\n");fclose(file);return(ENVIRONMENT_END);} else {fputs(yytext,file);}}}
 
 <NEW_ENV>[^{}]               {fputs(yytext,file);}
-
 
 "\\"[[:alpha:]]+             {scan_cmd(yytext+1);}
 
@@ -399,6 +397,7 @@ void scan_cmd(char * tex){
     yypush_buffer_state(test);
     yyparse();
     yypop_buffer_state();
+    fclose(fp_in);
   }
   else{
     fclose(fp_in);
@@ -406,11 +405,11 @@ void scan_cmd(char * tex){
     strcat(file_name,tex);
     FILE * fp_in2 = fopen(file_name,"r");
     if (fp_in2){
-      printf("env \n");
       YY_BUFFER_STATE test2 = yy_create_buffer(fp_in2,YY_BUF_SIZE);
       yypush_buffer_state(test2);
       yyparse();
       yypop_buffer_state();
+      fclose(fp_in2);
     }
     else{
       fclose(fp_in2);
@@ -419,18 +418,3 @@ void scan_cmd(char * tex){
   }
 }
 
-void scan_cmd2(char * tex){
-  strcpy(file_name,"Latex_com_");
-  strncat(file_name,tex,strlen(tex)-3);
-  FILE * fp_in = fopen(file_name,"r");
-  if (fp_in){
-    YY_BUFFER_STATE test = yy_create_buffer(fp_in,YY_BUF_SIZE);
-    yypush_buffer_state(test);
-    yyparse();
-    yypop_buffer_state();
-  }
-  else{
-    yyerror("pas de commande correspondant à cette macro\n");
-  }
-  fclose(fp_in);
-}
