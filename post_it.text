@@ -1,0 +1,18 @@
+"\\begin{equation}"{; }
+"\\end{equation}"{; }
+
+Changement de police ?
+
+couleurs reconnues : black, white, red, green, blue, yellow, cyan, magenta, brown, orange, violet, purple, gray, lightgray & darkgray
+/!\ utilisation du package \usepackage{xcolor}
+
+doit-on s'occuper des des caractères accentués ?
+
+Réferences / liens internes
+\pageref{marker}
+
+ordre actégorie MathMl Operateur, Symboles Logique, Symboles, Ensembles
+
+pas de lceil/rceil, sinon, il faut passer par une macro
+pas de symbole html pour \simeq ?
+problème de la racine acrré à gérer

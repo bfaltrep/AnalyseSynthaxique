@@ -1,0 +1,130 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath,amsfonts,amssymb}
+
+\begin{document}
+
+\textcolor{blue}{Piou} \textcolor{red}{Piiou} !
+
+\date{\today}
+
+\tableofcontents
+
+\section{Mon premier est:}        
+
+\section*{Je n'apparaitrais pas dans la Tdm}
+
+Test Caractères spéciaux : [ Crochets ]
+\begin{enumerate}
+\item \textbackslash o/ \textbackslash o/ \textbackslash o/ \textbackslash o/
+\item J'ai oublié de tester \textit{ça} \textbackslash\textbackslash
+\item \underline{Ben} \& Jerry's
+\item Money ! \$\_\$
+\item \{Accolades\}
+\item [Crochets]
+\item test !
+\end{enumerate}
+
+
+\newcommand{\test}{j'écris que je suis un test}
+\newcommand{\jambon}{\includegraphics{Mini_Amel.png}}
+\newcommand{\jambonGros}{Je suis un énorme test !}
+\newcommand{\cotelette}[3]{#1TADA#2DAAAA#3}
+
+\newcommand{\tableau}{\begin{tabular}{cccc}KJH & GZEF & O & IUZ \\LZ & KE & & \\L & JH & SDF & PIZE \\\end{tabular}}
+
+\subsection{Mon second ressemble à:}
+
+%Je suis un commentaire !
+
+On pourra se rappeler qu'on aurait pu faire tout les maths avec MathMl, car il y a une "option" qui permet de choisir entre en paragraphe ("block") ou incrusté dans le texte ("inline").
+
+$ 2^n $
+$ \left(3x - 2y\right)^2 $
+$ 8^{8x \div 4} + 12 \times 28 $
+$ {yo}_n $
+$ u_{coucou} $
+$ {{bonjour}_{ca va}}^{tout baigne} $
+\\
+$ \frac{8}{x} $
+$ 78+y+\infty $
+$ \frac{5+x}{3+1} + 8 $
+$ \sqrt{8}$
+$ \sqrt{\frac{8}{x}}$
+$ \sqrt{\sqrt{8+9}} \times 8 +1 $
+
+Je suis un essai \textasciitilde n de texte !
+Un retour à la ligne.
+
+\jambonGros
+
+\label{label1}{ici}
+
+Mais quand vais je retourner à \textasciicircum la ligne\\ ou faire un alinéa ?\\
+Ici ? Test\newline Test2
+Test
+
+\label{label2}{et là}
+
+Ici ?
+\begin{equation}
+x = 2 \label*{2}
+\end{equation}
+
+Dans l'equation \ref{2}{2}, blabla
+
+
+\begin{equation*}
+x = 2
+\end{equation*}
+
+Dans l'equation \ref{2}{ici}, blabla \(f\left(x\right) = 0 -7x = 1 \times 8 = 3 /4 \) j'ai fini cette equation qui sort de nulle part ! :)  C'est fou comme on revient toujours à la ligne !
+
+Dans la partie Suivante, je vais tester TOUT mes caractères présents dans MathML que j'ai encodé:$ \left( - \times \div \neq \equiv \sim \approx < \ll \leq > \gg \geq \pm \cdot \cdots | : % + = /  \neg \wedge \vee \oplus \Rightarrow \Leftarrow \Leftrightarrow \exists \forall \& \cap \cup \supset \subset \emptyset \in \notin \prime \lfloor 18 \rfloor \infty \right) $
+
+Ou encore là ? \\Sauf quand on le précise :p
+
+\begin{itemize}
+\item PIOU PIOU
+\begin{enumerate}
+\item enum1
+\item ENUM2
+\end{enumerate}
+\item PILPIL
+\end{itemize}
+
+POYPOY
+\begin{enumerate}
+\item enum3
+\item ENUM4
+\end{enumerate}
+\begin{tabular}{rlc}
+A droite ... & A gauche ... & Au centre ! \\
+{\bf \textcolor{red}{Bob}} & 300 & 15 \\
+{\itshape Chris} & 8 & \texttt{7800} \\
+\underline{ \textcolor{blue}{0}} & \textcolor{white}{h} & \textcolor{red}{0} \\
+\end{tabular}
+
+\citecode{label1}{label2}
+
+
+\subsubsection{Mon tout est un:}
+Je re-re-test tout ici !
+\includegraphics{Mini_Amel.png}
+JZHGEFIUZHJ
+
+\jambon
+
+\ref{2}{ici}
+
+\begin{tabular}{cccc}
+KJH & GZEF & O & IUZ \\
+LZ & KE & & \\
+L & JH & SDF & PIZE \\
+\end{tabular}
+
+
+\end{document}

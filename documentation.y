@@ -639,7 +639,7 @@ void yyerror(const char *s){
 int main (){
   //initialiser
   commandeActuelle = calloc(7, sizeof(*commandeActuelle)); //taille maximale de la longueur des commandes
-  create_files("documentation");
+  create_files(1,"Documentation","code_c.html");
   variables = stack_create();
   variables_name = list_create();
   
@@ -649,7 +649,7 @@ int main (){
   printf("\n\nAnalyse de vos fichiers terminée. Veuillez ouvrir code_c.html ou index.html avec votre navigateur. \n\n");
   
   //nettoyer avant de fermer.
-  finish_files();
+  finish_files(1);
   stack_destroy(variables);
   list_destroy(variables_name);
   free(commandeActuelle);

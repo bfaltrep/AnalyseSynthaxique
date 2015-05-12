@@ -138,7 +138,8 @@ void nommer_variable(char * nom){
   //si il s'agit de globales
   if(indentation == 0 && !lock){
     ajouter_variable(nom);
-  }else{
+  }
+  else{
     int pos = list_inside(variables_name,nom);
     if(pos == -1){
       ajouter_variable(nom);
@@ -162,6 +163,37 @@ void nommer_variable(char * nom){
   }
 }
 
+int create_menu()
+{
+  char *c = "<li><a href=\"",//latex.html
+    *d = "\">",
+    *e = "</a></li>";
+
+  fprintf(flot_html_latex,"<ul id=\"menu\">");
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"index.html",d,"Index",e);
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"code_c.html",d,"Partie C",e);
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"com_doxy.html",d,"Partie Documentation",e);
+  fprintf(flot_html_latex,"%s%s%s%s%s",c,"latex.html",d,"Partie LateX",e);
+  fprintf(flot_html_latex,"</ul>");
+  
+  ajout_regles_css( "ul#menu li","display:inline;margin:10px;padding:10px;\n");
+  ajout_regles_css( "ul#menu","text-align:center; margin:0;padding:0; list-style:none;\n");
+  return 0;
+}
+
+void ajout_fonction_js_cite_code(){
+  fprintf(flot_js,"function cite_code(code1, code2) {\n var str1=document.getElementById(code1); \n var str2=document.getElementById(code2); }\n");
+}
+
+void ajout_fonctions_js_tdm()
+{
+  fprintf(flot_js,"function tdm(replace){\n var createBackLink = false;\n var sectionNoTemplate = document.createElement('span');\n	sectionNoTemplate.className = 'section-no';\n	var tdmItemNoTemplate = document.createElement('span');\n	tdmItemNoTemplate.className = 'tdm-item-no';\n	replace = document.getElementById(replace);\n	var backToContentsLabel = \"retour\";\n	var tdm = document.createElement(\"div\");\n	tdm.setAttribute('id','tdm');\n	var tdmBody = document.createElement(\"div\");\n	tdmBody.setAttribute('id','tdm-corps');\n	tdm.appendChild(tdmBody);\n 	var sectionNumbers = [0,0,0,0,0,0];\n	addSections(document.body, tdmBody, sectionNumbers);\n 	replace.parentNode.replaceChild(tdm, replace);\n\n");
+  
+  fprintf(flot_js,"function addSections(n, tdm, sectionNumbers) {\n	for(var m = n.firstChild; m != null; m = m.nextSibling) {\n	if ((m.nodeType == 1) && (m.tagName.length == 2) && (m.className == \"tdm_part\")) {\n	var level = parseInt(m.tagName.charAt(1));\n	if (!isNaN(level)) {\n	var fragmentId = '';\n	sectionNumbers[level-1]++;\n  for(var i = level ; i < 6; i++) sectionNumbers[i] = 0;\n	var sectionNumber = \"\";\n	for(var i = 0; i < level ; i++) {\n	sectionNumber += sectionNumbers[i];\n	if (i < level) sectionNumber += \".\";}\n if (m.getAttribute(\"id\")) {\n  fragmentId = m.getAttribute(\"id\");\n  } else {fragmentId = \"SECT\"+sectionNumber;\n	m.setAttribute(\"id\", fragmentId);}\n	if (createBackLink) {\n 	var anchor = document.createElement(\"span\");\n  anchor.className = 'tdm-retour';\n	var backlink = document.createElement(\"a\");\n backlink.setAttribute(\"href\", \"#tdm\");\n	backlink.appendChild(document.createTextNode(backToContentsLabel));\n		anchor.appendChild(backlink);\n 	n.insertBefore(anchor, m);}\n	var link = document.createElement(\"a\");\n	link.setAttribute(\"href\", \"#\" + fragmentId);\n	var sectionTitle = getTextContent(m);\n 	link.appendChild(document.createTextNode(sectionTitle));\n	var tdmItem = document.createElement(\"div\");\n	tdmItem.className = 'tdm-item tdm-niveau-' + i;\n	var tdmItemEntry = document.createElement(\"span\");\n	tdmItemEntry.className = 'tdm-item-texte';\n	tdmItemNoNode = tdmItemNoTemplate.cloneNode(false);\n	tdmItemNoNode.appendChild(document.createTextNode(sectionNumber+\" \"));\n	tdmItem.appendChild(tdmItemNoNode);\n	tdmItemEntry.appendChild(link);\n	tdmItem.appendChild(tdmItemEntry);\n	tdm.appendChild(tdmItem);\n	sectionNumberNode = sectionNoTemplate.cloneNode(false);\n  sectionNumberNode.appendChild(document.createTextNode(sectionNumber+\" \"));\n  m.insertBefore(sectionNumberNode, m.firstChild);}}\n  else {addSections(m, tdm, sectionNumbers);}}}\n\n");
+  
+  fprintf(flot_js,"function getTextContent(n) {\n  var s = '';\n  var children = n.childNodes;\n  for(var i = 0; i < children.length; i++) {\n  var child = children[i];\n  if (child.nodeType == 3) s += child.data;\n  else s += getTextContent(child);}\n  return s;}}\n\n");
+}
+    
 /*
  Fonction récupérée sur le site developpez.com/articles/libc/string
  permet de remplacer une chaine de caractère par une autre chaine, dans une chaine.
@@ -219,35 +251,48 @@ void string_literal(){
   free(yylval_string_numb);
 }
 
-void ajout_enTete_html (char * language, char * title){
-  fprintf(flot_html_c,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s </title></head>\n", language, title);
-  fprintf(flot_html_doc,"<head><meta charset=\"utf-8\" lang=\"%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> comDoxy </title></head>\n", language);
-}
-
-int create_files(char * nom){
+int create_files(int exec, char * nom, char * fichier){
+  char * buf;
   //créer les fichiers du site
-  flot_html_c = fopen("code_c.html","w+");
   flot_css = fopen("style.css","w+");
   flot_js = fopen("script.js","w+");
-  flot_html_doc = fopen("comDoxy.html", "w+");
   
   //html
   buf = "<!DOCTYPE html><html>";
-  fprintf(flot_html_c,"%s",buf);
-  fprintf(flot_html_doc,"%s",buf);
-  ajout_enTete_html("fr", nom);
+  char * debut = "<head><meta charset=\"utf-8\" lang=\"";
   
-  
-  buf = "<body>";
-  fprintf(flot_html_c,"%s",buf);
-  fprintf(flot_html_doc,"%s",buf);
-  //traitement
+  if(exec){
+    flot_html_c = fopen(fichier,"w+");
+    flot_html_doc = fopen("com_doxy.html", "w+");
 
+    fprintf(flot_html_c,"%s",buf);
+    fprintf(flot_html_doc,"%s",buf);
+    
+    //en Tete
+    fprintf(flot_html_c,"%s%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s_c </title></head>\n",debut, "fr", nom);
+    fprintf(flot_html_doc,"%s%s \" /><link  rel=\"stylesheet\" href=\"style.css\" /><title> %s_Doxy </title></head>\n",debut, "fr",nom);
+
+    buf = "<body>";
+    fprintf(flot_html_c,"%s",buf);
+    fprintf(flot_html_doc,"%s",buf);
+  }
+  else{
+    flot_html_latex = fopen(fichier,"w+");
+    
+    fprintf(flot_html_latex,"%s",buf);
+    fprintf(flot_html_latex,"%s%s\" /><link  rel=\"stylesheet\" href=\"style.css\" /><title>%s_LaTeX</title></script><script type=\"text/javascript\"><!--\n function init(){\n tdm('tdm');\n }\n --> </script> </head>",debut, "fr", nom);
+    buf = "<body onload=\"init(); init_cite_code();\">";
+    fprintf(flot_html_latex,"%s",buf);
+  }
+  
   //css
-  ajout_regles_css("body","background-color : #333333; \ncolor : white; \nfont-family : Arial; \nfont-size : 1.5vw; \n");
-
-  ajout_regles_css(".preproc","color : #FF9933;\n");
   
+  ajout_regles_css("body","background-color : #333333; \ncolor : white; \nfont-family : Arial; \nfont-size : 1.5vw; \n");
+  
+  ajout_regles_css( "a, h1, h2, h3","color : #8291CF;\n");
+
+  //-- c
+  ajout_regles_css(".preproc","color : #FF9933;\n");
   ajout_regles_css(".number","color : #CF3838;\n");
   ajout_regles_css(".key_word" ,"color : #FF6600;\n");
   ajout_regles_css(".type_specifier" ,"color : #0099FF;\n");
@@ -265,26 +310,55 @@ int create_files(char * nom){
   ajout_regles_css(".returnTitle","margin-top: 15px;\n color: #A39CF7;\n font-weight: bold;\n");
   ajout_regles_css(".return","padding-left: 3%;\n");
 
-
+  //-- latex
   
-  //js fonctionnalité : clique accolades ouvrantes.
-  fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
-  //fonctionnalité : lien sur variable mène vers déclaration.
-  fprintf(flot_js,"\n$('a[href^=\"#\"]').click(function(){\n    var id = $(this).attr(\"href\");\n    var offset = $(id).offset().top\n    $('html, body').animate({scrollTop: offset}, 'slow');\n    return false; \n});\n\n");
+  ajout_regles_css( "td","border: 1px solid black;\n");
+  ajout_regles_css( "table","border-collapse: collapse;\n");
+  ajout_regles_css( ".title","font-size: 40px;\n");
+  ajout_regles_css( ".label_equation","margin-left: 5em;\n");
+  ajout_regles_css( ".tiny","font-size: 10px;\n");
+  ajout_regles_css(".tdm-niveau-1, .tdm-niveau-2, .tdm-niveau-3, .tdm-niveau-4, .tdm-niveau-5, .tdm-niveau-6","font-size: 25px;\n");
+  ajout_regles_css(".tdm-niveau-1","margin-left:1em;\nfont-weight:bold;\n");
+  ajout_regles_css(".tdm-niveau-2","margin-left:2em;\n");
+  ajout_regles_css(".tdm-niveau-3","margin-left:3em;\n");
+  ajout_regles_css(".tdm-niveau-4","margin-left:4em;\n");
+  ajout_regles_css(".tdm-niveau-5","margin-left:5em;\n");
+  ajout_regles_css(".tdm-niveau-6","margin-left:6em;\n");
+
+
+  //js
+  if(exec){
+    //js fonctionnalité : clique accolades ouvrantes.
+    fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
+    //fonctionnalité : lien sur variable mène vers déclaration.
+    fprintf(flot_js,"\n$('a[href^=\"#\"]').click(function(){\n    var id = $(this).attr(\"href\");\n    var offset = $(id).offset().top\n    $('html, body').animate({scrollTop: offset}, 'slow');\n    return false; \n});\n\n");
+  }
+  else{
+    ajout_fonctions_js_tdm();
+    ajout_fonction_js_cite_code();
+  }
+
   return 0;
 }
 
-void finish_files(){
+ void finish_files(int exec){
    
-  char * buf = "\n<script src=\"site/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n</body></html>";
-
-  fprintf(flot_html_c,"%s",buf);
-  fprintf(flot_html_doc,"\n</body></html>");
-  
+   char * buf = "\n<script src=\"site/jquery-1.11.2.min.js\"></script>\n<script type=\"text/javascript\" src=\"script.js\" ></script>\n";
+   char *buf2 = "</body></html>";
+   if(exec){
+     fprintf(flot_html_c,"%s%s",buf,buf2);
+     fprintf(flot_html_doc,"\n%s",buf2);
+     
+     fclose(flot_html_c);
+     fclose(flot_html_doc);
+     
+   }
+   else{
+     fprintf(flot_html_latex,"%s<t class=\"tiny\"><center>Cette page HTML a été générée à partir d'un fichier LateX</center></t>%s",buf,buf2);
+     
+     fclose(flot_html_latex);
+   }
   fclose(flot_js);
-  fclose(flot_html_c);
-  fclose(flot_html_doc);
   fclose(flot_css);
-  
 }
 

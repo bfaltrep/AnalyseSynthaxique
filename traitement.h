@@ -5,16 +5,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pile/stack.h"
 #include "list/list.h"
+#include "pile/stack.h"
 
 //-- global var
-FILE * flot_html_c;
 FILE * flot_css;
 FILE * flot_js;
+FILE * flot_html_c;
 FILE * flot_html_doc;
-
-char * buf;
+FILE * flot_html_latex;
 
 //globales sont initialisées à 0 donc ok !
 int bool_cond;
@@ -22,29 +21,28 @@ int indentation;
 //parametre != fonction/variable pr indentation à 0.
 int lock;
 
-extern void yyerror(const char *);
-extern char * yylval_char;
-extern char * yylval_string_numb;
-extern stack variables;
-extern list variables_name;
-extern int indent_switch;
+void yyerror(const char *);
+char * yylval_char;
+char * yylval_string_numb;
+stack variables;
+list variables_name;
+int indent_switch;
 
-int create_files();
+int create_files(int, char *, char *);
 
-void finish_files();
+void finish_files(int);
+
+int create_menu();
 
 //fonctions spécifiques à l'ajout dans les fichiers
 
 void ajout_regles_css( char * selecteurs, char * regles);
-
-void ajout_enTete_html (char * language, char * title);
 
 void ajout_balise_class(char * type, char * contenu);
 
 void ajout_balise_variable(char * surnom, char * nom);
 
 //fonctions de traitement de cas
-
 
 void new_line();
 
@@ -61,8 +59,7 @@ void ajout_div();
 void div_fermante();
 
 void condition_saut_ligne();
-//on veut que les strings litéraux puissent contenir des balises html qui ne
-//seront pas traitées
+//on veut que les strings litéraux puissent contenir des balises html qui ne seront pas traitées
 
 void string_literal();
 
@@ -79,4 +76,4 @@ void ajout_balise_id(char * nom_var);
 //fonction présente dans le flex, utilisée dans bison
 void condition_sans_accolade();
 
-#endif 
+#endif

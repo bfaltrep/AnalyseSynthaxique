@@ -5,19 +5,20 @@ struct list_t;
 
 typedef struct list_t *list;
 
-extern list list_create(void);
+list list_create(void);
 
-extern void list_destroy(list l);
+void list_destroy(list l);
 
-extern void list_insert(list l, char *object);
+void list_insert(list l, char *object);
 
-extern void list_delete(list l, int pos);
+void list_delete(list l, int pos);
 
-extern int list_size(list l);
+int list_size(list l);
 
-extern int list_empty(list l);
+int list_empty(list l);
 
-extern int list_inside(list l, char * object);
+int list_inside(list l, char * object);
 
-extern void list_print(list l);
+void list_print(list l);
+
 #endif
