@@ -334,17 +334,14 @@ int create_files(int exec, char * nom, char * fichier){
   ajout_regles_css(".tdm-niveau-5","margin-left:5em;\n");
   ajout_regles_css(".tdm-niveau-6","margin-left:6em;\n");
 
-
+  ajout_fonctions_js_tdm();
+  ajout_fonction_js_cite_code();
   //js
   if(exec){
     //js fonctionnalité : clique accolades ouvrantes.
     fprintf(flot_js,"$('body').on('click','.accolade',function(){\n 	$(this).next('span').toggle(); \n});\n");
     //fonctionnalité : lien sur variable mène vers déclaration.
     fprintf(flot_js,"\n$('a[href^=\"#\"]').click(function(){\n    var id = $(this).attr(\"href\");\n    var offset = $(id).offset().top\n    $('html, body').animate({scrollTop: offset}, 'slow');\n    return false; \n});\n\n");
-  }
-  else{
-    ajout_fonctions_js_tdm();
-    ajout_fonction_js_cite_code();
   }
 
   return 0;
